@@ -1,0 +1,17 @@
+Monik 2.2.3
+
+Auteur: Sylvain Lacombe
+E-mail: slacombe.ti@gmail.com
+Web Page: http://www.analyseprogrammation.com
+Copyright(C) 2009 by Sylvain Lacombe.
+
+Vous pouvez distribuer ce programme librement aussi longtemps que ce notice est inclus.
+
+Monik est un petit moteur d'échec conçu pour fonctionner avec l'interface Winboard.
+
+Paramêtre de démarrage:
+
+Pour configurer la largeur de la table de transposition utilisez la commande suivante:
+
+monik -h x
+x étant la largeur de la table en méga-octets.
