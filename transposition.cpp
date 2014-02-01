@@ -147,7 +147,7 @@ int TTableTrans::Lookup( TChessBoard& cb, int ply, int depth,
 
 // On utilise cette fonction lorsque un coup refute le coup de la couche
 // precedente.
-int TTableTrans::Store( TChessBoard& cb, int ply, int depth,
+int TTableTrans::StoreRefutation( TChessBoard& cb, int ply, int depth,
                                   int wtm, short valeur, int alpha, int beta,
                                   int danger )
 {
