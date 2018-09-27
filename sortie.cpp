@@ -108,7 +108,7 @@ void PrintBitBoard(Bitboard bitboard)
 {
 	int i;
 	for(i=A8; i<=H1; i++) {
-		printf("%d", bitboard & mask[i]);
+		printf("%llu", bitboard & mask[i]);
 		if (i % 8 == 7)
 			printf("\n");
 	}

@@ -80,7 +80,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 			ungetc(c, stdin);
 			if (c == '.')
 			{
-				scanf("%s", &buf);
+				scanf("%s", buf);
 			    printf( "stat01: %d %d %d %d %d\n", (TempsCenti()-timestamp),
 				  iNodes, iProfondeurIteration, cb.MoveList[1].nbmove - cb.MoveList[1].currmove-1,
 				  cb.MoveList[1].nbmove );
@@ -236,21 +236,22 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 
 		// Si on pousse un pion passe, pousser la recherche plus
         // loin pour voir si c'est un danger.
-        if ( cb.CurrentPath.moves[ply].Piece == pion )
+        if ( cb.CurrentPath.moves[ply].Piece == pion ) {
           if ( wtm ) {
-            if ( cb.CurrentPath.moves[ply].To <= H5 )
+            if ( cb.CurrentPath.moves[ply].To <= H5 ) {
               if ( cb.PionPasseB[cb.CurrentPath.moves[ply].To&7]  ) {
                 extension = 1;
                 cb.RaisonExtension[ply] = EXTENSION_PIONPASSE;
               }
-          }
-          else {
+            }
+          } else {
             if ( cb.CurrentPath.moves[ply].To >= A4 )
               if ( cb.PionPasseN[cb.CurrentPath.moves[ply].To&7] ) {
                 extension = 1;
                 cb.RaisonExtension[ply] = EXTENSION_PIONPASSE;
               }
           }
+        }
 
 
         // Razoring trick. Idee prise dans Crafty.

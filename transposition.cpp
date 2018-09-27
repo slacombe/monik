@@ -40,7 +40,7 @@ TTableTrans::TTableTrans( int i_iTaille )
   m_iMaskCle = m_iNbEntree - 1;
 
   printf( "Tranposition: %d positions\n", m_iNbEntree*2 );
-  printf( "Hash table size: %dk\n", (m_iNbEntree*sizeof(Bitboard)*4)/1024);
+  printf( "Hash table size: %lu\n", (m_iNbEntree*sizeof(Bitboard)*4)/1024);
   printf( "Mask: 0x%x\n", m_iMaskCle );
 }
 

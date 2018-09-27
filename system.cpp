@@ -63,7 +63,7 @@ int TrouverDernierJournal() {
 #include <sys/types.h>
 #include <unistd.h>
 
-long TempsCenti()
+int TempsCenti()
 {
   return clock() * 100 / CLOCKS_PER_SEC;
 }

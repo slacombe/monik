@@ -12,7 +12,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-long TempsCenti();
+int TempsCenti();
 long inter();
 void MakePath(char* path, const char* filename);
 

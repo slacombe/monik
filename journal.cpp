@@ -59,7 +59,7 @@ void TJournal::Log( const char* i_szMessage, ... )
   va_list listeParametres;
   va_start( listeParametres, i_szMessage );
   vsprintf( szTexte, i_szMessage, listeParametres );
-  fprintf( Fp, szTexte );
+  fprintf( Fp, szTexte, sizeof(szTexte) );
   fprintf( Fp, "\n" );
   va_end( listeParametres );
 

@@ -81,9 +81,7 @@ int Quiescence(int ply, int wtm, int alpha, int beta )
 #ifdef USE_SEE
     	int iScoreCapture = ValeurPiece[cb.MoveList[ply].moves[i].Capture];
     	iScoreGain = iScoreCapture-ValeurPiece[cb.MoveList[ply].moves[i].Piece];
-		if ( iScoreGain > 0 ||
-			 iScoreGain >= 0 && 
-			 delta <= 0 ) {
+		if ((iScoreGain > 0 || iScoreGain >= 0) && delta <= 0) {
 				bGarde = true;
 		}
 		else {
