@@ -2,7 +2,6 @@ Monik 2.2.3
 
 Author: Sylvain Lacombe
 E-mail: slacombe.ti@gmail.com
-Web Page: http://www.analyseprogrammation.com
 Copyright(C) 2009 by Sylvain Lacombe.
 
 You can distribute this software as long that this notice stays intact and with the software.
