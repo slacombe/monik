@@ -2,8 +2,6 @@
 #ifndef EvalH
 #define EvalH
 
-#include "stdafx.h"
-
 #include "chess.h"
 #include "board.h"
 

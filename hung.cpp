@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Chess.h"
 #include "Board.h"
 #include "Attaque.h"

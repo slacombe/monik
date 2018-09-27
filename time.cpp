@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "time.h"
 #include "iteration.h"
 #include "system.h"

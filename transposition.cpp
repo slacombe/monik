@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #ifdef TRANSPOSITION
 
 #include <stdlib.h>

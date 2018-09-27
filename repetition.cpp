@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "journal.h"
 #include "repetition.h"
 

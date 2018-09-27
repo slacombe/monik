@@ -6,8 +6,6 @@
 // Debut: 5 novembre 1998.
 //
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-
 #include <stdio.h>
 
 #include "board.h"
@@ -65,7 +63,7 @@ void MakeMove(int ply, TMove& move, int wtm)
       cb.CleHachage ^= ClePionB[move.From];
       cb.CleHachage ^= ClePionB[move.To];
 	  if (move.Promotion) {
-		// On enlève un pion.
+		// On enlï¿½ve un pion.
 		ClearBit( cb.pionb, move.To );
 		cb.CleHachage ^= ClePionB[move.From];
 		cb.TotalPionBlanc--;

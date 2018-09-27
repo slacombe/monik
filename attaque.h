@@ -9,8 +9,6 @@
 #ifndef AttaqueH
 #define AttaqueH
 
-#include "stdafx.h"
-
 #include "board.h"
 #include "chess.h"
 

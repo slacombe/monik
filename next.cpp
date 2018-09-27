@@ -7,8 +7,6 @@
 //
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
-
 #include <stdio.h>
 #include "genmove.h"
 #include "valide.h"

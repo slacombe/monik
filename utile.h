@@ -2,8 +2,6 @@
 #ifndef UtileH
 #define UtileH
 
-#include "stdafx.h"
-
 #include <math.h>
 #include <signal.h>
 

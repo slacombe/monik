@@ -6,8 +6,6 @@
 // Debut: 18 janvier 1999.
 //
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

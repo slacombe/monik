@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "chess.h"
 #include "init.h"
 #include "utile.h"

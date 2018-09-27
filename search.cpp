@@ -7,8 +7,6 @@
 //
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
-
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -228,7 +226,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
           cb.RaisonExtension[ply] = EXTENSION_RECAPTURE;
         }
 
-		// Si on est sur le point de promouvoir un pion, étendre la recherche
+		// Si on est sur le point de promouvoir un pion, ï¿½tendre la recherche
 		// pour voir si c'est une menace.
 		if ( extension == 0 && cb.CurrentPath.moves[ply].Piece == 1 &&
 			PromoteExtension[ cb.CurrentPath.moves[ply].To ] ) {

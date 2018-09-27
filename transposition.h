@@ -2,8 +2,6 @@
 #ifndef TranspositionH
 #define TranspositionH
 
-#include "stdafx.h"
-
 #include "chess.h"
 
 // Signification des bit dans une entree de transposition.

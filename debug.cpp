@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #ifdef DEBUG
 #include <vcl.h>
 #pragma hdrstop
