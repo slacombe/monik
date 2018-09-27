@@ -7,11 +7,11 @@ Copyright(C) 2009 by Sylvain Lacombe.
 
 Vous pouvez distribuer ce programme librement aussi longtemps que ce notice est inclus.
 
-Monik est un petit moteur d'échec conçu pour fonctionner avec l'interface Winboard.
+Monik est un petit moteur d'Ã©chec conÃ§u pour fonctionner avec l'interface Winboard.
 
-Paramêtre de démarrage:
+ParamÃ¨tre de dÃ©marrage:
 
 Pour configurer la largeur de la table de transposition utilisez la commande suivante:
 
 monik -h x
-x étant la largeur de la table en méga-octets.
+x Ã©tant la largeur de la table en mÃ©ga-octets.
