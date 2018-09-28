@@ -14,18 +14,25 @@
 extern bool xboard;
 extern int iMateInPly;
 
-// Prend un move et genere une chaine lisible.
+const char* promotion = "nbrq";
 
+// Prend un move et genere une chaine lisible.
 int SortieMove(TMove& move, char* i_szString) {
+	int p = 0;
+	
 	// La case source.
-	i_szString[0] = (char) (move.From % 8 + 'a');
-	i_szString[1] = (char) (8 - (move.From >> 3) + '0');
+	i_szString[p++] = (char) (move.From % 8 + 'a');
+	i_szString[p++] = (char) (8 - (move.From >> 3) + '0');
 
 	// La case destination.
-	i_szString[2] = (char) (move.To % 8 + 'a');
-	i_szString[3] = (char) (8 - (move.To >> 3) + '0');
+	i_szString[p++] = (char) (move.To % 8 + 'a');
+	i_szString[p++] = (char) (8 - (move.To >> 3) + '0');
+	
+	if (move.Promotion) {
+		i_szString[p++] = (char) (promotion[move.Promotion-2]);
+	}
 
-	i_szString[4] = 0;
+	i_szString[p] = 0;
 
 	return true;
 }
