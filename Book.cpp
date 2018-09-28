@@ -21,7 +21,6 @@
 #include "book.h"
 #include "journal.h"
 #include "system.h"
-#include "engine.h"
 
 BookPosition_t *book_table;
 Bitboard book_hash;
@@ -514,7 +513,7 @@ CreateStartBook (const char *i_szFilename)
 	  // que Monik comprendra.
 	  //
 	  TMove move;
-	  if (!Engine::InputMove(szText, ply, wtm, move)) {
+	  if (!InputMove(szText, ply, wtm, move)) {
 		fprintf (stderr, "Line: %d, Illegal move: %s\n", line, szText);
 		// Jump to next game.
 		illegal = 1;

@@ -110,8 +110,9 @@
     <ClCompile Include="chargeur.cpp" />
     <ClCompile Include="chess.cpp" />
     <ClCompile Include="debug.cpp" />
-    <ClCompile Include="Edit.cpp" />
+    <ClCompile Include="edit.cpp" />
     <ClCompile Include="engine.cpp" />
+    <ClCompile Include="entree.cpp" />
     <ClCompile Include="eval.cpp" />
     <ClCompile Include="genmove.cpp" />
     <ClCompile Include="hung.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="chargeur.h" />
     <ClInclude Include="chess.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="edit.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="entree.h" />
     <ClInclude Include="eval.h" />
