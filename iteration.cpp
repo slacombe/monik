@@ -1,7 +1,5 @@
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -92,13 +90,13 @@ int Iteration(int wtm)
   // Le temps restant.
   timestamp = TempsCenti();
 
-  // Nb de coups à faire pour ce temps.
+  // Nb de coups ï¿½ faire pour ce temps.
   int nbCoups = cb.NoCoups/2;
   nbCoups = nbCoups % iNbCoups;
   int coupsRestants = iNbCoups - nbCoups;
   if (coupsRestants < 4) 
 	  coupsRestants = 4;
-  // La tranche de temps allouée.
+  // La tranche de temps allouï¿½e.
   if (iMoveTime != 0)
 	timeslot = iMoveTime;
   else

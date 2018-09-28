@@ -1,5 +1,0 @@
-http://www.analyseprogrammation.com/index.php?option=com_content&view=section&layout=blog&id=2&Itemid=2
-http://www.analyseprogrammation.com/index.php?option=com_content&view=article&id=2&Itemid=3
-http://www.analyseprogrammation.com/index.php?option=com_content&view=article&id=3:comment-ecrire-un-moteur-dechecs&catid=3:tutoriels&Itemid=4
-http://www.analyseprogrammation.com/index.php?option=com_content&view=article&id=4:lechiquier&catid=3:tutoriels&Itemid=4
-http://www.analyseprogrammation.com/index.php?option=com_content&view=section&layout=blog&id=5&Itemid=5
