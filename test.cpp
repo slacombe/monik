@@ -1,6 +1,6 @@
 #include "test.h"
 #include "transposition.h"
-#include "Board.h"
+#include "board.h"
 #include "stdio.h"
 
 void testTransposition()
