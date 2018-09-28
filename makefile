@@ -15,6 +15,6 @@ clean:
 	-rm -f *~ *.o monik
 
 install:
-	cp monik /home/lacos00/monik
+	cp monik ~/bin
 
 
