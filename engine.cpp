@@ -58,8 +58,8 @@ bool Engine( const char *i_szCommande, char* o_szReponse )
     // La commande est une option.
     // Retourner directement la reponse.
     journal.Log( "Command: %s", i_szCommande );
-	if (!g_bModeAnalyse)
-		return true;
+    if (!g_bModeAnalyse)
+            return false;
   }  
 
   TMove move;
@@ -126,7 +126,7 @@ bool Engine( const char *i_szCommande, char* o_szReponse )
 	//    else
 	//      ChessBoard.History[iCoups++][1] = move;
 	    wtm = !wtm;
-		Moteur = !Moteur;
+            Moteur = !Moteur;
 	  }
   }
 
@@ -271,6 +271,10 @@ bool Engine( const char *i_szCommande, char* o_szReponse )
 
   if (!g_bModeAnalyse)
 	Moteur = !Moteur;
+  
+  if (Force) {
+      return false;
+  }
 
   return true;
 }
