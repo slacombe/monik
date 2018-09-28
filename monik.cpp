@@ -28,7 +28,7 @@ extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char* nomProgramme = "Monik v2.2.5\n";
+const char* nomProgramme = "Monik v2.2.6\n";
 
 void Interrupt( int )
 {

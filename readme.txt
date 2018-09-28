@@ -1,4 +1,4 @@
-Monik 2.2.5
+Monik 2.2.6
 
 Author: Sylvain Lacombe
 E-mail: slacombe.ti@gmail.com
