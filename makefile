@@ -15,6 +15,6 @@ clean:
 	-rm -f *~ *.o monik
 
 install:
-	cp monik ~/bin
+	cp monik ~/bin/monik
 
 

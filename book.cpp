@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <cstdlib>
 
 #include "entree.h"
 #include "board.h"
@@ -26,8 +27,9 @@ int book_size = 0;
 int startBook = 0;
 int bookLoaded = 0;
 
-int
-InitializeBook(void) {
+#define	MAXBOOKPLY 20
+
+int InitializeBook(void) {
 	//
 	// Allouer la memoire pour l'initialisation du livre.
 	//
@@ -43,27 +45,19 @@ InitializeBook(void) {
 	return 0;
 }
 
-int
-ReadCommand(FILE * fp, char* o_szCommande) {
+int ReadCommand(FILE * fp) {
 	//
 	// Lire le fichier jusqu'a ce qu'on
 	// trouve un ']'
-	int nbChar = 0;
 	int ch = 0;
 	while (ch != ']') {
 		ch = fgetc(fp);
-		if (ch != ']') {
-			o_szCommande[nbChar] = ch;
-			nbChar++;
-		}
 	}
-	o_szCommande[nbChar] = 0;
 
 	return 1;
 }
 
-int
-ReadComment(FILE * fp) {
+int ReadComment(FILE * fp) {
 	//
 	// Lire le fichier jusqu'a ce qu'on
 	// trouve un '}'
@@ -75,16 +69,15 @@ ReadComment(FILE * fp) {
 	return 1;
 }
 
-int
-ReadText(FILE * fp, char *o_szText, int i_iMax) {
+int ReadText(FILE * fp, char *o_szText, int i_iMax) {
 	//
 	// Lire jusqu'a un ' '
 	//
 	int ch = 0;
 	int nbCar = 0;
-	while (ch != ' ' && ch != '\n' && nbCar < i_iMax) {
+	while (ch != ' ' && ch != '\r' && ch != '\n' && nbCar < i_iMax) {
 		ch = fgetc(fp);
-		if (ch != ' ' && ch != '\n') {
+		if (ch != ' ' && ch != '\r' && ch != '\n') {
 			o_szText[nbCar] = ch;
 			nbCar++;
 		}
@@ -94,8 +87,7 @@ ReadText(FILE * fp, char *o_szText, int i_iMax) {
 	return 1;
 }
 
-int
-UnmakeAll(int i_iPly, int i_iWtm) {
+int UnmakeAll(int i_iPly, int i_iWtm) {
 	//
 	// Unmake all the move made so far.
 	//
@@ -109,8 +101,7 @@ UnmakeAll(int i_iPly, int i_iWtm) {
 	return true;
 }
 
-int
-ChargerCles(void) {
+int ChargerCles(void) {
 	//
 	// Charger les cles du livre.
 	//
@@ -165,8 +156,7 @@ ChargerCles(void) {
 	return 1;
 }
 
-int
-SauvegarderCles(void) {
+int SauvegarderCles(void) {
 	//
 	// Sauvegarde les cles dans le livre.
 	//
@@ -195,8 +185,7 @@ SauvegarderCles(void) {
 	return 1;
 }
 
-int
-AddToBook(TChessBoard * cb, int ply, int wtm) {
+int AddToBook(TChessBoard * cb, int ply, int wtm) {
 	// Calculate the key.
 	int64 pos = book_hash & cb->CleHachage;
 
@@ -242,8 +231,7 @@ int KeyCompare(const void* element1, const void* element2) {
 		return 0;
 }
 
-int
-SaveBook(void) {
+int SaveBook(void) {
 	FILE *fp = fopen("book.bin", "wb");
 	if (!fp) {
 		fprintf(stderr, "Could not create book file.\n");
@@ -251,8 +239,8 @@ SaveBook(void) {
 	}
 
 	// Sort the table.
-	// FIXME: No qsort!!!
-	// qsort( book_table, book_size, sizeof( BookPosition_t ), KeyCompare );
+	qsort( book_table, book_size, sizeof( BookPosition_t ), KeyCompare );
+	
 	// Go thru the book table and save the positions
 	// to the file.
 	Bitboard lastkey = 0;
@@ -270,8 +258,7 @@ SaveBook(void) {
 	return 1;
 }
 
-int
-LoadBook(void) {
+int LoadBook(void) {
 	char bookpath[255];
 	MakePath(bookpath, "book.bin");
 	FILE *fp = fopen(bookpath, "rb");
@@ -299,8 +286,7 @@ LoadBook(void) {
 
 // Binary search in the book.
 
-BookPosition_t*
-binLookup(Bitboard key, int wtm, int lo, int hi) {
+BookPosition_t* binLookup(Bitboard key, int wtm, int lo, int hi) {
 	BookPosition_t* book_pos;
 	if (lo > hi) {
 		return 0;
@@ -318,8 +304,7 @@ binLookup(Bitboard key, int wtm, int lo, int hi) {
 	}
 }
 
-int
-BookLookup(Bitboard key, int wtm) {
+int BookLookup(Bitboard key, int wtm) {
 	BookPosition_t* book_pos = binLookup(key, wtm, 0, book_size);
 	if (book_pos && book_pos->freq > 0) {
 		if (book_pos->wtm == wtm) {
@@ -329,8 +314,7 @@ BookLookup(Bitboard key, int wtm) {
 	return 0;
 }
 
-int
-Book(TChessBoard& cb, int wtm, TMoveList& ml) {
+int Book(TChessBoard& cb, int wtm, TMoveList& ml) {
 	if (!bookLoaded || cb.OutOfBook >= 3) {
 		return 0;
 	}
@@ -414,8 +398,7 @@ Book(TChessBoard& cb, int wtm, TMoveList& ml) {
 	}
 }
 
-int
-CreateStartBook(const char *i_szFilename) {
+int CreateStartBook(const char *i_szFilename) {
 	int line = 1;
 	InitializeBook();
 
@@ -449,6 +432,7 @@ CreateStartBook(const char *i_szFilename) {
 			ply = 0;
 			illegal = 0;
 			printf(".");
+			ReadCommand(fp);
 			continue;
 		}
 
@@ -470,6 +454,10 @@ CreateStartBook(const char *i_szFilename) {
 		//
 		if (ch == '\n') {
 			line++;
+			continue;
+		}
+
+		if (ply > MAXBOOKPLY) {
 			continue;
 		}
 
@@ -507,5 +495,7 @@ CreateStartBook(const char *i_szFilename) {
 	}
 
 	SaveBook();
+	UnmakeAll(ply, !wtm);
+
 	return 1;
 }
