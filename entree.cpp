@@ -394,7 +394,18 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szText[255];
     scanf( "%s", szText );
 
-    CreateStartBook( szText );
+    createBook( szText );
+    return true;
+  }
+
+  //
+  // Generation de la librairie d'ouverture de depart.
+  //
+  if ( strcmp( i_szCommande, "createstartbook" ) == 0 ) {
+    char text[255];
+    scanf( "%s", text );
+
+    createStartBook(text);
     return true;
   }
 

@@ -8,6 +8,8 @@
 #ifndef BOOK_H
 #define BOOK_H
 
+#include <string>
+
 #define		BOOK_MEM_SIZE_MB		32
 
 struct BookPosition_t 
@@ -17,10 +19,9 @@ struct BookPosition_t
 	unsigned int freq;
 };
 
-int ChargerCles( void );
-int SauvegarderCles( void );
 int LoadBook( void );
 int Book( TChessBoard& cb, int wtm, TMoveList& ml );
-int CreateStartBook( const char* i_szFilename );
+int createBook(const char* filename);
+void createStartBook(const char* filename);
 
 #endif
