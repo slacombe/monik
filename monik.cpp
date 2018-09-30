@@ -11,6 +11,7 @@
 #include <signal.h>
 
 #include "chess.h"
+#include "book.h"
 #include "board.h"
 #include "entree.h"
 #include "sortie.h"
@@ -85,7 +86,8 @@ int main(int argc, char **argv)
     // Au moins 1 meg de transposition.
     TableTrans = new TTableTrans( 32 );
 #endif
-
+  
+  openingBook->load();
 
   // On fonctionne ainsi.
   // On boucle entre l'entree de commande et

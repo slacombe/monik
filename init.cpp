@@ -55,5 +55,5 @@ void InitialiseData()
 		CleRoiN[i] = Random64();
 	}
 
-	LoadBook();
+    openingBook = new Book();
 }

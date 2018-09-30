@@ -11,7 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <cstdlib>
+#include <string>
+#include <iostream>
 
 #include "entree.h"
 #include "board.h"
@@ -19,219 +20,122 @@
 #include "unmake.h"
 #include "book.h"
 #include "journal.h"
-#include "system.h"
-
-BookPosition_t *book_table;
-Bitboard book_hash;
-int book_size = 0;
-int startBook = 0;
-int bookLoaded = 0;
+#include "pgnreader.h"
 
 #define	MAXBOOKPLY 20
 
-int InitializeBook(void) {
-	//
-	// Allouer la memoire pour l'initialisation du livre.
-	//
-	printf("Allocating memory...\n");
-	book_size = 1024 * 1024 * 2;
-	book_table = new BookPosition_t[book_size];
-	book_hash = book_size - 1;
-	if (!book_table) {
-		return -1;
-	}
-	memset(book_table, 0, book_size * sizeof (BookPosition_t));
+using namespace std;
 
-	return 0;
+Book* openingBook;
+
+Book::Book() : mStartBook(false) {}
+
+void Book::initialize() {
+	mBookTable.clear();
 }
 
-int ReadCommand(FILE * fp) {
-	//
-	// Lire le fichier jusqu'a ce qu'on
-	// trouve un ']'
-	int ch = 0;
-	while (ch != ']') {
-		ch = fgetc(fp);
-	}
-
-	return 1;
-}
-
-int ReadComment(FILE * fp) {
-	//
-	// Lire le fichier jusqu'a ce qu'on
-	// trouve un '}'
-	int ch = 0;
-	while (ch != '}') {
-		ch = fgetc(fp);
-	}
-
-	return 1;
-}
-
-int ReadText(FILE * fp, char *o_szText, int i_iMax) {
-	//
-	// Lire jusqu'a un ' '
-	//
-	int ch = 0;
-	int nbCar = 0;
-	while (ch != ' ' && ch != '\r' && ch != '\n' && nbCar < i_iMax) {
-		ch = fgetc(fp);
-		if (ch != ' ' && ch != '\r' && ch != '\n') {
-			o_szText[nbCar] = ch;
-			nbCar++;
-		}
-	}
-	o_szText[nbCar] = 0;
-
-	return 1;
-}
-
-int UnmakeAll(int i_iPly, int i_iWtm) {
-	//
-	// Unmake all the move made so far.
-	//
-	int wtm = i_iWtm;
-	int ply = i_iPly;
-	for (int iNoMove = cb.NoCoups - 1; iNoMove >= 0; iNoMove--) {
-		UnmakeMove(ply, cb.ListeMove[iNoMove], wtm);
-		wtm = !wtm;
-	}
-
-	return true;
-}
-
-int AddToBook(TChessBoard * cb, int ply, int wtm) {
+void Book::addPosition(TChessBoard& cb, int ply, int wtm) {
 	// Calculate the key.
-	int64 pos = book_hash & cb->CleHachage;
+	uint64 pos = cb.CleHachage;
 
 	// Get the board at this position.
-	BookPosition_t bookPos = book_table[pos];
+	Book::Position_t bookPos = mBookTable[pos];
 
 	// If the position is not currently use, then
 	// add the position to it. If it's already
 	// used then, if it is the same position
 	// increment the hit, else forget it.
 	if (bookPos.key == 0) {
-		bookPos.key = cb->CleHachage;
+		bookPos.key = cb.CleHachage;
 		bookPos.wtm = wtm;
-		if (startBook) {
+		if (mStartBook) {
 			bookPos.freq = 1000;
 		} else {
 			bookPos.freq = 1;
 		}
 
-		book_table[pos] = bookPos;
-	} else if (bookPos.key == cb->CleHachage) {
+		mBookTable[pos] = bookPos;
+	} else if (bookPos.key == cb.CleHachage) {
 		if (bookPos.wtm == wtm) {
 			bookPos.freq++;
 
-			book_table[pos] = bookPos;
+			mBookTable[pos] = bookPos;
 		}
 	}
-
-	return 1;
 }
 
-int KeyCompare(const void* element1, const void* element2) {
-	BookPosition_t* pElement1 = (BookPosition_t*) element1;
-	BookPosition_t* pElement2 = (BookPosition_t*) element2;
-	Bitboard key1 = pElement1->key;
-	Bitboard key2 = pElement2->key;
-
-	if (key1 < key2)
-		return -1;
-	else if (key2 < key1)
-		return 1;
-	else
-		return 0;
+void Book::addGame(const ChessGame& game) {
+	int wtm = 1;
+	int ply = 0;
+	for(int i=0; i<game.nbMoves() && i<20; i++) {
+		std::string move = game.getMove(i);
+		
+		TMove engineMove;
+		if (InputMove(move.c_str(), ply, wtm, engineMove)) {
+            MakeMove(ply, engineMove, wtm);
+			addPosition(cb, ply, wtm);
+            wtm = !wtm;
+            ply++;
+		} else {
+            std::cerr << endl << "Game starting at line: " << game.getStartLine() << ", Illegal move: " << move << std::endl;
+			break;
+		}
+	}
 }
 
-int SaveBook(void) {
+void Book::save() {
 	FILE *fp = fopen("book.bin", "wb");
 	if (!fp) {
-		fprintf(stderr, "Could not create book file.\n");
-		return 0;
+		std::cerr << "Could not create book file." << std::endl;
+		return;
 	}
 
-	// Sort the table.
-	qsort( book_table, book_size, sizeof( BookPosition_t ), KeyCompare );
-	
 	// Go thru the book table and save the positions
 	// to the file.
-	Bitboard lastkey = 0;
-	for (int i = 0; i < book_size; i++) {
-		BookPosition_t bookPos = book_table[i];
-		assert(lastkey <= bookPos.key);
-		lastkey = bookPos.key;
-		if (bookPos.key != 0 && bookPos.freq > 5) {
-			fwrite(&bookPos, sizeof (BookPosition_t), 1, fp);
+	for(std::map<uint64, Book::Position_t>::iterator it = mBookTable.begin();
+		it != mBookTable.end(); it++) {
+		if (it->second.freq > 5) {
+			fwrite(&it->second, sizeof(Book::Position_t), 1, fp);
 		}
 	}
-
+	
 	fclose(fp);
-
-	return 1;
 }
 
-int LoadBook(void) {
-	char bookpath[255];
-	MakePath(bookpath, "book.bin");
-	FILE *fp = fopen(bookpath, "rb");
+void Book::load() {
+	FILE *fp = fopen("book.bin", "rb");
 	if (!fp) {
-		fprintf(stderr, "Could not open book file.\n");
-		return 0;
+		std::cerr << "Could not open book file." << std::endl;
+		return;
 	}
 
 	// Load all the book in memory.
-	fseek(fp, 0, SEEK_END);
-	book_size = ftell(fp) / sizeof ( BookPosition_t);
-	book_table = new BookPosition_t[book_size];
-
-	fseek(fp, 0, SEEK_SET);
-	BookPosition_t bookPos;
-	for (int i = 0; i < book_size; i++) {
-		fread(&bookPos, sizeof (BookPosition_t), 1, fp);
-		book_table[i] = bookPos;
+	mBookTable.clear();
+	Book::Position_t bookPos;
+	while(!feof(fp)) {
+		fread(&bookPos, sizeof(Book::Position_t), 1, fp);
+		mBookTable[bookPos.key] = bookPos;
 	}
 
 	fclose(fp);
-	bookLoaded = true;
-	return 1;
+    
+    cout << "Opening Book with " << mBookTable.size() << " positions" << endl;
 }
 
-// Binary search in the book.
-
-BookPosition_t* binLookup(Bitboard key, int wtm, int lo, int hi) {
-	BookPosition_t* book_pos;
-	if (lo > hi) {
-		return 0;
-	}
-
-	int mid = (int) floor(float((lo + hi) / 2));
-	book_pos = &book_table[mid];
-	if (key == book_pos->key) {
-		return book_pos;
-	}
-	if (key > book_pos->key) {
-		return binLookup(key, wtm, mid + 1, hi);
-	} else {
-		return binLookup(key, wtm, lo, mid - 1);
-	}
-}
-
-int BookLookup(Bitboard key, int wtm) {
-	BookPosition_t* book_pos = binLookup(key, wtm, 0, book_size);
-	if (book_pos && book_pos->freq > 0) {
-		if (book_pos->wtm == wtm) {
-			return book_pos->freq;
+int Book::lookup(uint64 key, int wtm) {
+	if (mBookTable.count(key) == 1) {
+		Book::Position_t& pos = mBookTable[key];
+		if (pos.freq > 0) {
+			if (pos.wtm == wtm) {
+				return pos.freq;
+			}
 		}
 	}
 	return 0;
 }
 
-int Book(TChessBoard& cb, int wtm, TMoveList& ml) {
-	if (!bookLoaded || cb.OutOfBook >= 3) {
+bool Book::inBook(TMoveList& ml, int wtm) {
+	if (!loaded() || cb.OutOfBook >= 3) {
 		return 0;
 	}
 
@@ -241,7 +145,7 @@ int Book(TChessBoard& cb, int wtm, TMoveList& ml) {
 	int i, j;
 	for (i = 0; i < ml.nbmove; i++) {
 		MakeMove(1, ml.moves[i], wtm);
-		int freq = BookLookup(cb.CleHachage, wtm);
+		int freq = lookup(cb.CleHachage, wtm);
 		if (freq > 0) {
 			ml.moves[i].Score = freq;
 		} else {
@@ -314,107 +218,43 @@ int Book(TChessBoard& cb, int wtm, TMoveList& ml) {
 	}
 }
 
-int createBook(const char *filename) {
+bool Book::create(const std::string filename) {
 	int line = 1;
-	InitializeBook();
-
+	
 	//
 	// Try to open the file.
 	//
-	FILE *fp = fopen(filename, "rb");
-	if (!fp) {
-		fprintf(stderr, "Cannot open book source: %s\n", filename);
-		return 1;
-	}
+	PgnReader reader;
+    if (!reader.open(filename)) {
+        return false;
+    }
 
 	int ply = 0;
 	int wtm = 1;
-	int illegal = 0;
-	while (!feof(fp)) {
-		//
-		// Lire un caractere.
-		//
-		int ch = fgetc(fp);
 
-		// 
-		// Si le caractere est un '[', alors
-		// c'est une commande.
-		//
-		if (ch == '[') {
-			UnmakeAll(ply, !wtm);
-			wtm = 1;
-			ply = 0;
-			illegal = 0;
-			printf(".");
-			ReadCommand(fp);
-			continue;
-		}
-
-		//
-		// If the game is illegal, wait until new command. 
-		//
-		if (illegal) {
-			continue;
-		}
-
-		// 
-		// Si le caractere est un '{', alors
-		// c'est un commentaire.
-		//
-		if (ch == '{') {
-			ReadComment(fp);
-			continue;
-		}
-		//
-		if (ch == '\n') {
-			line++;
-			continue;
-		}
-
-		if (ply > MAXBOOKPLY) {
-			continue;
-		}
-
-		if (ch == ' ') {
-			continue;
-		}
-		//
-		// Lire jusqu'a un ' ' pour voir
-		// si c'est un coup.
-		//
-		if (strchr("PNBRQKpnrqkabcdefghOo", ch)) {
-			char szText[10];
-			ungetc(ch, fp);
-			ReadText(fp, szText, sizeof (szText) - 1);
-
-			// 
-			// Convertir le coup dans un format
-			// que Monik comprendra.
-			//
-			TMove move;
-			if (!InputMove(szText, ply, wtm, move)) {
-				fprintf(stderr, "Line: %d, Illegal move: %s\n", line, szText);
-				// Jump to next game.
-				illegal = 1;
-				continue;
-			}
-			//
-			// Jouer le coup sur le board.
-			//
-			MakeMove(ply, move, wtm);
-			AddToBook(&cb, ply, wtm);
-			wtm = !wtm;
-			ply++;
-		}
+    int nbGames = 0;
+	ChessGame* game;
+	while((game = reader.readGame())) {
+		addGame(*game);
+        nbGames++;
+        delete game;
+        if (nbGames % 100 == 1) {
+            cout << '.';
+        }
+        if (nbGames % 5000 == 0) {
+            cout << " " << nbGames << endl;
+        }
 	}
 
-	SaveBook();
-	UnmakeAll(ply, !wtm);
-
-	return 1;
+    cout << endl;
+    cout << "Read " << nbGames << " games" << endl;
+	save();
+    load();
+	
+	return true;
 }
 
-void createStartBook(const char* filename) {
-	startBook = true;
-	createBook(filename);
+void Book::createStart(const std::string filename) {
+	mStartBook = true;
+	create(filename);
 }

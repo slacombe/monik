@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../../attaque.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../attaque.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../board.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../board.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../book.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../book.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../chargeur.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../chargeur.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../chess.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../chess.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../chessgame.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../chessgame.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../debug.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../debug.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../edit.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../edit.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../engine.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../engine.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../entree.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../entree.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../eval.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../eval.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../genmove.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../genmove.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../hung.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../hung.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../init.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../init.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../iteration.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../iteration.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../journal.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../journal.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../lisez-moi.txt">
+   </FileRef>
+   <FileRef
+      location = "group:../../make.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../make.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../makefile">
+   </FileRef>
+   <FileRef
+      location = "group:../../Modern.pgn">
+   </FileRef>
+   <FileRef
+      location = "group:../../monik.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../next.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../next.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../nextracine.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../nextracine.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../pgnreader.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../pgnreader.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../quies.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../quies.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../racine.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../racine.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../readme.txt">
+   </FileRef>
+   <FileRef
+      location = "group:../../repetition.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../repetition.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../resource.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../search.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../search.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../sortie.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../sortie.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../system.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../system.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../test.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../test.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../time.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../time.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../transposition.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../transposition.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../unmake.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../unmake.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../utile.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../utile.h">
+   </FileRef>
+   <FileRef
+      location = "group:../../valide.cpp">
+   </FileRef>
+   <FileRef
+      location = "group:../../valide.h">
+   </FileRef>
+   <FileRef
+      location = "self:MonikProject.xcodeproj">
+   </FileRef>
+</Workspace>

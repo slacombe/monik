@@ -18,6 +18,6 @@ bool Parse(const char* i_szEntree, int ply, int wtm, TMove& o_Move);
 
 bool Option( const char* i_szCommande, char* o_szReponse );
 
-int InputMove(char* text, int ply, int wtm, TMove& move);
+int InputMove(const char* text, int ply, int wtm, TMove& move);
 //---------------------------------------------------------------------------
 #endif

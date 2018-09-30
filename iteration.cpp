@@ -60,7 +60,7 @@ int Iteration(int wtm)
   // On verifie si tous les coups sont valide.
   cb.MoveList[1].ChoisiMove(1, wtm);
 
-  if ( Book( cb, wtm, cb.MoveList[1] ) ) {
+  if (openingBook->inBook(cb.MoveList[1], wtm)) {
 	return BOOKMOVE;
   }
 
