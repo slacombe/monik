@@ -24,6 +24,10 @@
 #include "journal.h"
 #include "eval.h"
 
+#include <cstring>
+
+using std::string;
+
 #ifdef   TRANSPOSITION
 #include "transposition.h"
 #endif
@@ -394,7 +398,18 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szText[255];
     scanf( "%s", szText );
 
-    CreateStartBook( szText );
+    openingBook->create(std::string(szText));
+    return true;
+  }
+
+  //
+  // Generation de la librairie d'ouverture de depart.
+  //
+  if ( strcmp( i_szCommande, "createstartbook" ) == 0 ) {
+    char text[255];
+    scanf( "%s", text );
+
+    openingBook->createStart(std::string(text));
     return true;
   }
 
@@ -407,7 +422,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 // 
 // Code modifie de Crafty.
 //
-int InputMove(char* text, int ply, int wtm, TMove& move) 
+int InputMove(const char* text, int ply, int wtm, TMove& move) 
 {
 	int moves[220];
 	TMove goodmove;

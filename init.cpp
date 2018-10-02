@@ -39,25 +39,21 @@ void InitialiseData()
     }
   }
 
-	if ( ChargerCles() == 0 ) {
-
-  		// Initialisation des cles de hachages.
-  		for( int i=A8; i<=H1; i++ ) {
-    		ClePionB[i] = Random64();
-  		  	ClePionN[i] = Random64();
-   		 	CleCavalierB[i] = Random64();
-  		  	CleCavalierN[i] = Random64();
-		    CleFouB[i] = Random64();
-   		 	CleFouN[i] = Random64();
-   		 	CleTourB[i] = Random64();
-    		CleTourN[i] = Random64();
-    		CleDameB[i] = Random64();
-    		CleDameN[i] = Random64();
-    		CleRoiB[i] = Random64();
-    		CleRoiN[i] = Random64();
-  		}
+	// Initialisation des cles de hachages.
+	for( int i=A8; i<=H1; i++ ) {
+		ClePionB[i] = Random64();
+		ClePionN[i] = Random64();
+		CleCavalierB[i] = Random64();
+		CleCavalierN[i] = Random64();
+		CleFouB[i] = Random64();
+		CleFouN[i] = Random64();
+		CleTourB[i] = Random64();
+		CleTourN[i] = Random64();
+		CleDameB[i] = Random64();
+		CleDameN[i] = Random64();
+		CleRoiB[i] = Random64();
+		CleRoiN[i] = Random64();
 	}
 
-	LoadBook();
-
+    openingBook = new Book();
 }

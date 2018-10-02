@@ -15,10 +15,10 @@
 #ifdef _WIN32
 typedef unsigned __int64 int64;
 #else
-typedef unsigned long long int64;
+typedef unsigned long long uint64;
 #endif
 
-typedef int64 Bitboard;
+typedef uint64 Bitboard;
 
 #define    ROI             6
 #define    DAME            5

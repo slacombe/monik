@@ -8,19 +8,45 @@
 #ifndef BOOK_H
 #define BOOK_H
 
-#define		BOOK_MEM_SIZE_MB		32
+#include <sstream>
+#include <map>
 
-struct BookPosition_t 
-{
-	Bitboard key;
-	unsigned short wtm;
-	unsigned int freq;
+#include "chessgame.h"
+
+using std::string;
+
+class Book;
+
+extern Book* openingBook;
+
+class Book {
+public:
+	struct Position_t 
+	{
+		Bitboard key;
+		unsigned short wtm;
+		unsigned int freq;
+	};
+
+private:
+	bool mStartBook;
+	std::map<Bitboard, Book::Position_t> mBookTable;
+
+	void initialize();
+	void addPosition(TChessBoard& cb, int ply, int wtm);	
+	void addGame(const ChessGame& game);
+	void save();
+	bool loaded() { return !mBookTable.empty(); }
+	int lookup(uint64 key, int wtm);
+	
+public:
+	Book();
+	
+	void load();
+	bool create(const std::string filename);
+	void createStart(const std::string filename);
+	bool inBook(TMoveList& ml, int wtm);
 };
 
-int ChargerCles( void );
-int SauvegarderCles( void );
-int LoadBook( void );
-int Book( TChessBoard& cb, int wtm, TMoveList& ml );
-int CreateStartBook( const char* i_szFilename );
-
 #endif
+
