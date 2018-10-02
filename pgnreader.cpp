@@ -90,7 +90,6 @@ ChessGame* PgnReader::readGame() {
 
 	ChessGame* game = NULL;
 	
-	int ch = 0;
 	while (!feof(mPgnFile)) {
 		//
 		// Lire un caractere.

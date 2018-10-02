@@ -219,8 +219,6 @@ bool Book::inBook(TMoveList& ml, int wtm) {
 }
 
 bool Book::create(const std::string filename) {
-	int line = 1;
-	
 	//
 	// Try to open the file.
 	//
@@ -228,9 +226,6 @@ bool Book::create(const std::string filename) {
     if (!reader.open(filename)) {
         return false;
     }
-
-	int ply = 0;
-	int wtm = 1;
 
     int nbGames = 0;
 	ChessGame* game;

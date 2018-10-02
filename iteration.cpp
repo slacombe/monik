@@ -143,7 +143,6 @@ int Iteration(int wtm)
       root_beta = INFINI;
 
 	  // Display the move that failed high.
-	  float fScore = float(cb.MoveList[1].CurrentMove().Score/100.0);
 	  SortieMove( cb.MoveList[1].CurrentMove(), szContinuation );
 
 	  // Prepare to research the move.
@@ -187,7 +186,6 @@ int Iteration(int wtm)
 	root_alpha = -INFINI;
 
 	  // Display the move that failed low.
-	  float fScore = float(cb.MoveList[1].CurrentMove().Score/100.0);
 	  SortieMove( cb.MoveList[1].CurrentMove(), szContinuation );
 
 	  // Research the move.
