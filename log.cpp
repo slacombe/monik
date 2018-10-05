@@ -16,11 +16,11 @@
 #include "utile.h"
 #include "log.h"
 
-Log::Log() {
-	startNew();
+Log::Log() : mLogGame(false) {
 }
 
-Log::~Log() {
+void Log::turnOn() {
+	mLogGame = true;
 }
 
 void Log::startNew() {
@@ -32,6 +32,9 @@ void Log::startNew() {
 }
 
 void Log::log(const TChessBoard& cb) {
+	if (!mLogGame)
+		return;
+	
 	char ligne[100], move[6];
 	strcpy(ligne, "");
 	for (int i = A8; i <= H1; i++) {
@@ -45,6 +48,9 @@ void Log::log(const TChessBoard& cb) {
 }
 
 void Log::log(const char* i_szMessage, ...) {
+	if (!mLogGame)
+		return;
+	
 	std::fstream fs;
 	char szTexte[255];
 

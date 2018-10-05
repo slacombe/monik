@@ -15,19 +15,19 @@
 
 using namespace std;
 
-class Log : fstream
-{
-  string mFilename;
+class Log : fstream {
+	string mFilename;
+	bool mLogGame;
 public:
-  Log();
-  ~Log();
-  void startNew();
-  void log(const char* i_szMessage, ...);
-  void log(const TChessBoard& cb);
+	Log();
+	void turnOn();
+	void startNew();
+	void log(const char* i_szMessage, ...);
+	void log(const TChessBoard& cb);
 };
 
 extern Log gameLog;
 
 //---------------------------------------------------------------------------
 #endif
- 
+

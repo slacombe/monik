@@ -1,6 +1,6 @@
 CC	= g++
 
-CPPFLAGS = -g -O2 -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DICSTALK
+CPPFLAGS = -Wall -O2 -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DICSTALK
 
 objects = monik.o board.o init.o iteration.o racine.o make.o unmake.o engine.o\
 	  search.o chess.o utile.o quies.o genmove.o eval.o next.o\
@@ -15,6 +15,4 @@ clean:
 	-rm -f *~ *.o monik
 
 install:
-	cp monik ~/bin
-
-
+	cp monik ~/bin/monik

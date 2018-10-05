@@ -41,19 +41,19 @@ public:
 
   // Le materiel.
   int NbWhitePieces;
-  char TotalPionBlanc;
-  char TotalCavalierBlanc;
-  char TotalFouBlanc;
-  char TotalTourBlanche;
-  char TotalDameBlanche;
-  char TotalMaterielBlanc;
+  int TotalPionBlanc;
+  int TotalCavalierBlanc;
+  int TotalFouBlanc;
+  int TotalTourBlanche;
+  int TotalDameBlanche;
+  int TotalMaterielBlanc;
   int NbBlackPieces;
-  char TotalPionNoir;
-  char TotalCavalierNoir;
-  char TotalFouNoir;
-  char TotalTourNoire;
-  char TotalDameNoire;
-  char TotalMaterielNoir;
+  int TotalPionNoir;
+  int TotalCavalierNoir;
+  int TotalFouNoir;
+  int TotalTourNoire;
+  int TotalDameNoire;
+  int TotalMaterielNoir;
 
   int PositionRoiBlanc;
   int PositionRoiNoir;
