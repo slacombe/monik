@@ -6,7 +6,7 @@
 #include "eval.h"
 #include "utile.h"
 #include "attaque.h"
-#include "journal.h"
+#include "log.h"
 
 SCORE PionRoiBlanc( int col );
 SCORE PionRoiNoir( int col );

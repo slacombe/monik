@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "journal.h"
+#include "log.h"
 #include "racine.h"
 #include "board.h"
 #include "genmove.h"
@@ -35,7 +35,6 @@ bool Post = true;
 extern int root_alpha, root_beta;
 
 extern bool xboard;
-extern TJournal journal;
 extern int iProfondeurIteration;
 
 // Cette routine est la racine de l'arbre de recherche. Elle doit etre separee
@@ -157,7 +156,7 @@ void AffichePV(int i_iProfondeur)
               (TempsCenti()-timestamp),
               iNodes, szContinuation );
     }
-    journal.Log( "[%2d] (%2d/%d) n: %8d  %5.2f   % 7.2f %s", i_iProfondeur,
+    gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f   % 7.2f %s", i_iProfondeur,
                  cb.MoveList[1].currmove+1,
                  cb.MoveList[1].nbmove,
 				 iNodes,

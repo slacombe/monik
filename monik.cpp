@@ -15,14 +15,13 @@
 #include "entree.h"
 #include "sortie.h"
 #include "engine.h"
-#include "journal.h"
+#include "log.h"
 #include "init.h"
 #include "utile.h"
 #include "transposition.h"
 #include "test.h"
 
 //---------------------------------------------------------------------------
-TJournal journal;
 extern int interrupted;
 extern int wtm;
 

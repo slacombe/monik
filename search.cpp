@@ -18,7 +18,7 @@
 #include "eval.h"
 #include "make.h"
 #include "unmake.h"
-#include "journal.h"
+#include "log.h"
 #include "utile.h"
 #include "valide.h"
 #include "next.h"
@@ -34,7 +34,6 @@
 #include "debug.h"
 #endif
 
-extern TJournal journal;
 extern int iNodes;
 extern int iMateInPly;
 int iExtension;
@@ -84,7 +83,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 			    printf( "stat01: %d %d %d %d %d\n", (TempsCenti()-timestamp),
 				  iNodes, iProfondeurIteration, cb.MoveList[1].nbmove - cb.MoveList[1].currmove-1,
 				  cb.MoveList[1].nbmove );
-				journal.Log("received a dot\n");
+				gameLog.log("received a dot\n");
 			}
 			else
 			{

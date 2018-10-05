@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "journal.h"
+#include "log.h"
 #include "entree.h"
 #include "board.h"
 #include "edit.h"
@@ -21,14 +21,13 @@
 #include "unmake.h"
 #include "utile.h"
 #include "book.h"
-#include "journal.h"
+#include "log.h"
 #include "eval.h"
 
 #ifdef   TRANSPOSITION
 #include "transposition.h"
 #endif
 
-extern TJournal journal;
 extern int wtm;
 extern bool Moteur;
 extern bool Force;
@@ -65,7 +64,7 @@ void Entree( char* o_szCommande )
   strcpy( o_szCommande, "" );
   do { 
 	scanf( "%s", o_szCommande );
-	journal.Log("entree: %s", o_szCommande);
+	gameLog.log("entree: %s", o_szCommande);
   } while( strlen( o_szCommande ) == 0 );
 }
 
@@ -155,14 +154,14 @@ bool Option( const char* i_szCommande, char* o_szReponse )
       if ( i % 8 == 7 )
         strcat( szBoard, "\n" );
     }
-    journal.Log( szBoard );
+    gameLog.log( szBoard );
     return true;
   }
 
   if (strcmp(i_szCommande, "eval") == 0) {
 	  int score = Eval(1, wtm, -INFINI, INFINI);
 	  printf("score = %d\n", score);
-	  journal.Log("score = %d", score);
+	  gameLog.log("score = %d", score);
 	  return true;
   }
 
@@ -179,7 +178,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
   // On demande le mode xboard.
   // Il n'y a pas de possibilite de retourne au mode normal.
   if ( strcmp( i_szCommande, "xboard" ) == 0 ) {
-    journal.Log( "Interface graphique: Winboard" );
+    gameLog.log( "Interface graphique: Winboard" );
     xboard = 1;
     return true;
   }
@@ -199,7 +198,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
   // Le moteur est mis en mode edit.
   // Permet d'entrer une position specifique.
   if ( strcmp( i_szCommande, "edit" ) == 0 ) {
-    journal.Log( "Edit." );
+    gameLog.log( "Edit." );
     g_bEdit = true;
     g_bBlanche = true;
     return true;
@@ -219,7 +218,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   // Le moteur est mis en mode d'analyse.
   if ( strcmp( i_szCommande, "analyze" ) == 0 ) {
-    journal.Log( "Analyse." );
+    gameLog.log( "Analyse." );
     Moteur = true;
     g_bModeAnalyse = true;
     Force = true;
@@ -246,7 +245,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   // Le moteur doit etre sortie du mode d'analyse.
   if ( strcmp( i_szCommande, "exit" ) == 0 ) {
-    journal.Log( "Exit." );
+    gameLog.log( "Exit." );
     Moteur = false;
     Force = false;
     g_bModeAnalyse = false;
@@ -255,8 +254,8 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   // Le moteur joue le joueur courant.
   if ( strcmp( i_szCommande, "go" ) == 0 ) {
-    journal.Nouveau();
-    journal.Log( "Demarrage." );
+    gameLog.startNew();
+    gameLog.log( "Demarrage." );
     // Je sais que c'est une option et que je devrais retourner true, mais
     // je retourne false c'est pour forcer le moteur a jouer son coup.
 #ifdef  ICSTALK
@@ -270,14 +269,14 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   // Les blancs jouent les prochains.
   if ( strcmp( i_szCommande, "white" ) == 0 ) {
-    journal.Log( "Les blancs jouent." );
+    gameLog.log( "Les blancs jouent." );
     wtm = true;
     return true;
   }
 
   // Les noirs jouent les prochains.
   if ( strcmp( i_szCommande, "black" ) == 0 ) {
-    journal.Log( "Les noirs jouent." );
+    gameLog.log( "Les noirs jouent." );
     wtm = false;
     return true;
   }
@@ -326,7 +325,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   if (strcmp(i_szCommande, "st") == 0) {
 	scanf("%d", &iMoveTime);
-	journal.Log("move time = %d", iMoveTime);
+	gameLog.log("move time = %d", iMoveTime);
 	return true;
   }
 
@@ -335,21 +334,21 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     scanf( "%d", &iEngTime );
     char szTemp[20];
     sprintf( szTemp, "%d", iEngTime );
-    journal.Log( "time = %d", iEngTime );
+    gameLog.log( "time = %d", iEngTime );
     return true;
   }
 
   // La deuxieme horloge.
   if ( strcmp( i_szCommande, "otim" ) == 0 ) {
     scanf( "%d", &iOppTime );
-    journal.Log("otime = %d", iOppTime);
+    gameLog.log("otime = %d", iOppTime);
     return true;
   }
 
   if ( strcmp( i_szCommande, "name" ) == 0 ) {
 	  char szName[40];
 	  scanf( "%s", szName );
-	  journal.Log( "name = %s", szName );
+	  gameLog.log( "name = %s", szName );
       TSeeker::stop();
 	  return true;
   }
@@ -357,16 +356,16 @@ bool Option( const char* i_szCommande, char* o_szReponse )
   if ( strcmp( i_szCommande, "rating" ) == 0 ) {
 	  int myrating, rating;
 	  scanf( "%d", &myrating );
-	  journal.Log( "my rating = %d", myrating );
+	  gameLog.log( "my rating = %d", myrating );
 	  scanf( "%d", &rating );
-	  journal.Log( "Opponent rating = %d", rating );
+	  gameLog.log( "Opponent rating = %d", rating );
 	  return true;
   }
 
   if ( strcmp( i_szCommande, "protover" ) == 0 ) {
 	  float version;
 	  scanf( "%f", &version );
-	  journal.Log( "proto version: %f\n", version );
+	  gameLog.log( "proto version: %f\n", version );
 	  return true;
   }
 
@@ -618,9 +617,9 @@ int InputMove(char* text, int ply, int wtm, TMove& move)
 			move = goodmove;
 			return 1;
 	}
-	if (nleft == 0) journal.Log( "Illegal move: %s\n",text);
-	else if (piece < 0) journal.Log( "Illegal move (unrecognizable): %s\n", text );
-	else journal.Log( "Illegal move (ambiguous): %s\n", text );
+	if (nleft == 0) gameLog.log( "Illegal move: %s\n",text);
+	else if (piece < 0) gameLog.log( "Illegal move (unrecognizable): %s\n", text );
+	else gameLog.log( "Illegal move (ambiguous): %s\n", text );
 
 	return(0);
 }

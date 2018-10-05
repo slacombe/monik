@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "journal.h"
+#include "log.h"
 #include "iteration.h"
 #include "board.h"
 #include "genmove.h"
@@ -25,7 +25,6 @@
 int prev_root_score, root_score, root_alpha, root_beta;
 
 extern bool xboard;
-extern TJournal journal;
 int iNbCoups = 80;
 int iEngTime = 30000;
 int iOppTime = 30000;
@@ -106,7 +105,7 @@ int Iteration(int wtm)
 #ifdef JOURNAL
   char Text[80];
   sprintf( Text, "iTempRestants: %d", iTempRestants );
-  journal.Log( Text );
+  log.log( Text );
 #endif
 
   // On creuse.
@@ -129,7 +128,7 @@ int Iteration(int wtm)
     if ( iProfondeurIteration > 1 ) {
       root_alpha = prev_root_score - 40;
 	  root_beta = prev_root_score + 40;
-	  journal.Log( "root_alpha = %d, root_beta = %d", root_alpha, root_beta );
+	  gameLog.log( "root_alpha = %d, root_beta = %d", root_alpha, root_beta );
     }
     else {
       root_alpha = -INFINI;
@@ -171,13 +170,14 @@ int Iteration(int wtm)
 			(TempsCenti()-timestamp)/100.0,
 			szContinuation );
 	  }
-	  journal.Log( "[%2d] (%2d/%d) n: %8d  %5.2f        ++ %s!",
+	  gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        ++ %s!",
 		iProfondeurIteration,
 		cb.MoveList[1].currmove+2,
 		cb.MoveList[1].nbmove,
 		iNodes,
 		(TempsCenti()-timestamp)/100.0,
 		szContinuation );
+		  
 	root_score = SearchRacine(iProfondeurIteration, wtm, root_alpha, root_beta);
     }
     else if ( root_score <= root_alpha && !timeabort && !interrupted ) {
@@ -207,7 +207,7 @@ int Iteration(int wtm)
 			(TempsCenti()-timestamp)/100.0,
 			szContinuation );
 	}
-	journal.Log( "[%2d] (%2d/%d) n: %8d  %5.2f        -- %s?", iProfondeurIteration,
+	gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        -- %s?", iProfondeurIteration,
 		cb.MoveList[1].currmove+2,
 		cb.MoveList[1].nbmove,
 		iNodes,
@@ -219,7 +219,7 @@ int Iteration(int wtm)
     if ( interrupted ) {
 		char buf[4];
 		int c = getc(stdin);
-		journal.Log("Interrompu pour: %c", c);
+		gameLog.log("Interrompu pour: %c", c);
 		if (c == '.') {
 			gets(buf);
 		    char continuation[200];
@@ -227,7 +227,7 @@ int Iteration(int wtm)
 			printf( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
                 (TempsCenti() - timestamp),
        	        iNodes, continuation );
-			journal.Log( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
+			gameLog.log( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
                 (TempsCenti() - timestamp),
        	        iNodes, continuation);
 			interrupted = false;
