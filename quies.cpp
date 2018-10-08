@@ -13,13 +13,12 @@
 #include "eval.h"
 #include "make.h"
 #include "unmake.h"
-#include "journal.h"
+#include "log.h"
 #include "utile.h"
 #include "hung.h"
 #include "next.h"
 #include "attaque.h"
 
-extern TJournal journal;
 extern int LeTemps;
 extern int iTempRestants;
 extern int iNodes;

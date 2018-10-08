@@ -5,7 +5,7 @@
 #include "make.h"
 #include "utile.h"
 #include "unmake.h"
-#include "journal.h"
+#include "log.h"
 
 Bitboard ClePionB[BOARDSIZE];
 Bitboard ClePionN[BOARDSIZE];
@@ -34,7 +34,7 @@ int ValeurPiece[] = { 0, VALPION, VALCAVALIER, VALFOU,
 void TMoveList::ChoisiMove(int ply, int wtm)
 {
 #ifdef JOURNAL
-	journal.Log( "ChoisiMove: NbMove: %d\n", nbmove );
+	log.log( "ChoisiMove: NbMove: %d\n", nbmove );
 #endif
   if ( nbmove == 0 )
     return;

@@ -1,4 +1,4 @@
-Monik 2.2.6
+Monik 2.2.7
 
 Auteur: Sylvain Lacombe
 E-mail: slacombe.ti@gmail.com
@@ -10,7 +10,11 @@ Monik est un petit moteur d'échec conçu pour fonctionner avec l'interface Winb
 
 Paramètre de démarrage:
 
-Pour configurer la largeur de la table de transposition utilisez la commande suivante:
+-h
 
-monik -h x
+Pour configurer la largeur de la table de transposition utilisez la commande suivante:
 x étant la largeur de la table en méga-octets.
+
+-gamelog
+
+Pour journaliser l'information du moteur pour chacune des parties que Monik joue.

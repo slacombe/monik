@@ -1,4 +1,4 @@
-#include "journal.h"
+#include "log.h"
 #include "repetition.h"
 
 bool Repetition(int wtm)

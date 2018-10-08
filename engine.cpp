@@ -21,7 +21,7 @@
 #include "utile.h"
 #include "unmake.h"
 #include "iteration.h"
-#include "journal.h"
+#include "log.h"
 #include "repetition.h"
 #include "system.h"
 #include "search.h"
@@ -32,7 +32,6 @@ bool g_bEdit = false; // Mode edit. Voir doc. winboard.
 int whisper = true;
 int wtm = 1;
 
-extern TJournal journal;
 extern int iCoups;
 extern int iNodes;
 extern bool xboard;
@@ -44,10 +43,10 @@ extern int interrupted;
 
 bool Engine(const char *i_szCommande, char* o_szReponse) {
 	// En mode d'édition.
-	journal.Log("force = %d", Force);
+	gameLog.log("force = %d", Force);
 	if (g_bEdit) {
 		Edit(cb, i_szCommande, o_szReponse);
-		journal.Log("Edit command: %s", i_szCommande);
+		gameLog.log("Edit command: %s", i_szCommande);
 		return false;
 	}
 
@@ -56,7 +55,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 	if (bOption) {
 		// La commande est une option.
 		// Retourner directement la reponse.
-		journal.Log("Command: %s", i_szCommande);
+		gameLog.log("Command: %s", i_szCommande);
 		if (!g_bModeAnalyse)
 			return false;
 	}
@@ -70,14 +69,14 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 		// au moteur.
 		if (!Moteur || (Force && (strcmp(i_szCommande, "analyze") != 0))) {
 			if (wtm)
-				journal.Log("Blanc (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
+				gameLog.log("Blanc (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
 			else
-				journal.Log("Noir (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
+				gameLog.log("Noir (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
 
 			// On prend le coup du joueur et on le transforme.
 			if (!Parse(i_szCommande, 0, wtm, move)) {
 				sprintf(o_szReponse, "Illegal move (parsing): %s", i_szCommande);
-				journal.Log("Illegal move (parsing): %s", i_szCommande);
+				gameLog.log("Illegal move (parsing): %s", i_szCommande);
 				return false;
 			}
 
@@ -97,7 +96,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 			}
 			if (iFound == -1) {
 				sprintf(o_szReponse, "Illegal move: %s", i_szCommande);
-				journal.Log("Illegal move: %s", i_szCommande);
+				gameLog.log("Illegal move: %s", i_szCommande);
 				return false;
 			}
 
@@ -109,7 +108,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 			if (Check(wtm)) {
 				UnmakeMove(0, move, wtm);
 				sprintf(o_szReponse, "Illegal move: %s", i_szCommande);
-				journal.Log("Coup illégale, met en echec: %s", i_szCommande);
+				gameLog.log("Coup illégale, met en echec: %s", i_szCommande);
 				return false;
 			}
 			UnmakeMove(0, move, wtm);
@@ -150,14 +149,14 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 				TSeeker::start();
 			}
 		}
-		journal.Log("%s", o_szReponse);
+		gameLog.log("%s", o_szReponse);
 		return false;
 	}
 
 	// Verifier pour la nulle.
 	if (RepetitionNulle(wtm)) {
 		strcpy(o_szReponse, "1/2-1/2\n");
-		journal.Log("%s", o_szReponse);
+		gameLog.log("%s", o_szReponse);
 		return false;
 	}
 
@@ -166,8 +165,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 
 		// C'est ici qu'on décole.
 		// Logger le board 
-		journal.logBoard();
-		journal.Log("");
+		gameLog.log(cb);
 
 		// On prend en note le temps.
 		timestamp = TempsCenti();
@@ -180,7 +178,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 		if (Score == 0) {
 			if (RepetitionNulle(wtm)) {
 				strcpy(o_szReponse, "result 1/2-1/2\n");
-				journal.Log("%s", o_szReponse);
+				gameLog.log("%s", o_szReponse);
 				TSeeker::start();
 				return false;
 			}
@@ -203,12 +201,12 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 						0,
 						szBookInfo);
 					float tempsPasse = TempsCenti() - timestamp;
-					journal.Log("Book move - temps: %4.2f %s", tempsPasse, szBookInfo);
+					gameLog.log("Book move - temps: %4.2f %s", tempsPasse, szBookInfo);
 				} else {
 					printf("%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
 						(TempsCenti() - timestamp),
 						iNodes, szContinuation);
-					journal.Log("Move - %d %d %d %d %s",
+					gameLog.log("Move - %d %d %d %d %s",
 						iProfondeurIteration, pv[1][1].Score,
 						(TempsCenti() - timestamp),
 						iNodes, szContinuation);
@@ -237,7 +235,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 					iProfondeurIteration, pv[1][1].Score / 100.0,
 					iNodes / Secondes,
 					szContinuation);
-				journal.Log("d: %d s: %3.2f nps: %d c: %s\n",
+				gameLog.log("d: %d s: %3.2f nps: %d c: %s\n",
 					iProfondeurIteration,
 					pv[1][1].Score / 100.0,
 					iNodes / Secondes,
@@ -247,17 +245,17 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 
 			wtm = !wtm;
 
-			journal.Log("\n\nTransposition hits: %d, collisions: %d\n",
+			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n",
 				g_iTranspositionHit, g_iTranspositionCollision);
-			journal.Log("Refutation: %d\n", g_iRefutation);
-			journal.Log("nps: %dk", (iNodes / Secondes) / 1000);
-			journal.Log("eps: %dk", (nbevals / Secondes) / 1000);
+			gameLog.log("Refutation: %d\n", g_iRefutation);
+			gameLog.log("nps: %dk", (iNodes / Secondes) / 1000);
+			gameLog.log("eps: %dk", (nbevals / Secondes) / 1000);
 			SortieMove(pv[1][1], o_szReponse);
-			journal.Log("My move: %s", o_szReponse);
+			gameLog.log("My move: %s", o_szReponse);
 
 			char szText[1000];
 			sprintf(szText, "pvsresearch: %d\n", pvsresearch);
-			journal.Log(szText);
+			gameLog.log(szText);
 		}
 	}
 

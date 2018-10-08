@@ -7,22 +7,27 @@
 // Description: Permet d'ecrire dans un log.
 //
 //---------------------------------------------------------------------------
-#ifndef TJournalH
-#define TJournalH
+#ifndef LogH
+#define LogH
 
-class TJournal
-{
-  char m_szFichier[255];
+#include <fstream>
+#include "board.h"
+
+using namespace std;
+
+class Log : fstream {
+	string mFilename;
+	bool mLogGame;
 public:
-  TJournal();
-  ~TJournal();
-  void Nouveau();
-  void Log( const char* i_szMessage, ... );
-  void logBoard();
+	Log();
+	void turnOn();
+	void startNew();
+	void log(const char* i_szMessage, ...);
+	void log(const TChessBoard& cb);
 };
 
-extern TJournal journal;
+extern Log gameLog;
 
 //---------------------------------------------------------------------------
 #endif
- 
+

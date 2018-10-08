@@ -15,20 +15,19 @@
 #include "entree.h"
 #include "sortie.h"
 #include "engine.h"
-#include "journal.h"
+#include "log.h"
 #include "init.h"
 #include "utile.h"
 #include "transposition.h"
 #include "test.h"
 
 //---------------------------------------------------------------------------
-TJournal journal;
 extern int interrupted;
 extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char* nomProgramme = "Monik v2.2.6\n";
+const char* nomProgramme = "Monik v2.2.7";
 
 void Interrupt( int )
 {
@@ -42,7 +41,7 @@ int main(int argc, char **argv)
   setbuf(stdout, 0);
   signal( SIGINT, Interrupt );
   signal( SIGTERM, Interrupt );
-  printf( "%s", nomProgramme );
+  printf( "%s\n", nomProgramme );
   printf( "Copyright(C) 2009-2011.\n" );
   printf( "Sylvain Lacombe\n\n" );
 
@@ -76,6 +75,10 @@ int main(int argc, char **argv)
 	  }
 
 #endif // TRANSPOSITION
+	  
+	  if (strcmp(argv[i], "-gamelog") == 0) {
+		  gameLog.turnOn();
+	  }
     }
   }
 

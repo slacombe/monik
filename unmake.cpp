@@ -14,9 +14,8 @@
 #include "board.h"
 #include "eval.h"
 #include "sortie.h"
-#include "journal.h"
+#include "log.h"
 
-extern TJournal journal;
 extern int wtm;
 
 

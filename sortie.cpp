@@ -8,7 +8,7 @@
 #include "chess.h"
 #include "utile.h"
 
-#include "journal.h"
+#include "log.h"
 
 // Variable indiquant si l'interface graphique est utilisee.
 extern bool xboard;

@@ -12,10 +12,8 @@
 #include "make.h"
 #include "utile.h"
 #include "chess.h"
-#include "journal.h"
+#include "log.h"
 #include "eval.h"
-
-extern TJournal journal;
 
 // On effectue un coup dans l'echiquier. On mettera a jour tout
 // les structures necessaire.

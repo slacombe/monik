@@ -6,7 +6,7 @@
 #include "eval.h"
 #include "utile.h"
 #include "attaque.h"
-#include "journal.h"
+#include "log.h"
 
 SCORE PionRoiBlanc( int col );
 SCORE PionRoiNoir( int col );
@@ -74,17 +74,6 @@ const SCORE PositionFou [] =
 	-10,   0,   5,   5,   5,   5,   0, -10,
 	-10,   0,   0,   0,   0,   0,   0, -10,
 	-10, -10, -20, -10, -10, -20, -10, -10
-};
-
-const SCORE PosDame[] = {
-	  0,  10,  20,  30,  30,  20,  10,   0,
-	 10,  20,  30,  40,  40,  30,  20,  10,
-	 20,  30,  40,  50,  50,  40,  30,  20,
-	 30,  40,  50,  60,  60,  50,  40,  30,
-	 30,  40,  50,  60,  60,  50,  40,  30,
-	 20,  30,  40,  50,  50,  40,  30,  20,
-	 10,  20,  30,  40,  40,  30,  20,  10,
-	  0,  10,  20,  30,  30,  20,  10,   0
 };
 
 // Ouverture et milieu de partie.

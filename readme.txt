@@ -1,4 +1,4 @@
-Monik 2.2.6
+Monik 2.2.7
 
 Author: Sylvain Lacombe
 E-mail: slacombe.ti@gmail.com
@@ -10,7 +10,10 @@ Monik is a little chess engine created to run under the Winboard GUI.
 
 Starting parameters:
 
-To configure the hash table
+-h
 
-monik -h x
+To configure the hash table
 x being the size of the hash table in megabytes.
+
+-gamelog
+To use game logging

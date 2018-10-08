@@ -9,8 +9,6 @@
 
 #include <stdio.h>
 
-#pragma hdrstop
-
 #include "genmove.h"
 #include "valide.h"
 #include "next.h"

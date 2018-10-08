@@ -17,7 +17,7 @@
 #include "make.h"
 #include "unmake.h"
 #include "book.h"
-#include "journal.h"
+#include "log.h"
 #include "system.h"
 
 BookPosition_t *book_table;
@@ -411,13 +411,13 @@ Book( TChessBoard& cb, int wtm, TMoveList& ml )
 		int randPercent = (int) ((float)100*rand()/(RAND_MAX+1.0));
 		// Take the one with the percentage.
 		// ie. If 1 = 80%, 2 = 15%, 3 = 5%. Then picking 85 will pick 2.
-		journal.Log( "randPercent = %d\n", randPercent );
+		gameLog.log( "randPercent = %d\n", randPercent );
 		int p = 0;
 		for( i=0; i<pv_length[0]; i++ ) {
 			p += pv[0][i].Score;
 			if ( p >= randPercent ) {
 				choosen = i;
-				journal.Log( "Choosen: %d\n", choosen );
+				gameLog.log( "Choosen: %d\n", choosen );
 				break;
 			}
 		}
@@ -425,7 +425,7 @@ Book( TChessBoard& cb, int wtm, TMoveList& ml )
 
 	if ( choosen >= 0 ) {
 		pv[1][1] = pv[0][choosen];
-		journal.Log( "In book..." );
+		gameLog.log( "In book..." );
 		return true;
 	}
 	else {
