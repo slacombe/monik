@@ -3,10 +3,10 @@
 
 #include "system.h"
 #include "chess.h"
+#include <windows.h>
 
 #ifdef _WIN32
-#include <windows.h>
-int inter() {
+long int inter() {
  static int init = 0, pipe;
  static HANDLE inh;
  DWORD dw;
@@ -30,7 +30,7 @@ int inter() {
   }
 }
 
-long TempsCenti()
+int TempsCenti()
 {
   return GetTickCount()/10;
 }

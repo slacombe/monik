@@ -10,6 +10,7 @@
 #ifndef LogH
 #define LogH
 
+#undef min
 #include <fstream>
 #include "board.h"
 
