@@ -14,7 +14,7 @@
 class IUIProtocol {
 public:
 	virtual void write(const std::string& text) = 0;
-	virtual const std::string& read() = 0;
+	virtual const std::string read() = 0;
 	virtual void displayTurn(Color color, int moveNb) = 0;
 };
 

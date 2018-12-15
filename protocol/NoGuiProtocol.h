@@ -11,21 +11,21 @@
  * Created on 15 décembre 2018, 10:07
  */
 
-#ifndef NOPROTOCOL_H
-#define NOPROTOCOL_H
+#ifndef NOGUIPROTOCOL_H
+#define NOGUIPROTOCOL_H
 
-#include "NoProtocol.h"
+#include "NoGuiProtocol.h"
 #include "../ui/UIController.h"
 
-class NoProtocol : public IUIProtocol {
+class NoGuiProtocol : public IUIProtocol {
 public:
-	NoProtocol();
-	virtual ~NoProtocol();
+	NoGuiProtocol();
+	virtual ~NoGuiProtocol();
 	virtual void write(const std::string& text);
-	const std::string& read();
+	const std::string read();
 	void displayTurn(Color color, int moveNb);
 private:
 };
 
-#endif /* NOPROTOCOL_H */
+#endif /* NOGUIPROTOCOL_H */
 

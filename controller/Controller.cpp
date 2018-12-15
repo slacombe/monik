@@ -6,7 +6,6 @@
  */
 
 #include <iostream>
-#include "../console/ConsoleFactory.h"
 #include "Controller.h"
 #include "../utile.h"
 #include "../entree.h"
@@ -31,17 +30,16 @@ void Controller::init() {
 }
 
 void Controller::run() {
-	char szCommande[255];
+	std::string command;
 	char szReponse[255];
 	TSeeker::start();
 	do {
-
 		g_bAbort = false;
 		fflush(0);
 		uiController()->displayTurn(wtm ? Color::white : Color::black, cb.NoCoups/2+1);
-		Entree(szCommande);
+		command = uiController()->read();
 
-		bool bSucces = Engine(szCommande, szReponse);
+		bool bSucces = Engine(command.c_str(), szReponse);
 
 		if (!bSucces) {
 			// Soit un coup invalide ou la reponse a une option.
@@ -58,7 +56,7 @@ void Controller::run() {
 		// C'est pourquoi je l'ai mise apres avoir envoye le coup a WinBoard.
 		TableTrans->Initialise();
 #endif
-	} while (strcmp(szCommande, "quit"));
+	} while (command.compare("quit") != 0);
 }
 
 void Controller::interruptReceived() {

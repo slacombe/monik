@@ -13,7 +13,7 @@
 
 #include "ProtocolFactory.h"
 #include "../ui/UIController.h"
-#include "../protocol/NoProtocol.h"
+#include "../protocol/NoGuiProtocol.h"
 
 ProtocolFactory::ProtocolFactory() {
 }
@@ -22,6 +22,6 @@ ProtocolFactory::~ProtocolFactory() {
 }
 
 IUIProtocol* ProtocolFactory::createNoProtocol() {
-	IUIProtocol* uiProtocol = new NoProtocol();
+	IUIProtocol* uiProtocol = new NoGuiProtocol();
 	return uiProtocol;
 }

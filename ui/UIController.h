@@ -15,6 +15,7 @@ class UIController {
 public:
 	UIController(IUIProtocol* uiProtocol);
 	virtual ~UIController();
+	const std::string read();
 	void print(const std::string& text);
 	void displayTurn(Color color, int moveNb);
 private:

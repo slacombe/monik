@@ -42,18 +42,6 @@ extern const char* g_szNomProgramme;
 bool xboard = 0;   // Interface graphique ou non.
 extern int whisper;
 
-// Routine qui obtient une commande a partir de la console.
-// Pour interfacer le moteur avec tout autre interface, on peut passer
-// directement la fonction engine.
-void Entree( char* o_szCommande )
-{
-  strcpy( o_szCommande, "" );
-  do { 
-	scanf( "%s", o_szCommande );
-	gameLog.log("entree: %s", o_szCommande);
-  } while( strlen( o_szCommande ) == 0 );
-}
-
 // Prend un coup sous forme de chaine utilisateur et donne l'equivalent
 // sous forme interne.
 // Valeur retourne:

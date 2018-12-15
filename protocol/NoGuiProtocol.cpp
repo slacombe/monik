@@ -14,23 +14,25 @@
 #include<iostream>
 
 #include "Protocol.h"
-#include "NoProtocol.h"
+#include "NoGuiProtocol.h"
 
-NoProtocol::NoProtocol() {
+NoGuiProtocol::NoGuiProtocol() {
 }
 
-NoProtocol::~NoProtocol() {
+NoGuiProtocol::~NoGuiProtocol() {
 }
 
-void NoProtocol::write(const std::string& text) {
+void NoGuiProtocol::write(const std::string& text) {
 	std::cout << text << std::endl;
 }
 
-const std::string& NoProtocol::read() {
-	
+const std::string NoGuiProtocol::read() {
+	std::string command;
+	std::cin >> command;
+	return command;
 }
 
-void NoProtocol::displayTurn(Color color, int moveNb) {
+void NoGuiProtocol::displayTurn(Color color, int moveNb) {
 	const char* colorText = color == Color::white ? "Blanc" : "Noir";
     std::cout << colorText << " (" << moveNb << "): ";
 }
