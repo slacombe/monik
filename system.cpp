@@ -3,9 +3,10 @@
 
 #include "system.h"
 #include "chess.h"
-#include <windows.h>
 
 #ifdef _WIN32
+#include <windows.h>
+
 long int inter() {
  static int init = 0, pipe;
  static HANDLE inh;

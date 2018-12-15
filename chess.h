@@ -89,6 +89,8 @@ typedef int SCORE;
 
 // Structure pour representer un move.
 
+enum Color { black = 0, white = 0 };
+
 struct TMove {
 	// Une structure de 64 bit.
 	// Utile pour pouvoir defaire le coup.

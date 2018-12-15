@@ -49,18 +49,6 @@ void Entree( char* o_szCommande )
 {
   static char szText[255];
 
-  // En mode xboard on n'affiche pas la demande de commande.
-  if ( !xboard ) {
-    // Les blancs ou les noirs.
-    if ( wtm )
-      sprintf( szText, "Blanc (%d): ", cb.NoCoups/2+1);
-    else
-      sprintf( szText, "Noir (%d): ", cb.NoCoups/2+1);
-
-    printf( "%s", szText );
-  }
-
-
   strcpy( o_szCommande, "" );
   do { 
 	scanf( "%s", o_szCommande );

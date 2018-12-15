@@ -12,38 +12,37 @@
 
 #include "chess.h"
 #include "board.h"
-#include "entree.h"
-#include "sortie.h"
-#include "engine.h"
 #include "log.h"
 #include "init.h"
-#include "utile.h"
 #include "transposition.h"
 #include "test.h"
+#include "controller/ControllerFactory.h"
+#include "controller/Controller.h"
 
 //---------------------------------------------------------------------------
 extern int interrupted;
 extern int wtm;
 
-//---------------------------------------------------------------------------
-
 const char* nomProgramme = "Monik v2.2.7";
+Controller* controller;
 
-void Interrupt( int )
+void Interrupt(int)
 {
-	interrupted = true;
+	if (controller) {
+		controller->interruptReceived();
+	}
 }
 
 int main(int argc, char **argv)
 {
+	ControllerFactory* controllerFactory = new ControllerFactory();
+	controller = controllerFactory->createController();
+		
+	signal( SIGINT, Interrupt );
+	signal( SIGTERM, Interrupt );	
+
   // Initialisation.
   TMoveList movelist;
-  setbuf(stdout, 0);
-  signal( SIGINT, Interrupt );
-  signal( SIGTERM, Interrupt );
-  printf( "%s\n", nomProgramme );
-  printf( "Copyright(C) 2009-2011.\n" );
-  printf( "Sylvain Lacombe\n\n" );
 
   char* temphome = getenv("MONIKHOME");
   if (temphome) {
@@ -88,39 +87,8 @@ int main(int argc, char **argv)
     // Au moins 1 meg de transposition.
     TableTrans = new TTableTrans( 32 );
 #endif
-
-
-  // On fonctionne ainsi.
-  // On boucle entre l'entree de commande et
-  // la reponse de l'ordinateur.
-  char szCommande[255];
-  char szReponse[255];
-  TSeeker::start();
-  do {
-
-    g_bAbort = false;
-	fflush( 0 );
-   	Entree( szCommande );
-    
-    bool bSucces = Engine( szCommande, szReponse );
-
-    if ( !bSucces ) {
-      // Soit un coup invalide ou la reponse a une option.
-      printf( "%s\n", szReponse );
-	  fflush( stdout );
-    }
-    else {
-      // On retourne
-      if ( !g_bModeAnalyse ) {
-        Sortie( szReponse );
-      }
-    }
-#ifdef TRANSPOSITION
-      // Cette fonction peut etre longue a etre executer.
-      // C'est pourquoi je l'ai mise apres avoir envoye le coup a WinBoard.
-      TableTrans->Initialise();
-#endif
-  } while( strcmp( szCommande, "quit" ) );
+  
+  controller->run();
 
 #ifdef TRANSPOSITION
   if ( TableTrans )

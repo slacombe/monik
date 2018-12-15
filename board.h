@@ -13,6 +13,7 @@
 
 extern TMove pv[MAXPLY][MAXPLY];
 extern int pv_length[MAXPLY];
+extern int wtm;
 
 // Les positions.
 class TChessBoard
