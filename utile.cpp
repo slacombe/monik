@@ -252,7 +252,7 @@ int DernierBit( Bitboard bitboard )
     unsigned int i[2];
   };
 
-  register BitboardSplit split;
+  BitboardSplit split;
   split.b = bitboard;
 
   // Est-ce qu'il y a un bit dans le 32 bits de poid fort?
@@ -358,9 +358,9 @@ void Swap( TMove& m1, TMove& m2 )
 // ameliorer le score.
 int Echange(int source, int destination, int wtm)
 {
-  register Bitboard attaques;
-  register bool bCote;
-  register int direction, piececapture, capture, signe;
+  Bitboard attaques;
+  bool bCote;
+  int direction, piececapture, capture, signe;
 
   // Effectuer la premiere capture pour partir l'echange.
   signe=1;
@@ -479,7 +479,7 @@ Bitboard EchangeRayonX(Bitboard attaque, int source, int direction)
 
 int GagneOpposition(int doit_joue, int roi_blanc, int roi_noir)
 {
-	register int file_distance, rank_distance;
+	int file_distance, rank_distance;
 	file_distance = FileDistance( roi_blanc, roi_noir );
 	rank_distance = RankDistance( roi_blanc, roi_noir );
 	if ( rank_distance < 2 ) return 1;

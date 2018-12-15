@@ -42,7 +42,7 @@ extern int iProfondeurIteration;
 // le lookup dans la table de transposition.
 int SearchRacine(int depth, int wtm, int alpha, int beta)
 {
-  register int Valeur, AlphaInitiale, extension = 0;
+  int Valeur, AlphaInitiale, extension = 0;
 
   AlphaInitiale = alpha;
 

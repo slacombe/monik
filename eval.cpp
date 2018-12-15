@@ -119,8 +119,8 @@ int RangeePion[2][10];
 // sinon le score sera negatif.
 SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 {
-  register int i, pos;
-  register SCORE Score = EvaluateMaterial(wtm);
+  int i, pos;
+  SCORE Score = EvaluateMaterial(wtm);
 
   nbevals++;
   iNodes++;
@@ -585,7 +585,7 @@ SCORE PionRoiNoir( int col )
 //
 SCORE EvaluerCoursePionPasses(int wtm)
 {
-	register Bitboard pions;
+	Bitboard pions;
 	// Verifier si les blanc ont un pion et que les noirs en ont pas.
 	if ( cb.TotalPionBlanc > 0 && !cb.TotalPionNoir ) {
 		pions = cb.pionb;
@@ -676,7 +676,7 @@ SCORE EvaluerCoursePionPasses(int wtm)
 
 SCORE EvaluateMaterial(int wtm)
 {
-	register int score;
+	int score;
 
 	score = cb.ScoreMaterielBlanc - cb.ScoreMaterielNoir;
 

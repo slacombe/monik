@@ -58,8 +58,8 @@ void TTableTrans::Initialise()
 
 void TTableTrans::Reinitialise()
 {
-  register Bitboard* entree;
-  register int i;
+  Bitboard* entree;
+  int i;
   entree = m_pTableBlanc;
   for( i=0; i<m_iNbEntree; i++ ) {
     SetAge( (*entree) );

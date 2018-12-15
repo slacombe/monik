@@ -47,8 +47,6 @@ extern int whisper;
 // directement la fonction engine.
 void Entree( char* o_szCommande )
 {
-  static char szText[255];
-
   strcpy( o_szCommande, "" );
   do { 
 	scanf( "%s", o_szCommande );

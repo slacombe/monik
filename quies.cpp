@@ -30,7 +30,7 @@ extern int maxQuiet;
 // Ici on considere seulement les prises.
 int Quiescence(int ply, int wtm, int alpha, int beta )
 {
-  register int Valeur, AlphaInitiale;
+  int Valeur, AlphaInitiale;
 
   if ( ply >= MAXPLY-1 )
     return beta;

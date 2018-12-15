@@ -17,7 +17,7 @@
 // Retourne la piece qui l'attaque.
 int Attacked(int i_iCase, int i_bWtm)
 {
-  register Bitboard attaque;
+  Bitboard attaque;
   // C'est simple, generer les attaques ennemis et verifier si ils
   // possedent une piece sur une de ces cases.
   if ( i_bWtm ) {
@@ -67,7 +67,7 @@ int Attacked(int i_iCase, int i_bWtm)
 // Retourne une map de toutes les cases attaques par cette piece.
 Bitboard AttaqueDe(int i_iCase, int wtm)
 {
-  register Bitboard map;
+  Bitboard map;
 
   if ( wtm ) {
     map = cb.AttaqueCavalier[i_iCase] & cb.cavalierb;

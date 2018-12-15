@@ -48,7 +48,7 @@ extern int g_bCanAbort;
 // Algorithme de recherche MinMax avec des coupes Alpha-Beta.
 int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 {
-  register int Valeur, AlphaInitiale, check_ext = 0, extension = 0,
+  int Valeur, AlphaInitiale, check_ext = 0, extension = 0,
            MoveCherche, danger = 0;
   if ( ply >= MAXPLY-1 )
     return beta;

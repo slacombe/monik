@@ -18,7 +18,7 @@ int Phase[MAXPLY];
 // Cette fonction genere les coups pour chaque phase
 int NextMove( TChessBoard& cb, int ply, int wtm )
 {
-  register int i, max, maxpos;
+  int i, max, maxpos;
   TMove temp;
 
   switch( Phase[ply] ) {
