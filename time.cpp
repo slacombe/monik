@@ -1,7 +1,7 @@
 #include "time.h"
 #include "iteration.h"
 #include "system.h"
-#include "log.h"
+#include "logger/log.h"
 
 int TimeCheck()
 {

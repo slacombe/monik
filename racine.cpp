@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "log.h"
+#include "logger/log.h"
 #include "racine.h"
 #include "board.h"
 #include "genmove.h"

@@ -9,7 +9,7 @@
 #include "attaque.h"
 #include "make.h"
 #include "unmake.h"
-#include "log.h"
+#include "logger/log.h"
 
 
 // Les bitboards.

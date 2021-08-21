@@ -17,7 +17,7 @@
 #include "make.h"
 #include "unmake.h"
 #include "book.h"
-#include "log.h"
+#include "logger/log.h"
 #include "system.h"
 
 BookPosition_t *book_table;

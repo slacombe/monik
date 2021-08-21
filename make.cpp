@@ -12,7 +12,7 @@
 #include "make.h"
 #include "utile.h"
 #include "chess.h"
-#include "log.h"
+#include "logger/log.h"
 #include "eval.h"
 
 // On effectue un coup dans l'echiquier. On mettera a jour tout

@@ -12,7 +12,7 @@
 
 #include "chess.h"
 #include "board.h"
-#include "log.h"
+#include "logger/log.h"
 #include "init.h"
 #include "transposition.h"
 #include "test.h"

@@ -14,7 +14,7 @@
 #include "board.h"
 #include "eval.h"
 #include "sortie.h"
-#include "log.h"
+#include "logger/log.h"
 
 extern int wtm;
 

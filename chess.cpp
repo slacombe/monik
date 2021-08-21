@@ -5,7 +5,7 @@
 #include "make.h"
 #include "utile.h"
 #include "unmake.h"
-#include "log.h"
+#include "logger/log.h"
 
 Bitboard ClePionB[BOARDSIZE];
 Bitboard ClePionN[BOARDSIZE];

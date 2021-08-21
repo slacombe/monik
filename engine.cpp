@@ -21,7 +21,7 @@
 #include "utile.h"
 #include "unmake.h"
 #include "iteration.h"
-#include "log.h"
+#include "logger/log.h"
 #include "repetition.h"
 #include "system.h"
 #include "search.h"

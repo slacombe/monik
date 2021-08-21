@@ -18,7 +18,7 @@
 #include "eval.h"
 #include "make.h"
 #include "unmake.h"
-#include "log.h"
+#include "logger/log.h"
 #include "utile.h"
 #include "valide.h"
 #include "next.h"

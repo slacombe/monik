@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "log.h"
+#include "logger/log.h"
 #include "entree.h"
 #include "board.h"
 #include "edit.h"
@@ -21,7 +21,7 @@
 #include "unmake.h"
 #include "utile.h"
 #include "book.h"
-#include "log.h"
+#include "logger/log.h"
 #include "eval.h"
 
 #ifdef   TRANSPOSITION

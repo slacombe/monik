@@ -1,4 +1,4 @@
-#include "log.h"
+#include "logger/log.h"
 #include "repetition.h"
 
 bool Repetition(int wtm)

@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "log.h"
+#include "logger/log.h"
 #include "iteration.h"
 #include "board.h"
 #include "genmove.h"
