@@ -12,17 +12,14 @@ objects = obj/monik.o obj/board.o obj/init.o obj/iteration.o obj/racine.o obj/ma
 	  obj/edit.o obj/attaque.o obj/chargeur.o obj/book.o obj/transposition.o obj/time.o\
 	  obj/test.o obj/system.o
 
-obj/%.o: %.cpp
+obj/%.o: ../%.cpp
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
-linux: $(objects) $(linux-objs)
-	$(CC) $(LDFLAGS) $(objects) $(linux-objs) -o monik
-
-windows: $(objects) $(windows-objs)
-	$(CC) $(LDFLAGS) $(objects) $(windows-objs) -o monik
+monik: $(objects) $(linux-objs)
+	$(CC) $(LDFLAGS) $(objects) $(linux-objs) -o ../monik-linux
 
 clean:
-	-rm -f *~ obj/*.o monik
+	-rm -f *~ obj/*.o ../monik-linux
 
 install:
 	cp monik ~/bin/monik
