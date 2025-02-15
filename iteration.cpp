@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 
+#include <iostream>
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -40,6 +41,8 @@ int interrupted;
 int pvsresearch;
 
 int iProfondeurIteration;
+
+using namespace std;
 
 //
 // Cette routine appelle la negamax par iteration.
@@ -219,7 +222,7 @@ int Iteration(int wtm)
 		int c = getc(stdin);
 		gameLog.log("Interrompu pour: %c", c);
 		if (c == '.') {
-			gets(buf);
+			cin >> buf;
 		    char continuation[200];
 			GetPV(continuation, &pv[1][1], iProfondeurIteration);
 			printf( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
