@@ -16,10 +16,14 @@ obj/%.o: ../%.cpp
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 monik: $(objects) $(linux-objs)
-	$(CC) $(LDFLAGS) $(objects) $(linux-objs) -o ../monik-linux
+	$(CC) $(LDFLAGS) $(objects) $(linux-objs) -o monik-linux
 
 clean:
-	-rm -f *~ obj/*.o ../monik-linux
+	-rm -f *~ obj/*.o monik-linux
 
 install:
-	cp monik ~/bin/monik
+	docker build -t monik-chess .
+	docker run -i --name monik-chess monik-chess
+
+
+
