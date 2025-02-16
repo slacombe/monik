@@ -30,69 +30,50 @@
 #define Depth        0x0000000000000FFFLL
 
 
-#define SetAge( x ) \
+#define SetAge(x) \
   (x |= maskAge)
-#define ClearAge( x ) \
+#define ClearAge(x) \
   (x &= (~maskAge))
-#define GetAge( x ) \
+#define GetAge(x) \
   (x & maskAge)
-#define StoreType( x, t ) \
-  (x |= ((Bitboard)(t&3) << 61))
-#define GetType( x ) \
+#define StoreType(x, t) \
+  (x |= ((Bitboard)(t & 3) << 61))
+#define GetType(x) \
   (((Bitboard)x >> 61) & 0x03)
-#define StoreDanger( x, d ) \
-  (x |= ((Bitboard) (d&1) << 60))
-#define GetDanger( x ) \
+#define StoreDanger(x, d) \
+  (x |= ((Bitboard)(d & 1) << 60))
+#define GetDanger(x) \
   ((x & maskDanger) >> 60)
-#define StoreValeur( x, v ) \
-  (x |= ((Bitboard) ((short)(v)&0xFFFF) << 44))
-#define GetValeur( x ) \
+#define StoreValeur(x, v) \
+  (x |= ((Bitboard)((short)(v) & 0xFFFF) << 44))
+#define GetValeur(x) \
   (((short)(x >> 44) & 0xFFFF))
-#define StoreCoup( x, c ) \
-  (x |= ((Bitboard) ((c)&0xFFFFFFFF) << 12))
-#define GetCoup( x ) \
+#define StoreCoup(x, c) \
+  (x |= ((Bitboard)((c) & 0xFFFFFFFF) << 12))
+#define GetCoup(x) \
   ((x & maskCoup) >> 12)
-#define StoreDepth( x, d ) \
-  (x |= ((Bitboard) (d&0xFFF)))
-#define GetDepth( x ) \
+#define StoreDepth(x, d) \
+  (x |= ((Bitboard)(d & 0xFFF)))
+#define GetDepth(x) \
   (x & 0xFFF)
 
-class TTableTrans {
-  Bitboard* m_pTableBlanc;
-  Bitboard* m_pTableNoir;
+bool transpositionTableCreated();
+void createTranspositionTable(uint32 sizeInMeg);
+void freeTranspositionTable();
 
-  int m_iNbEntree;
-  int m_iMaskCle;
-public:
-  // Constructeur par defaut.
-  TTableTrans();
+void initializeTranspositionTable();
 
-  // Constructeur avec passage de la taille en byte disponible.
-  TTableTrans( int i_iTaille );
+void reinitialise();
 
-  // Destructeur.
-  ~TTableTrans();
+// Chercher une position dans la table.
+uint32 lookup(TChessBoard &cb, int ply, int depth,
+              int wtm, int &alpha, int &beta, int &danger);
 
-  // Initialise les deux tables.
-  // Mettre le flag a 1.
-  void Initialise();
+uint32 storeRefutation(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm,
+                      short valeur, uint32 alpha, uint32 beta, uint32 danger);
 
-  // Reinitialise la table de transposition.
-  // Mettre l'age a 1.
-  void Reinitialise();
-
-  // Chercher une position dans la table.
-  int Lookup( TChessBoard& cb, int ply, int depth,
-              int wtm, int& alpha, int& beta, int& danger );
-
-  int StoreRefutation( TChessBoard& cb, int ply, int depth, int wtm,
-                       short valeur, int alpha, int beta, int danger );
-
-  int StoreBest( TChessBoard& cb, int ply, int depth, int wtm,
-                 int alpha, int initial_alpha, int danger );
-};
-
-extern TTableTrans *TableTrans;
+uint32 storeBest(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm, 
+                      uint32 alpha, uint32 initial_alpha, uint32 danger);
 
 #endif
 

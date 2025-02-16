@@ -9,34 +9,28 @@
 #ifndef ChessH
 #define ChessH
 
+#include "types.h"
 #include <assert.h>
 #include <string.h>
 
-#ifdef _WIN32
-typedef unsigned __int64 int64;
-#else
-typedef unsigned long long int64;
-#endif
-
-typedef int64 Bitboard;
-
-#define    ROI             6
-#define    DAME            5
-#define    TOUR            4
-#define    FOU             3
-#define    CAVALIER        2
-#define    PION            1
+#define ROI 6
+#define DAME 5
+#define TOUR 4
+#define FOU 3
+#define CAVALIER 2
+#define PION 1
 
 // Definition de quelque type.
-#define BOARDSIZE   64
-#define MAXMOVE     600
-#define INFINI      32767
-#define MATE        30000
-#define MAXPLY      60
+#define BOARDSIZE 64
+#define MAXMOVE 600
+#define INFINI 32767
+#define MATE 30000
+#define MAXPLY 60
 
 // Definition pour la librairie d'ouverture.
 
-struct BOOKPOSITION {
+struct BOOKPOSITION
+{
 	Bitboard hashkey; // Cle pour identifie la position.
 	// 8 premier bit. Qualite de la position.
 	// 0000 0001  Tres mauvais coup.
@@ -48,12 +42,12 @@ struct BOOKPOSITION {
 	// 0100 0000  Au moins un partie nulle.
 	// 1000 0000  Les blancs ont gagne au moins une partie.
 	// 24 bit suivant. Nombre de fois joue.
-	unsigned int flag;
+	uint32 flag;
 };
 
 #define  POSITION_PER_SLOT     600
 
-#define MAXCHECKEXT 
+#define MAXCHECKEXT
 
 typedef char Piece;
 typedef int SCORE;
@@ -85,11 +79,12 @@ typedef int SCORE;
 #define		NULLE_REGLE_50COUPS          5
 #define		DRAWSCORE     100
 
-#define         FORKUNCERTAIN                   50
+#define FORKUNCERTAIN 50
 
 // Structure pour representer un move.
 
-struct TMove {
+struct TMove
+{
 	// Une structure de 64 bit.
 	// Utile pour pouvoir defaire le coup.
 	unsigned From : 6;
@@ -105,42 +100,42 @@ struct TMove {
 
 class TChessBoard;
 
-// Gestion d'une liste de coup.
-
-class TMoveList {
+class TMoveList
+{
 public:
 	int nbmove;
 	int currmove;
 	TMove moves[MAXMOVE];
 
-	TMoveList() {
+	TMoveList()
+	{
 		nbmove = 0;
 		currmove = 0;
 	}
 
-	void Copie(TMoveList& ml) {
-		memcpy(moves, ml.moves, ml.nbmove * sizeof ( TMove));
+	void Copie(TMoveList &ml)
+	{
+		memcpy(moves, ml.moves, ml.nbmove * sizeof(TMove));
 	}
 
-	void Ajoute(TMove& i_move) {
-		moves[ nbmove++ ] = i_move;
-	}
+	void Ajoute(TMove &i_move) { moves[nbmove++] = i_move; }
 
-	void Vide() {
+	void Vide()
+	{
 		nbmove = 0;
 		currmove = 0;
 	}
 
-	TMove& CurrentMove() {
-		return moves[currmove];
-	}
+	TMove &CurrentMove() { return moves[currmove]; }
 
-	void Tri() {
+	void Tri()
+	{
 		if (nbmove <= 0)
 			return;
 		for (int i = 0; i < nbmove - 1; i++)
 			for (int j = i + 1; j < nbmove; j++)
-				if (moves[i].Score < moves[j].Score) {
+				if (moves[i].Score < moves[j].Score)
+				{
 					TMove move = moves[i];
 					moves[i] = moves[j];
 					moves[j] = move;
@@ -192,7 +187,7 @@ extern Bitboard CleRoiN[BOARDSIZE];
 extern bool xboard;
 extern bool g_bAbort;
 extern bool g_bModeAnalyse;
-extern const char* nomProgramme;
+extern const char *nomProgramme;
 
 extern int g_iTranspositionHit, g_iTranspositionCollision;
 extern int g_iRefutation;

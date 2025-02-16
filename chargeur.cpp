@@ -17,7 +17,7 @@
 
 extern int wtm;
 
-bool ChargePosition( TChessBoard& cb, const char* i_szFichier )
+bool loadPosition(TChessBoard& cb, const char* i_szFichier)
 {
   // Verifier si le fichier existe.
   // Si il n'existe pas retourner une erreur.

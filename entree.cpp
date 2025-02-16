@@ -209,7 +209,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szFichier[60];
     printf( "Entrez le nom de fichier: " );
     scanf( "%s", szFichier );
-    if (ChargePosition( cb, szFichier))
+    if (loadPosition( cb, szFichier))
       printf( "Chargement ok." );
     else
       printf( "Chargement pas reussi." );

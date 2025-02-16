@@ -48,8 +48,8 @@ extern int g_bCanAbort;
 // Algorithme de recherche MinMax avec des coupes Alpha-Beta.
 int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 {
-  register int Valeur, AlphaInitiale, check_ext = 0, extension = 0,
-           MoveCherche, danger = 0;
+  int Valeur, AlphaInitiale, check_ext = 0, extension = 0,
+      MoveCherche, danger = 0;
   if ( ply >= MAXPLY-1 )
     return beta;
 
@@ -79,11 +79,12 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
 			ungetc(c, stdin);
 			if (c == '.')
 			{
-				scanf("%s", buf);
-			    printf( "stat01: %d %d %d %d %d\n", (TempsCenti()-timestamp),
-				  iNodes, iProfondeurIteration, cb.MoveList[1].nbmove - cb.MoveList[1].currmove-1,
-				  cb.MoveList[1].nbmove );
-				gameLog.log("received a dot\n");
+				  if (scanf("%s", buf) == 1) {
+            printf( "stat01: %d %d %d %d %d\n", (TempsCenti()-timestamp),
+            iNodes, iProfondeurIteration, cb.MoveList[1].nbmove - cb.MoveList[1].currmove-1,
+            cb.MoveList[1].nbmove );
+            gameLog.log("received a dot\n");
+          }
 			}
 			else
 			{
@@ -116,16 +117,12 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
   // Regarder dans la table de transposition pour voir si cette position
   // n'a pas deja ete calculer.
 #ifdef TRANSPOSITION
-  switch( TableTrans->Lookup( cb, ply, depth,
-                              wtm, alpha, beta, danger ) ) {
+  switch(lookup( cb, ply, depth, wtm, alpha, beta, danger )) {
     case SCORE_EXACTE:
-
       return alpha;
     case BORNE_SUPERIEUR:
-
       return alpha;
     case BORNE_INFERIEUR:
-
       return beta;
     case EVITER_NULL:
       do_null = false;
@@ -148,8 +145,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
       cb.EnPassantN[ply+1] = EnPassantN;
       if ( Valeur >= beta ) {
 #ifdef TRANSPOSITION
-      TableTrans->StoreRefutation( cb, ply, depth,
-                                   wtm, Valeur, alpha, beta, danger );
+      storeRefutation( cb, ply, depth, wtm, Valeur, alpha, beta, danger );
 #endif
         return Valeur;
       }
@@ -158,22 +154,6 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
     }
   }
 #endif
-  // Internal Iterative Deepening.
-/*  if ( depth > 2 && ((!(ply&1) && alpha==root_alpha && beta==root_beta) ||
-    ((ply&1) && alpha==-root_beta && beta==-root_alpha)) &&
-      cb.HashMove[ply].From == 0 && cb.HashMove[ply].To == 0 ) {
-      Valeur = ABSearch( cb, depth-2, ply, wtm, alpha, beta, true );
-
-    if ( Valeur <= alpha ) {
-      Valeur = ABSearch( cb, depth-2, ply, wtm, -MATE, beta, true );
-    }
-    else {
-      if ( Valeur < beta ) {
-        cb.HashMove[ply] = pv[ply-1][ply];
-      }
-      else cb.HashMove[ply] = cb.CurrentPath.moves[ply];
-    }
-  }*/
 
 #ifdef TRANSPOSITION
   Phase[ply] = HASH_MOVE;
@@ -304,8 +284,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
       if ( Valeur > alpha ) {
         if ( Valeur >= beta ) {
 #ifdef TRANSPOSITION
-          TableTrans->StoreRefutation( cb, ply, depth,
-                                       wtm, Valeur, alpha, beta, check_ext );
+          storeRefutation( cb, ply, depth, wtm, Valeur, alpha, beta, check_ext );
 #endif
 		  g_iRefutation++;
           // Verifier si on peu l'utiliser comme killer move.
@@ -348,8 +327,7 @@ int Search(int depth, int ply, int wtm, int alpha, int beta, bool do_null)
   }
 
 #ifdef TRANSPOSITION
-  TableTrans->StoreBest( cb, ply, depth, wtm,
-                         alpha, AlphaInitiale, danger );
+  storeBest( cb, ply, depth, wtm, alpha, AlphaInitiale, danger );
 #endif
 
   return alpha;

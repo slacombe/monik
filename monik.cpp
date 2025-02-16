@@ -27,11 +27,11 @@ extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char* nomProgramme = "Monik v2.2.7";
+const char *nomProgramme = "Monik v2.2.8";
 
-void Interrupt( int )
+void Interrupt(int)
 {
-	interrupted = true;
+  interrupted = true;
 }
 
 int main(int argc, char **argv)
@@ -39,56 +39,56 @@ int main(int argc, char **argv)
   // Initialisation.
   TMoveList movelist;
   setbuf(stdout, 0);
-  signal( SIGINT, Interrupt );
-  signal( SIGTERM, Interrupt );
-  printf( "%s\n", nomProgramme );
-  printf( "Copyright(C) 2009-2011.\n" );
-  printf( "Sylvain Lacombe\n\n" );
+  signal(SIGINT, Interrupt);
+  signal(SIGTERM, Interrupt);
+  printf("%s\n", nomProgramme);
+  printf("Copyright(C) 2009-2011.\n");
+  printf("Sylvain Lacombe\n\n");
 
-  char* temphome = getenv("MONIKHOME");
-  if (temphome) {
+  char *temphome = getenv("MONIKHOME");
+  if (temphome)
+  {
     strcpy(MonikHome, temphome);
   }
 
-#ifdef TRANSPOSITION
-  TableTrans = 0;
-#endif
-
   // Maintenant, verifier si il y a des parametres.
-  if ( argc > 1 ) {
+  if (argc > 1)
+  {
     // Survoler la liste des parametres et les traiter si besoin.
-    for( int i=1; i<argc; i++ ) {
-#ifdef  TRANSPOSITION
+    for (int i = 1; i < argc; i++)
+    {
+#ifdef TRANSPOSITION
       // Verifier pour le parametre des tables de transpositions.
-      if ( strcmp( argv[i], "-h" ) == 0 ) {
-        if ( argc < i+2 || atoi( argv[i+1] ) == 0 ) {
-          printf( "\nMauvaise largeur de table." );
+      if (strcmp(argv[i], "-h") == 0)
+      {
+        if (argc < i + 2 || atoi(argv[i + 1]) == 0)
+        {
+          printf("\nMauvaise largeur de table.");
           return 1;
         }
-        TableTrans = new TTableTrans( atoi( argv[i+1] ) );
-        TableTrans->Initialise();
+        int tableSize = atoi(argv[i + 1]);
+        createTranspositionTable(tableSize);
+        initializeTranspositionTable();
       }
 
-	  if (strcmp(argv[i], "test") == 0) {
-		  testTransposition();
-		  return 0;
-	  }
-
 #endif // TRANSPOSITION
-	  
-	  if (strcmp(argv[i], "-gamelog") == 0) {
-		  gameLog.turnOn();
-	  }
+
+      if (strcmp(argv[i], "-gamelog") == 0)
+      {
+        gameLog.turnOn();
+      }
     }
   }
 
 #ifdef TRANSPOSITION
   // Verifier si une table de transposition a ete construite.
-  if ( !TableTrans )
-    // Au moins 1 meg de transposition.
-    TableTrans = new TTableTrans( 32 );
+  if (!transpositionTableCreated())
+  {
+    // At least 32 meg of transposition table.
+    createTranspositionTable(32);
+    initializeTranspositionTable();
+  }
 #endif
-
 
   // On fonctionne ainsi.
   // On boucle entre l'entree de commande et
@@ -96,37 +96,42 @@ int main(int argc, char **argv)
   char szCommande[255];
   char szReponse[255];
   TSeeker::start();
-  do {
+  do
+  {
 
     g_bAbort = false;
-	fflush( 0 );
-   	Entree( szCommande );
-    
-    bool bSucces = Engine( szCommande, szReponse );
+    fflush(0);
+    Entree(szCommande);
 
-    if ( !bSucces ) {
+    bool bSucces = Engine(szCommande, szReponse);
+
+    if (!bSucces)
+    {
       // Soit un coup invalide ou la reponse a une option.
-      printf( "%s\n", szReponse );
-	  fflush( stdout );
+      printf("%s\n", szReponse);
+      fflush(stdout);
     }
-    else {
+    else
+    {
       // On retourne
-      if ( !g_bModeAnalyse ) {
-        Sortie( szReponse );
+      if (!g_bModeAnalyse)
+      {
+        Sortie(szReponse);
       }
     }
 #ifdef TRANSPOSITION
-      // Cette fonction peut etre longue a etre executer.
-      // C'est pourquoi je l'ai mise apres avoir envoye le coup a WinBoard.
-      TableTrans->Initialise();
+    // Cette fonction peut etre longue a etre executer.
+    // C'est pourquoi je l'ai mise apres avoir envoye le coup a WinBoard.
+    initializeTranspositionTable();
 #endif
-  } while( strcmp( szCommande, "quit" ) );
+  } while (strcmp(szCommande, "quit"));
 
 #ifdef TRANSPOSITION
-  if ( TableTrans )
-    delete TableTrans;
+  if (transpositionTableCreated())
+  {
+    freeTranspositionTable();
+  }
 #endif
 
   return 0;
 }
-
