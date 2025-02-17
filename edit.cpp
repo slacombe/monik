@@ -7,7 +7,7 @@
 extern bool g_bEdit;
 bool g_bBlanche;
 
-void Edit( TChessBoard& cb, const char* i_szCommande, char* o_szReponse )
+void edit(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
 {
   // Caractere permis.
   const char* szCode = "PNBRQK.";
@@ -20,15 +20,15 @@ void Edit( TChessBoard& cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Enleve toutes les pieces.
-  if ( strcmp( i_szCommande, "#" ) == 0 ) {
-    memset( &cb, 0, sizeof( cb ) );
+  if (strcmp(i_szCommande, "#") == 0) {
+    memset(cb, 0, sizeof(TChessBoard));
     return;
   }
 
   // Sort du mode edit.
   if ( strcmp( i_szCommande, "." ) == 0 ) {
     g_bEdit = false;
-    cb.InitialiseBitboard();
+    initialiseBitboard(cb);
     return;
   }
 
@@ -57,7 +57,7 @@ void Edit( TChessBoard& cb, const char* i_szCommande, char* o_szReponse )
 
   // On place la piece.
   if ( i_szCommande[0] == 'x' )
-    cb.board[iPosition] = 0;
+    cb->board[iPosition] = 0;
   else
-    cb.board[iPosition] = (Piece)iType;
+    cb->board[iPosition] = (Piece)iType;
 }

@@ -11,7 +11,7 @@
 
 #include "chess.h"
 
-bool Engine( const char *i_szCommande, char* o_szReponse );
+bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse );
 
 //---------------------------------------------------------------------------
 #endif

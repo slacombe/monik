@@ -6,8 +6,8 @@
 
 SCORE Hung( TChessBoard& cb, int wtm )
 {
-  register Bitboard temp;
-  register int pos, piece, score;
+  Bitboard temp;
+  int pos, piece, score;
 
   if ( wtm ) {
     // Verifier si les dames sont attaques.

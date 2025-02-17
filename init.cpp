@@ -3,7 +3,7 @@
 #include "utile.h"
 #include "book.h"
 
-void InitialiseData()
+void initialiseData()
 {
   // On initialise les premiers bits.
   // Au depart la position du bit est 0.
@@ -39,7 +39,7 @@ void InitialiseData()
     }
   }
 
-	if ( ChargerCles() == 0 ) {
+	if (chargerCles() == 0) {
 
   		// Initialisation des cles de hachages.
   		for( int i=A8; i<=H1; i++ ) {
@@ -58,6 +58,5 @@ void InitialiseData()
   		}
 	}
 
-	LoadBook();
-
+	loadBook();
 }

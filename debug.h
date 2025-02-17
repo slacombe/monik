@@ -2,11 +2,11 @@
 #ifndef DebugH
 #define DebugH
 
-#include "Chess.h"
-#include "Board.h"
+#include "chess.h"
+#include "board.h"
 
 #ifdef DEBUG
-void Consistence( TChessBoard& i_CBoard, TMove& move );
+void consistence(TChessBoard *cb, TMove move );
 #endif
 
 //---------------------------------------------------------------------------

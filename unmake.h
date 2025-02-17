@@ -12,8 +12,8 @@
 #include "chess.h"
 #include "board.h"
 
-void UnmakeMove(int ply, TMove& i_Move, int wtm);
-void UndoMove();
+void unmakeMove(TChessBoard *cb, int ply, TMove i_Move, int wtm);
+void undoMove(TChessBoard *cb);
 
 //---------------------------------------------------------------------------
 #endif

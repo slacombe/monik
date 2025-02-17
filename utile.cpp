@@ -241,7 +241,7 @@ Bitboard Random64()
 }
 
 // Retourne la position du dernier bit d'un entier de 64 bits.
-int DernierBit( Bitboard bitboard )
+uint32 dernierBit( Bitboard bitboard )
 {
   // On definit une structure qui nous permet d'aller chercher la bonne
   // partie.
@@ -252,7 +252,7 @@ int DernierBit( Bitboard bitboard )
     unsigned int i[2];
   };
 
-  register BitboardSplit split;
+  BitboardSplit split;
   split.b = bitboard;
 
   // Est-ce qu'il y a un bit dans le 32 bits de poid fort?
@@ -272,81 +272,80 @@ int DernierBit( Bitboard bitboard )
   }
 }
 
-Bitboard AttaqueRangee( int i_iPosition )
+Bitboard AttaqueRangee(TChessBoard *cb, int i_iPosition )
 {
 	int iRangee = i_iPosition/8;
-	Bitboard tempR = cb.piece >> iRangee*8;
+	Bitboard tempR = cb->piece >> iRangee*8;
 
-	return cb.AttRangee[i_iPosition][(unsigned char)tempR];
+	return cb->AttRangee[i_iPosition][(unsigned char)tempR];
 }
 
-Bitboard AttaqueColonne( int i_iPosition )
+Bitboard AttaqueColonne(TChessBoard *cb, int i_iPosition )
 {
 	int iColonne = i_iPosition&7;
-	Bitboard tempC = cb.pieceR90L >> (7-iColonne)*8;
+	Bitboard tempC = cb->pieceR90L >> (7-iColonne)*8;
 
-	return cb.AttColonne[i_iPosition][(unsigned char)tempC];
+	return cb->AttColonne[i_iPosition][(unsigned char)tempC];
 }
 
 // Retourne le bitboard d'attaque de la position demandee.
-Bitboard AttaqueTour(int i_iPosition)
+Bitboard attaqueTour(TChessBoard *cb, int i_iPosition)
 {
   // Quelle rangee?
   int iRangee = i_iPosition/8;
   int iColonne = i_iPosition&7;
-  Bitboard tempR = cb.piece >> iRangee*8;
-  Bitboard tempC = cb.pieceR90L >> (7-iColonne)*8;
+  Bitboard tempR = cb->piece >> iRangee*8;
+  Bitboard tempC = cb->pieceR90L >> (7-iColonne)*8;
 
   unsigned char cPatternR = (char)tempR;
   unsigned char cPatternC = (char)tempC;
 
-  Bitboard att = cb.AttRangee[i_iPosition][cPatternR];
-  att |= cb.AttColonne[i_iPosition][cPatternC];
+  Bitboard att = cb->AttRangee[i_iPosition][cPatternR];
+  att |= cb->AttColonne[i_iPosition][cPatternC];
 
   return att;
 }
 
 // Retourne le bitboard d'attaque de la position demande.
-Bitboard AttaqueDame(int i_iPosition)
+Bitboard attaqueDame(TChessBoard *cb, int i_iPosition)
 {
-  return AttaqueTour(i_iPosition) |
-         AttaqueFou(i_iPosition);
+  return attaqueTour(cb, i_iPosition) |
+         attaqueFou(cb, i_iPosition);
 }
 
 // Les Fous.
 // Retourne le bitboard d'attaque de la position demande.
-Bitboard AttaqueFou(int i_iPosition)
+Bitboard attaqueFou(TChessBoard *cb, int i_iPosition)
 {
-  Bitboard tempD =
-    cb.pieceR45R >> DecalageDiagonaleR[i_iPosition];
+  Bitboard tempD = cb->pieceR45R >> DecalageDiagonaleR[i_iPosition];
 
   unsigned char cPatternD = (char)tempD;
   cPatternD &= (char)((1 << LongueurDiagonaleA8_H1[i_iPosition])-1);
 
-  Bitboard att = cb.AttDiagonaleA8_H1[i_iPosition][cPatternD];
+  Bitboard att = cb->AttDiagonaleA8_H1[i_iPosition][cPatternD];
 
-  tempD = cb.pieceR45L >> DecalageDiagonaleL[i_iPosition];
+  tempD = cb->pieceR45L >> DecalageDiagonaleL[i_iPosition];
 
   cPatternD = (char)tempD;
   cPatternD &= (char)((1 << LongueurDiagonaleH8_A1[i_iPosition])-1);
 
-  att |= cb.AttDiagonaleH8_A1[i_iPosition][cPatternD];
+  att |= cb->AttDiagonaleH8_A1[i_iPosition][cPatternD];
 
   return att;
 }
 
 // Verifie si le joueur est en echec.
-int Check(int wtm)
+int check(TChessBoard *cb, int wtm)
 {
   if ( wtm ) {
-    return Attacked(cb.PositionRoiBlanc, !wtm);
+    return attacked(cb, cb->PositionRoiBlanc, !wtm);
   }
   else {
-    return Attacked(cb.PositionRoiNoir, !wtm);
+    return attacked(cb, cb->PositionRoiNoir, !wtm);
   }
 }
 
-void Swap( TMove& m1, TMove& m2 )
+void swap(TMove& m1, TMove& m2 )
 {
   TMove T = m1;
   m1 = m2;
@@ -356,68 +355,68 @@ void Swap( TMove& m1, TMove& m2 )
 // Echange retourne la valeur d'un echange. Le but de cette fonction
 // est d'accelerer Quiescence en ne considerant que les echanges qui peuvent
 // ameliorer le score.
-int Echange(int source, int destination, int wtm)
+int echange(TChessBoard *cb, int source, int destination, int wtm)
 {
-  register Bitboard attaques;
-  register bool bCote;
-  register int direction, piececapture, capture, signe;
+  Bitboard attaques;
+  bool bCote;
+  int direction, piececapture, capture, signe;
 
   // Effectuer la premiere capture pour partir l'echange.
   signe=1;
   bCote = !wtm;
 
   // Prochaine piece a etre capturee.
-  piececapture = abs(cb.board[destination]);
+  piececapture = abs(cb->board[destination]);
 
   // Valeur de la piece.
   capture = ValeurPiece[piececapture];
 
   // Les pieces qui peuvent attaquer destination.
-  attaques = AttaqueDe(destination, wtm) |
-             AttaqueDe(destination, !wtm);
+  attaques = attaqueDe(cb, destination, wtm) |
+             attaqueDe(cb, destination, !wtm);
 
   // La direction de la capture.
-  direction = cb.directions[source][destination];
+  direction = cb->directions[source][destination];
 
   ClearBit( attaques, source );
 
   // Regarder derriere la piece qui capture pour voir si une
   // autre piece vient de se decouvrir et peut attaquer destination.
   if ( direction )
-    attaques = EchangeRayonX(attaques, source, direction);
+    attaques = echangeRayonX(cb, attaques, source, direction);
 
   while( attaques ) {
     signe = -signe;
-    piececapture = abs(cb.board[source]);
+    piececapture = abs(cb->board[source]);
 
     if ( bCote ) {
-      if ( attaques & cb.pionb )
-        source = DernierBit( attaques & cb.pionb );
-      else if ( attaques & cb.cavalierb )
-        source = DernierBit( attaques & cb.cavalierb );
-      else if ( attaques & cb.foub )
-        source = DernierBit( attaques & cb.foub );
-      else if ( attaques & cb.tourb )
-        source = DernierBit( attaques & cb.tourb );
-      else if ( attaques & cb.dameb )
-        source = DernierBit( attaques & cb.dameb );
-      else if ( attaques & cb.roib )
-        source = DernierBit( attaques & cb.roib );
+      if ( attaques & cb->pionb )
+        source = dernierBit( attaques & cb->pionb );
+      else if ( attaques & cb->cavalierb )
+        source = dernierBit( attaques & cb->cavalierb );
+      else if ( attaques & cb->foub )
+        source = dernierBit( attaques & cb->foub );
+      else if ( attaques & cb->tourb )
+        source = dernierBit( attaques & cb->tourb );
+      else if ( attaques & cb->dameb )
+        source = dernierBit( attaques & cb->dameb );
+      else if ( attaques & cb->roib )
+        source = dernierBit( attaques & cb->roib );
       else break;
     }
     else {
-      if ( attaques & cb.pionn )
-        source = DernierBit( attaques & cb.pionn );
-      else if ( attaques & cb.cavaliern )
-        source = DernierBit( attaques & cb.cavaliern );
-      else if ( attaques & cb.foun )
-        source = DernierBit( attaques & cb.foun );
-      else if ( attaques & cb.tourn )
-        source = DernierBit( attaques & cb.tourn );
-      else if ( attaques & cb.damen )
-        source = DernierBit( attaques & cb.damen );
-      else if ( attaques & cb.roin )
-        source = DernierBit( attaques & cb.roin );
+      if ( attaques & cb->pionn )
+        source = dernierBit( attaques & cb->pionn );
+      else if ( attaques & cb->cavaliern )
+        source = dernierBit( attaques & cb->cavaliern );
+      else if ( attaques & cb->foun )
+        source = dernierBit( attaques & cb->foun );
+      else if ( attaques & cb->tourn )
+        source = dernierBit( attaques & cb->tourn );
+      else if ( attaques & cb->damen )
+        source = dernierBit( attaques & cb->damen );
+      else if ( attaques & cb->roin )
+        source = dernierBit( attaques & cb->roin );
       else break;
     }
 
@@ -425,9 +424,9 @@ int Echange(int source, int destination, int wtm)
     capture += ValeurPiece[piececapture]*signe;
 
     ClearBit( attaques, source );
-    direction = cb.directions[source][destination];
+    direction = cb->directions[source][destination];
     if ( direction )
-      attaques = EchangeRayonX(attaques, source, direction );
+      attaques = echangeRayonX(cb, attaques, source, direction);
 
   } // while
 
@@ -438,48 +437,48 @@ int Echange(int source, int destination, int wtm)
 // Fonction qui regarde si il y a une piece en arriere et si il y en a
 // une elle regarde si elle peut capturer la source. Si elle le peut,
 // l'ajouter a la liste des echanges.
-Bitboard EchangeRayonX(Bitboard attaque, int source, int direction)
+Bitboard echangeRayonX(TChessBoard *cb, Bitboard attaque, int source, int direction)
 {
   switch( direction ) {
     case -1:
       return Or( attaque,
-                 And( And( AttaqueTour(source), DameTour ),
-                      cb.plus1dir[source]));
+                 And(And(attaqueTour(cb, source), DameTour ),
+                      cb->plus1dir[source]));
     case -7:
       return Or( attaque,
-                 And( And( AttaqueFou(source), DameFou ),
-                      cb.plus7dir[source]));
+                 And(And(attaqueFou(cb, source), DameFou ),
+                      cb->plus7dir[source]));
     case -8:
       return Or( attaque,
-                 And( And( AttaqueTour(source), DameTour ),
-                      cb.plus8dir[source]));
+                 And(And(attaqueTour(cb, source), DameTour ),
+                      cb->plus8dir[source]));
     case -9:
       return Or( attaque,
-                 And( And( AttaqueFou(source ), DameFou),
-                      cb.plus9dir[source]));
+                 And(And(attaqueFou(cb, source ), DameFou),
+                      cb->plus9dir[source]));
     case 1:
       return Or( attaque,
-                 And( And( AttaqueTour(source), DameTour ),
-                      cb.minus1dir[source]));
+                 And(And(attaqueTour(cb, source), DameTour ),
+                      cb->minus1dir[source]));
     case 7:
       return Or( attaque,
-                 And( And( AttaqueFou(source), DameFou ),
-                      cb.minus7dir[source]));
+                 And(And(attaqueFou(cb, source), DameFou ),
+                      cb->minus7dir[source]));
     case 8:
       return Or( attaque,
-                 And( And( AttaqueTour(source), DameTour ),
-                      cb.minus8dir[source]));
+                 And(And(attaqueTour(cb, source), DameTour ),
+                      cb->minus8dir[source]));
     case 9:
       return Or( attaque,
-                 And( And( AttaqueFou(source), DameFou ),
-                      cb.minus9dir[source]));
+                 And(And(attaqueFou(cb, source), DameFou ),
+                      cb->minus9dir[source]));
   }
   return attaque;
 }
 
-int GagneOpposition(int doit_joue, int roi_blanc, int roi_noir)
+int gagneOpposition(int doit_joue, int roi_blanc, int roi_noir)
 {
-	register int file_distance, rank_distance;
+	int file_distance, rank_distance;
 	file_distance = FileDistance( roi_blanc, roi_noir );
 	rank_distance = RankDistance( roi_blanc, roi_noir );
 	if ( rank_distance < 2 ) return 1;
@@ -496,51 +495,3 @@ int GagneOpposition(int doit_joue, int roi_blanc, int roi_noir)
 	if ( !(file_distance&1) && !(rank_distance&1)) return 1;
 	return 0;
 }
-
-void TSeeker::parseseekfile()
-{
-	/*
-	FILE* fp = fopen( "seek.cmd", "rb" );
-	if ( !fp ) {
-		return;
-	}
-
-	// If command too long do not send it.
-	char seekcmd[80];
-	while( !feof( fp ) ) {
-		fgets( seekcmd, sizeof( seekcmd )-1, fp );
-		seekcmd[sizeof(seekcmd)-1] = 0;
-		printf( "tellics %s\n", seekcmd );
-	}
-	fclose( fp );
-	*/
-}
-
-void TSeeker::start()
-{
-	/*
-	signal( SIGALRM, handler_alarm );
-	alarm( 5*60 );
-	parseseekfile();
-	journal.Log( "Seeker started" );
-	*/
-}
-
-void TSeeker::stop()
-{
-	/*
-	signal( SIGALRM, SIG_IGN );
-	alarm( 0 );
-	journal.Log( "Seeker stopped" );
-	*/
-}
-
-void TSeeker::handler_alarm( int signum )
-{
-	/*
-	parseseekfile();
-	alarm( 5*60 );
-	*/
-}
-//---------------------------------------------------------------------------
-

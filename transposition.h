@@ -3,6 +3,7 @@
 #define TranspositionH
 
 #include "chess.h"
+#include "board.h"
 
 // Signification des bit dans une entree de transposition.
 //  Bits      Type      Pos      Description
@@ -62,17 +63,16 @@ void createTranspositionTable(uint32 sizeInMeg);
 void freeTranspositionTable();
 
 void initializeTranspositionTable();
-
 void reinitialise();
 
 // Chercher une position dans la table.
-uint32 lookup(TChessBoard &cb, int ply, int depth,
-              int wtm, int &alpha, int &beta, int &danger);
+uint32 lookup(TChessBoard *cb, int ply, int depth,
+              int wtm, int *alpha, int *beta, int *danger);
 
-uint32 storeRefutation(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm,
+uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm,
                       short valeur, uint32 alpha, uint32 beta, uint32 danger);
 
-uint32 storeBest(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm, 
+uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, 
                       uint32 alpha, uint32 initial_alpha, uint32 danger);
 
 #endif

@@ -5,8 +5,8 @@
 #include "board.h"
 
 extern int maxply;
-int SearchRacine(int depth, int wtm, int alpha, int beta);
-void AffichePV(int i_iIteration);
+int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta);
+void affichePV(TChessBoard *cb, int i_iIteration);
 
 //---------------------------------------------------------------------------
 #endif

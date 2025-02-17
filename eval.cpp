@@ -8,8 +8,8 @@
 #include "attaque.h"
 #include "log.h"
 
-SCORE PionRoiBlanc( int col );
-SCORE PionRoiNoir( int col );
+SCORE pionRoiBlanc(int col);
+SCORE pionRoiNoir(int col);
 
 extern int root_wtm, iNodes, nbevals;
 
@@ -117,10 +117,10 @@ int RangeePion[2][10];
 
 // Fonction d'evaluation. Si les blancs sont en avantage le score sera positif,
 // sinon le score sera negatif.
-SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
+SCORE eval(TChessBoard *cb, int ply, int wtm, SCORE alpha, SCORE beta)
 {
-  register int i, pos;
-  register SCORE Score = EvaluateMaterial(wtm);
+  int i, pos;
+  SCORE Score = evaluateMaterial(cb, wtm);
 
   nbevals++;
   iNodes++;
@@ -133,13 +133,13 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 	//
 	// Pour commencer, calculer la rangee de chaque pions.
 	//
-	Bitboard pions = cb.pionb | cb.pionn;
+	Bitboard pions = cb->pionb | cb->pionn;
 	while( pions ) {
-		pos = DernierBit(pions);
+		pos = dernierBit(pions);
 
 		int col = File(pos) + 1;
 
-		if ( pions & cb.pionb & mask[pos] ) {
+		if ( pions & cb->pionb & mask[pos] ) {
 			if ( RangeePion[BLANC][col] < Rank(pos) )
 				RangeePion[BLANC][col] = Rank(pos);
 		}
@@ -152,33 +152,33 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 	}
 
 	// Le roi blanc.
- 	if ( cb.ScoreMaterielNoir - (cb.TotalPionNoir * VALPION) <= 1400 ) {
-		Score += PosRoiFin[cb.PositionRoiBlanc];
+ 	if ( cb->ScoreMaterielNoir - (cb->TotalPionNoir * VALPION) <= 1400 ) {
+		Score += PosRoiFin[cb->PositionRoiBlanc];
 	}
 	else {
-		Score += ProtectionRoiBlanc(ply);
+		Score += protectionRoiBlanc(cb, ply);
 	}
 
 	// Le roi noir.
-	if ( cb.ScoreMaterielBlanc - (cb.TotalPionBlanc * VALPION) <= 1400 ) {
-		Score -= PosRoiFin[flip[cb.PositionRoiNoir]];
+	if ( cb->ScoreMaterielBlanc - (cb->TotalPionBlanc * VALPION) <= 1400 ) {
+		Score -= PosRoiFin[flip[cb->PositionRoiNoir]];
 	}
 	else {
-		Score -= ProtectionRoiNoir(ply);
+		Score -= protectionRoiNoir(cb, ply);
 	}
 
 	// 
 	// Les pions blancs.
 	//
-	if ( cb.TotalPionBlanc == 8 )
+	if ( cb->TotalPionBlanc == 8 )
 		Score -= ALL_PAWNS_PENALTY;
-	pions = cb.pionb;
+	pions = cb->pionb;
 	while( pions ) {
-		pos = DernierBit(pions);
+		pos = dernierBit(pions);
 
-		if (File(cb.PositionRoiBlanc) < 3)
+		if (File(cb->PositionRoiBlanc) < 3)
 			Score += PionRoqueDame[pos];
-		else if (File(cb.PositionRoiBlanc) > 4)
+		else if (File(cb->PositionRoiBlanc) > 4)
 			Score += PionRoqueRoi[pos];
 		else
 			Score += PionCentre[pos];
@@ -213,15 +213,15 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 	// 
 	// Les pions noirs.
 	//
-	if ( cb.TotalPionNoir == 8 )
+	if ( cb->TotalPionNoir == 8 )
 		Score += ALL_PAWNS_PENALTY;
-	pions = cb.pionn;
+	pions = cb->pionn;
 	while( pions ) {
-		pos = DernierBit(pions);
+		pos = dernierBit(pions);
 
-		if (File(cb.PositionRoiNoir) < 3)
+		if (File(cb->PositionRoiNoir) < 3)
 			Score -= PionRoqueDame[flip[pos]];
-		else if (File(cb.PositionRoiNoir) > 4)
+		else if (File(cb->PositionRoiNoir) > 4)
 			Score -= PionRoqueRoi[flip[pos]];
 		else
 			Score -= PionCentre[flip[pos]];
@@ -257,70 +257,70 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 	// Calculer la position des fous.
 	//
 	// Un bonus pour la pair de fou.
-	if ( cb.TotalFouBlanc == 2 && cb.TotalFouNoir < 2 ) {
-		Score += bishop_pair_bonus[cb.TotalPionBlanc];
+	if ( cb->TotalFouBlanc == 2 && cb->TotalFouNoir < 2 ) {
+		Score += bishop_pair_bonus[cb->TotalPionBlanc];
 	}
-	if ( cb.TotalFouNoir == 2 && cb.TotalFouBlanc < 2 ) {
-		Score -= bishop_pair_bonus[cb.TotalPionNoir];
+	if ( cb->TotalFouNoir == 2 && cb->TotalFouBlanc < 2 ) {
+		Score -= bishop_pair_bonus[cb->TotalPionNoir];
 	}
 
 	int to;
 	Bitboard temp;
-	Bitboard fous = cb.foub;
+	Bitboard fous = cb->foub;
 	while( fous ) {
-		pos = DernierBit(fous);
+		pos = dernierBit(fous);
 
 		Score += PositionFou[pos];
 
 		// 1 points pour chaque case attaque.
-		temp = (AttaqueFou(pos)&(~cb.pieceb));
+		temp = (attaqueFou(cb, pos)&(~cb->pieceb));
 		while( temp ) {
-			to = DernierBit( temp );
+			to = dernierBit( temp );
 			ClearBit( temp, to );
 			Score += 1;
 		}
 
 		// Penaliser chaque pion sur sa couleur.
-		if ( cb.TotalFouBlanc  == 1 ) {
+		if ( cb->TotalFouBlanc  == 1 ) {
 			Bitboard pions;
-			if ( mask[pos] & cb.CaseBlanche ) {
-				pions = cb.pionb & cb.CaseBlanche;
+			if ( mask[pos] & cb->CaseBlanche ) {
+				pions = cb->pionb & cb->CaseBlanche;
 			}
 			else {
-				pions = cb.pionb & cb.CaseNoire;
+				pions = cb->pionb & cb->CaseNoire;
 			}
 			while( pions ) {
-				to = DernierBit( pions );
+				to = dernierBit( pions );
 				Score += 1;
 				ClearBit( pions, to );
 			}
 		}
 		ClearBit( fous, pos );
 	}
-	fous = cb.foun;
+	fous = cb->foun;
 	while( fous ) {
-		pos = DernierBit(fous);
+		pos = dernierBit(fous);
 
 		Score -= PositionFou[flip[pos]];
 		// 1 points pour chaque case attaque.
-		temp = (AttaqueFou(pos)&(~cb.piecen));
+		temp = (attaqueFou(cb, pos)&(~cb->piecen));
 		while( temp ) {
-			to = DernierBit( temp );
+			to = dernierBit( temp );
 			ClearBit( temp, to );
 			Score -= 1;
 		}
 
 		// Penaliser chaque pion sur sa couleur.
-		if ( cb.TotalFouNoir == 1 ) {
+		if ( cb->TotalFouNoir == 1 ) {
 			Bitboard pions;
-			if ( mask[pos] & cb.CaseBlanche ) {
-				pions = cb.pionn & cb.CaseBlanche;
+			if ( mask[pos] & cb->CaseBlanche ) {
+				pions = cb->pionn & cb->CaseBlanche;
 			}
 			else {
-				pions = cb.pionn & cb.CaseNoire;
+				pions = cb->pionn & cb->CaseNoire;
 			}
 			while( pions ) {
-				to = DernierBit( pions );
+				to = dernierBit( pions );
 				Score -= 1;
 				ClearBit( pions, to );
 			}
@@ -331,9 +331,9 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 	//
 	// Calculer la position des cavaliers.
 	//
-	Bitboard cavaliers = cb.cavalierb;
+	Bitboard cavaliers = cb->cavalierb;
 	while( cavaliers ) {
-		pos = DernierBit( cavaliers );
+		pos = dernierBit( cavaliers );
 
 		Score += PositionCavalier[pos];
 
@@ -342,10 +342,10 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 		if ( (RangeePion[NOIR][col-1] >= Rank(pos)) &&
 			 (RangeePion[NOIR][col+1] >= Rank(pos)) ) {
 				int prot = 0;
-				if ( cb.pionb & mask[pos-7] ) {
+				if ( cb->pionb & mask[pos-7] ) {
 					prot++;
 				}
-				if ( cb.pionb & mask[pos-9] ) {
+				if ( cb->pionb & mask[pos-9] ) {
 					prot++;
 				}
 				if ( prot ) {
@@ -359,9 +359,9 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 
 		ClearBit( cavaliers, pos );
 	}
-	cavaliers = cb.cavaliern;
+	cavaliers = cb->cavaliern;
 	while( cavaliers ) {
-		pos = DernierBit( cavaliers );
+		pos = dernierBit( cavaliers );
 
 		Score -= PositionCavalier[flip[pos]];
 
@@ -370,10 +370,10 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 		if ( (RangeePion[BLANC][col-1] <= Rank(pos)) &&
 			 (RangeePion[BLANC][col+1] <= Rank(pos)) ) {
 			int prot = 0;
-			if ( cb.pionn & mask[pos+7] ) {
+			if ( cb->pionn & mask[pos+7] ) {
 				prot++;
 			}
-			if ( cb.pionn & mask[pos+9] ) {
+			if ( cb->pionn & mask[pos+9] ) {
 				prot++;
 			}
 			if ( prot ) {
@@ -387,9 +387,9 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 		ClearBit( cavaliers, pos );
 	}
 
-	Bitboard tours = cb.tourb;
+	Bitboard tours = cb->tourb;
 	while( tours ) {
-		pos = DernierBit( tours );
+		pos = dernierBit( tours );
 
 		if ( RangeePion[BLANC][File(pos)+1] == 0) {
 			if (RangeePion[NOIR][File(pos)+1] == 7)
@@ -403,9 +403,9 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
 		ClearBit( tours, pos );
 	}
 	
-	tours = cb.tourn;
+	tours = cb->tourn;
 	while( tours ) {
-		pos = DernierBit( tours );
+		pos = dernierBit( tours );
 
 		if ( RangeePion[NOIR][File(pos)+1] == 7) {
 			if (RangeePion[BLANC][File(pos)+1] == 0)
@@ -422,40 +422,40 @@ SCORE Eval(int ply, int wtm, SCORE alpha, SCORE beta)
     return Score;
 }
 
-SCORE ProtectionRoiBlanc(int ply)
+SCORE protectionRoiBlanc(TChessBoard *cb, int ply)
 {
 	int score;
 
-	int pos = cb.PositionRoiBlanc;
+	int pos = cb->PositionRoiBlanc;
 
 	score = PosRoi[pos];
 
 	// S'il le roi a roque, alors evaluation depend
 	// du cote.
 	if ( File(pos) < 3 ) {
-		score += PionRoiBlanc(1);
-		score += PionRoiBlanc(2);
-		score += PionRoiBlanc(3) / 2;
+		score += pionRoiBlanc(1);
+		score += pionRoiBlanc(2);
+		score += pionRoiBlanc(3) / 2;
 
 	    // Verifier si le fou du fianchetto est present dans
 	    // le cas ou le pion b est avance en b3.
-	    if ( RangeePion[BLANC][2] == 5 && !(cb.foub && cb.CaseNoire)) {
+	    if ( RangeePion[BLANC][2] == 5 && !(cb->foub && cb->CaseNoire)) {
 		    score -= NO_FIANCHETTO_PEN;
-			if ( !(cb.foub & mask[B2]) ) {
+			if ( !(cb->foub & mask[B2]) ) {
 				score -= NO_FIANCHETTO_PEN;
 			}
 		}
 	}
 	else if ( File(pos) > 4 ) {
-		score += PionRoiBlanc(8);
-		score += PionRoiBlanc(7);
-		score += PionRoiBlanc(6) / 2;
+		score += pionRoiBlanc(8);
+		score += pionRoiBlanc(7);
+		score += pionRoiBlanc(6) / 2;
 
 		// Verifier si le fou du fianchetto est present dans
 		// le cas ou le pion g est avance en g3.
-		if ( RangeePion[BLANC][7] && (!cb.foub && cb.CaseBlanche)) {
+		if ( RangeePion[BLANC][7] && (!cb->foub && cb->CaseBlanche)) {
 			score -= NO_FIANCHETTO_PEN;
-			if ( !(cb.foub & mask[G2]) ) {
+			if ( !(cb->foub & mask[G2]) ) {
 				score -= NO_FIANCHETTO_PEN;
 			}
 		}
@@ -471,15 +471,14 @@ SCORE ProtectionRoiBlanc(int ply)
 		}
 	}
 
-
 	// Plus l'adversaire a de piece, plus c'est enervant.
-	score *= cb.ScoreMaterielNoir;
+	score *= cb->ScoreMaterielNoir;
 	score /= 3100;
 
 	return score;
 }
 
-SCORE PionRoiBlanc( int col )
+SCORE pionRoiBlanc(int col )
 {
 	int score = 0;
 
@@ -501,40 +500,40 @@ SCORE PionRoiBlanc( int col )
 	return score;
 }
 
-SCORE ProtectionRoiNoir(int ply)
+SCORE protectionRoiNoir(TChessBoard *cb, int ply)
 {
 	int score;
 
-	int pos = cb.PositionRoiNoir;
+	int pos = cb->PositionRoiNoir;
 
 	score = PosRoi[flip[pos]];
 
 	// S'il le roi a roque, alors evaluation depend
 	// du cote.
 	if ( File(pos) < 3 ) {
-		score += PionRoiNoir(1);
-		score += PionRoiNoir(2);
-		score += PionRoiNoir(3) / 2;
+		score += pionRoiNoir(1);
+		score += pionRoiNoir(2);
+		score += pionRoiNoir(3) / 2;
 
 	    // Verifier si le fou du fianchetto est present dans
 	    // le cas ou le pion b est avance en b6.
-	    if ( RangeePion[BLANC][2] == 2 && !(cb.foun && cb.CaseBlanche)) {
+	    if ( RangeePion[BLANC][2] == 2 && !(cb->foun && cb->CaseBlanche)) {
 		    score -= NO_FIANCHETTO_PEN;
-			if ( !(cb.foun & mask[B7]) ) {
+			if ( !(cb->foun & mask[B7]) ) {
 				score -= NO_FIANCHETTO_PEN;
 			}
 		}
 	}
 	else if ( File(pos) > 4 ) {
-		score += PionRoiNoir(8);
-		score += PionRoiNoir(7);
-		score += PionRoiNoir(6) / 2;
+		score += pionRoiNoir(8);
+		score += pionRoiNoir(7);
+		score += pionRoiNoir(6) / 2;
 
 	    // Verifier si le fou du fianchetto est present dans
 	    // le cas ou le pion g est avance en g6.
-	    if ( RangeePion[BLANC][7] == 2 && !(cb.foun && cb.CaseNoire)) {
+	    if ( RangeePion[BLANC][7] == 2 && !(cb->foun && cb->CaseNoire)) {
 		    score -= NO_FIANCHETTO_PEN;
-			if ( !(cb.foun & mask[G7]) ) {
+			if ( !(cb->foun & mask[G7]) ) {
 				score -= NO_FIANCHETTO_PEN;
 			}
 		}
@@ -551,14 +550,13 @@ SCORE ProtectionRoiNoir(int ply)
 	}
 
 	// Plus l'adversaire a de piece, plus c'est enervant.
-	score *= cb.ScoreMaterielBlanc;
+	score *= cb->ScoreMaterielBlanc;
 	score /= 3100;
 
 	return score;
 }
 
-
-SCORE PionRoiNoir( int col )
+SCORE pionRoiNoir(int col )
 {
 	int score = 0;
 
@@ -583,31 +581,31 @@ SCORE PionRoiNoir( int col )
 // Pour le moment, cette fonction evalue seulement la course lorsque un cote a
 // un pion et l'autre en a pas.
 //
-SCORE EvaluerCoursePionPasses(int wtm)
+SCORE evaluerCoursePionPasses(TChessBoard *cb, int wtm)
 {
-	register Bitboard pions;
+	Bitboard pions;
 	// Verifier si les blanc ont un pion et que les noirs en ont pas.
-	if ( cb.TotalPionBlanc > 0 && !cb.TotalPionNoir ) {
-		pions = cb.pionb;
+	if ( cb->TotalPionBlanc > 0 && !cb->TotalPionNoir ) {
+		pions = cb->pionb;
 		do { 
-			int casepion = DernierBit( pions );
+			int casepion = dernierBit( pions );
 			ClearBit( pions, casepion );
 
 			// Premierement, si le pion est en avant du roi, passe au prochain
 			// pion.
-			if ( Rank( cb.PositionRoiBlanc ) >= Rank( casepion )) 
+			if ( Rank( cb->PositionRoiBlanc ) >= Rank( casepion )) 
 				continue;	
 
 			// Cas special, un pion tour.
 			if ( File( casepion ) == FILEA ) {
-				if (( File( cb.PositionRoiBlanc ) == FILEB) &&
-					(Distance(cb.PositionRoiBlanc,A8) < Distance(cb.PositionRoiNoir,A8)) )
+				if (( File( cb->PositionRoiBlanc ) == FILEB) &&
+					(Distance(cb->PositionRoiBlanc,A8) < Distance(cb->PositionRoiNoir,A8)) )
 					return (VALDAME-VALFOU);
 				continue;
 			}
 			else  if (File( casepion ) == FILEH ) {
-				if ((File( cb.PositionRoiBlanc ) == FILEG) &&
-					(Distance(cb.PositionRoiBlanc,H8) < Distance(cb.PositionRoiNoir,H8)))
+				if ((File( cb->PositionRoiBlanc ) == FILEG) &&
+					(Distance(cb->PositionRoiBlanc,H8) < Distance(cb->PositionRoiNoir,H8)))
 					return (VALDAME-VALFOU);
 				break;
 			}
@@ -615,58 +613,58 @@ SCORE EvaluerCoursePionPasses(int wtm)
 			// Si le roi est 2 cases en avant du pion ou est sur la sixieme
 			// rangee et que le roi est blanc est plus proche du pion que le
 			// roi noir.
-			if (Distance(cb.PositionRoiBlanc, casepion) < Distance(cb.PositionRoiNoir, casepion )) {
-				if (Rank(cb.PositionRoiBlanc) < Rank(casepion)-1)
+			if (Distance(cb->PositionRoiBlanc, casepion) < Distance(cb->PositionRoiNoir, casepion )) {
+				if (Rank(cb->PositionRoiBlanc) < Rank(casepion)-1)
 					return (VALDAME-VALFOU);
-				if (Rank(cb.PositionRoiBlanc) == RANK6)
+				if (Rank(cb->PositionRoiBlanc) == RANK6)
 					return (VALDAME-VALFOU);
 			}
 			
 			// Si le roi est une case en avant du pion et a l'opposition.
-			if ((Rank(cb.PositionRoiBlanc) == Rank(casepion)-1) &&
-				GagneOpposition(wtm, cb.PositionRoiBlanc,cb.PositionRoiNoir))
+			if ((Rank(cb->PositionRoiBlanc) == Rank(casepion)-1) &&
+				gagneOpposition(wtm, cb->PositionRoiBlanc,cb->PositionRoiNoir))
 				return (VALDAME-VALFOU);
 		} while( pions );
 	}
 	
 	// Verifier si les noirs ont un pion et que les blancs en ont pas.
-	if ( cb.TotalPionNoir && !cb.TotalPionBlanc ) {
-		pions = cb.pionn;
+	if ( cb->TotalPionNoir && !cb->TotalPionBlanc ) {
+		pions = cb->pionn;
 		do { 
-			int casepion = DernierBit( pions );
+			int casepion = dernierBit( pions );
 			ClearBit( pions, casepion );
 
 			// Premierement, si le pion est en avant du roi, passe au prochain
 			// pion.
-			if ( Rank( cb.PositionRoiNoir ) <= Rank( casepion )) 
+			if ( Rank( cb->PositionRoiNoir ) <= Rank( casepion )) 
 				continue;	
 
 			// Cas special, un pion tour.
 			if ( File( casepion ) == FILEA ) {
-				if (( File( cb.PositionRoiNoir ) == FILEB) &&
-					(Distance(cb.PositionRoiNoir,A1) < Distance(cb.PositionRoiBlanc,A1)) )
+				if (( File( cb->PositionRoiNoir ) == FILEB) &&
+					(Distance(cb->PositionRoiNoir,A1) < Distance(cb->PositionRoiBlanc,A1)) )
 					return (-(VALDAME-VALFOU));
 				continue;
 			}
 			else  if (File( casepion ) == FILEH ) {
-				if ((File( cb.PositionRoiNoir ) == FILEG) &&
-					(Distance(cb.PositionRoiNoir,H1) < Distance(cb.PositionRoiBlanc,H1)))
+				if ((File( cb->PositionRoiNoir ) == FILEG) &&
+					(Distance(cb->PositionRoiNoir,H1) < Distance(cb->PositionRoiBlanc,H1)))
 					return (-(VALDAME-VALFOU));
 				break;
 			}
 		
 			// Si le roi est 2 cases en avant du pion ou est sur la sixieme
 			// rangee.
-			if (Distance(cb.PositionRoiNoir, casepion) < Distance(cb.PositionRoiBlanc, casepion )) {
-				if (Rank(cb.PositionRoiNoir) < Rank(casepion)+1)
+			if (Distance(cb->PositionRoiNoir, casepion) < Distance(cb->PositionRoiBlanc, casepion )) {
+				if (Rank(cb->PositionRoiNoir) < Rank(casepion)+1)
 					return (-(VALDAME-VALFOU));
-				if (Rank(cb.PositionRoiNoir) == RANK3)
+				if (Rank(cb->PositionRoiNoir) == RANK3)
 					return (-(VALDAME-VALFOU));
 			}
 
 			// Si le roi est une case en avant du pion et a l'opposition.
-			if ((Rank(cb.PositionRoiNoir) == Rank(casepion)+1) &&
-				GagneOpposition(wtm, cb.PositionRoiBlanc,cb.PositionRoiNoir))
+			if ((Rank(cb->PositionRoiNoir) == Rank(casepion)+1) &&
+				gagneOpposition(wtm, cb->PositionRoiBlanc,cb->PositionRoiNoir))
 				return (-(VALDAME-VALFOU));
 		} while( pions );
 	}
@@ -674,18 +672,18 @@ SCORE EvaluerCoursePionPasses(int wtm)
 	return 0;
 }
 
-SCORE EvaluateMaterial(int wtm)
+SCORE evaluateMaterial(TChessBoard *cb, int wtm)
 {
-	register int score;
+	int score;
 
-	score = cb.ScoreMaterielBlanc - cb.ScoreMaterielNoir;
+	score = cb->ScoreMaterielBlanc - cb->ScoreMaterielNoir;
 
 	//
 	// If there is only pawn left and one side as more pawn then the other then penalize
 	// the side that have less pawn to prevent exchanging pieces when down a pawn.
 	//
-	if ( cb.NbWhitePieces + cb.NbBlackPieces == 0 ) {
-		if ( cb.TotalPionBlanc > cb.TotalPionNoir ) {
+	if ( cb->NbWhitePieces + cb->NbBlackPieces == 0 ) {
+		if ( cb->TotalPionBlanc > cb->TotalPionNoir ) {
 			score += MORE_PAWMS_BONUS;
 		}
 		else {
@@ -697,11 +695,11 @@ SCORE EvaluateMaterial(int wtm)
 	// If one side has more piece then the other then give a penality to the side that has more
 	// pieces for each piece left to the opponent.
 	//
-	if ( cb.NbWhitePieces > cb.NbBlackPieces ) {
-		score -= cb.NbBlackPieces * EXCHANGE_PEN;
+	if ( cb->NbWhitePieces > cb->NbBlackPieces ) {
+		score -= cb->NbBlackPieces * EXCHANGE_PEN;
 	}
-	else if ( cb.NbBlackPieces > cb.NbWhitePieces ) {
-		score += cb.NbWhitePieces * EXCHANGE_PEN;
+	else if ( cb->NbBlackPieces > cb->NbWhitePieces ) {
+		score += cb->NbWhitePieces * EXCHANGE_PEN;
 	}
 
 	//
@@ -709,11 +707,11 @@ SCORE EvaluateMaterial(int wtm)
 	// give a bonus to the side with more pieces since it is usally
 	// better to have more pieces then pawns.
 	//
-	if ( cb.ScoreMaterielBlanc == cb.ScoreMaterielNoir ) { 
-		if ( cb.NbWhitePieces > cb.NbBlackPieces ) {
+	if ( cb->ScoreMaterielBlanc == cb->ScoreMaterielNoir ) { 
+		if ( cb->NbWhitePieces > cb->NbBlackPieces ) {
 			score += MORE_PIECES_BONUS;
 		}
-		else if ( cb.NbBlackPieces > cb.NbWhitePieces ) {
+		else if ( cb->NbBlackPieces > cb->NbWhitePieces ) {
 			score -= MORE_PIECES_BONUS;
 		}
 	}

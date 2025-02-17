@@ -4,7 +4,7 @@
 
 #include "board.h"
 
-int Quiescence(int ply, int wtm, int alpha, int beta );
+int quiescence(TChessBoard *cb, int ply, int wtm, int alpha, int beta);
 
 //---------------------------------------------------------------------------
 #endif

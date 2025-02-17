@@ -29,7 +29,7 @@ long inter()
   return retval;
 }
 
-long TrouverDernierJournal()
+long trouverDernierJournal()
 {
   static long iDernierNo = 0;
 

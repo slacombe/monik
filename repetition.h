@@ -4,8 +4,8 @@
 
 #include "board.h"
 
-bool Repetition(int wtm);
+bool repetition(TChessBoard *cb, int wtm);
 
-int RepetitionNulle(int wtm);
+int repetitionNulle(TChessBoard *cb, int wtm);
 //---------------------------------------------------------------------------
 #endif

@@ -2,7 +2,7 @@
 #ifndef InitH
 #define InitH
 
-void InitialiseData();
+void initialiseData();
 
 //---------------------------------------------------------------------------
 #endif

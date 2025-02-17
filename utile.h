@@ -27,28 +27,28 @@ extern int PromoteExtension[];
 extern  Bitboard mask[BOARDSIZE];
 
 // Retourne le dernier bit d'un entier de 64 bits.
-int DernierBit( Bitboard bitboard );
+uint32 dernierBit(Bitboard bitboard);
 
 // Retourne le bitboard d'attaque de la position demande.
-Bitboard AttaqueRangee( int i_iPosition );
-Bitboard AttaqueColonne( int i_iPosition );
-Bitboard AttaqueTour(int i_iPosition);
-Bitboard AttaqueDame(int i_iPosition);
-Bitboard AttaqueFou(int i_iPosition);
+Bitboard attaqueRangee(TChessBoard *cb, int i_iPosition);
+Bitboard attaqueColonne(TChessBoard *cb, int i_iPosition );
+Bitboard attaqueTour(TChessBoard *cb, int i_iPosition);
+Bitboard attaqueDame(TChessBoard *cb, int i_iPosition);
+Bitboard attaqueFou(TChessBoard *cb, int i_iPosition);
 
 unsigned int Random32();
 Bitboard Random64();
 
 // Verifier si le joueur est en echec.
-int Check(int wtm);
+int check(TChessBoard *cb, int wtm);
 
-void Swap(TMove& m1, TMove& m2);
-int Echange(int source, int dest, int wtm);
-Bitboard EchangeRayonX(Bitboard attaque, int source, int direction);
+void swap(TMove& m1, TMove& m2);
+int echange(TChessBoard *cb, int source, int dest, int wtm);
+Bitboard echangeRayonX(TChessBoard *cb, Bitboard attaque, int source, int direction);
 
-int TrouverDernierJournal();
+int trouverDernierJournal();
 
-int GagneOpposition( int doit_joue, int roi_blanc, int roi_noir );
+int gagneOpposition(int doit_joue, int roi_blanc, int roi_noir);
 
 // Des macros pour travailler sur les bits.
 #define ClearBit( board, position )       (board &= ~mask[position])
@@ -99,13 +99,13 @@ int GagneOpposition( int doit_joue, int roi_blanc, int roi_noir );
 
 // Macro qui determine si c'est le temp d'appeler quiescence ou
 // encore Search.
-#define ABSearch(depth, ply, wtm, alpha, beta, do_null ) (depth<=0?Quiescence(ply, wtm, alpha, beta ):Search(depth, ply, wtm, alpha, beta, do_null))
+#define ABSearch(cb, depth, ply, wtm, alpha, beta, do_null ) (depth<=0?quiescence(cb, ply, wtm, alpha, beta ):search(cb, depth, ply, wtm, alpha, beta, do_null))
 
 // Macro qui OR les bitboars.
-#define Cavalier ((cb.cavalierb | cb.cavaliern))
-#define Fou      ((cb.foub | cb.foun))
-#define Tour     ((cb.tourb | cb.tourn))
-#define Dame     ((cb.dameb | cb.damen))
+#define Cavalier ((cb->cavalierb | cb->cavaliern))
+#define Fou      ((cb->foub | cb->foun))
+#define Tour     ((cb->tourb | cb->tourn))
+#define Dame     ((cb->dameb | cb->damen))
 #define DameFou  ((Dame | Fou))
 #define DameTour ((Dame | Tour))
 
@@ -132,10 +132,10 @@ int GagneOpposition( int doit_joue, int roi_blanc, int roi_noir );
 #define RANK2		6
 #define RANK1		7
 
-#define		RoqueBlancDame(x)		(cb.Roque[ply]&ROQUEDAMEBLANC)
-#define		RoqueBlancRoi(x)		(cb.Roque[ply]&ROQUEROIBLANC)
-#define		RoqueNoirDame(x)		(cb.Roque[ply]&ROQUEDAMENOIR)
-#define		RoqueNoirRoi(x)			(cb.Roque[ply]&ROQUEROINOIR)
+#define		RoqueBlancDame(x)		(cb->Roque[ply]&ROQUEDAMEBLANC)
+#define		RoqueBlancRoi(x)		(cb->Roque[ply]&ROQUEROIBLANC)
+#define		RoqueNoirDame(x)		(cb->Roque[ply]&ROQUEDAMENOIR)
+#define		RoqueNoirRoi(x)			(cb->Roque[ply]&ROQUEROINOIR)
 
 #define RoqueBlanc(x) And(RoqueBlancDame(x),RoqueBlancRoi(x))
 #define	RoqueNoir(x)  And(RoqueNoirDame(x),RoqueNoirRoi(x))

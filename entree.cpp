@@ -33,7 +33,6 @@ extern bool Moteur;
 extern bool Force;
 extern bool Post;
 extern bool g_bEdit;
-extern TChessBoard ChessBoard;
 extern int iEngTime;
 extern int iMoveTime;
 extern int iNbCoups;
@@ -45,7 +44,7 @@ extern int whisper;
 // Routine qui obtient une commande a partir de la console.
 // Pour interfacer le moteur avec tout autre interface, on peut passer
 // directement la fonction engine.
-void Entree( char* o_szCommande )
+void entree(TChessBoard *cb, char* o_szCommande)
 {
   static char szText[255];
 
@@ -53,9 +52,9 @@ void Entree( char* o_szCommande )
   if ( !xboard ) {
     // Les blancs ou les noirs.
     if ( wtm )
-      sprintf( szText, "Blanc (%d): ", cb.NoCoups/2+1);
+      sprintf( szText, "Blanc (%d): ", cb->NoCoups/2+1);
     else
-      sprintf( szText, "Noir (%d): ", cb.NoCoups/2+1);
+      sprintf( szText, "Noir (%d): ", cb->NoCoups/2+1);
 
     printf( "%s", szText );
   }
@@ -72,7 +71,7 @@ void Entree( char* o_szCommande )
 // sous forme interne.
 // Valeur retourne:
 //    true si le coup est valide, false sinon.
-bool Parse(const char* i_szEntree, int ply, int wtm, TMove& o_Move)
+bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_Move)
 {
   // Prend l'entree de l'utilisateur et
   // le converti en un format interne.
@@ -109,15 +108,15 @@ bool Parse(const char* i_szEntree, int ply, int wtm, TMove& o_Move)
   // Pour commencer, verifier si la case source a bien une piece et de la bonne
   // couleur.
   if ( wtm )
-    if ( cb.board[move.From] <= 0 )
+    if ( cb->board[move.From] <= 0 )
       return false;
     else ;
   else
-    if ( cb.board[move.From] >= 0 )
+    if ( cb->board[move.From] >= 0 )
       return false;
 
   // Verifier si la case destination est vide ou contient une piece adverse.
-  Piece piece = cb.board[move.To];
+  Piece piece = cb->board[move.To];
   if ( wtm )
     if ( piece > 0 )
       return false;
@@ -127,10 +126,10 @@ bool Parse(const char* i_szEntree, int ply, int wtm, TMove& o_Move)
       return false;
 
   // Transfere le coup.
-  move.Capture = cb.board[move.To];
+  move.Capture = cb->board[move.To];
   if ( move.Capture < 0 )
     move.Capture = -move.Capture;
-  move.Piece = cb.board[move.From];
+  move.Piece = cb->board[move.From];
   if ( move.Piece < 0 )
     move.Piece = -move.Piece;
   o_Move = move;
@@ -140,7 +139,7 @@ bool Parse(const char* i_szEntree, int ply, int wtm, TMove& o_Move)
 // Cette routine verifie si une commande est execute, l'execute et
 // retourne true. Sinon elle retourne false pour que le moteur sache
 // que c'est un coup.
-bool Option( const char* i_szCommande, char* o_szReponse )
+bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
 {
   strcpy( o_szReponse, "" );
 
@@ -149,7 +148,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szText[10];
     strcpy( szBoard, "" );
     for( int i=A8; i<=H1; i++ ) {
-      sprintf( szText, "%+2d", cb.board[i] );
+      sprintf( szText, "%+2d", cb->board[i] );
       strcat( szBoard, szText );
       if ( i % 8 == 7 )
         strcat( szBoard, "\n" );
@@ -159,7 +158,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
   }
 
   if (strcmp(i_szCommande, "eval") == 0) {
-	  int score = Eval(1, wtm, -INFINI, INFINI);
+	  int score = eval(cb, 1, wtm, -INFINI, INFINI);
 	  printf("score = %d\n", score);
 	  gameLog.log("score = %d", score);
 	  return true;
@@ -167,7 +166,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   if (strcmp(i_szCommande, "board") == 0) {
 	  for(int i=A8; i<=H1; i++) {
-		  printf(" %2d ", cb.board[i]);
+		  printf(" %2d ", cb->board[i]);
 		  if (i % 8 == 7) 
 			  printf("\n");
 	  }
@@ -185,8 +184,8 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 
   // On demande une nouvelle partie.
   if ( strcmp( i_szCommande, "new" ) == 0 ) {
-    cb.InitialiseBoard();
-    cb.InitialiseBitboard();
+    initialiseBoard(cb);
+    initialiseBitboard(cb);
     wtm = true;
     Moteur = false;
     Force = false;
@@ -209,7 +208,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szFichier[60];
     printf( "Entrez le nom de fichier: " );
     scanf( "%s", szFichier );
-    if (loadPosition( cb, szFichier))
+    if (loadPosition(cb, szFichier))
       printf( "Chargement ok." );
     else
       printf( "Chargement pas reussi." );
@@ -349,7 +348,6 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 	  char szName[40];
 	  scanf( "%s", szName );
 	  gameLog.log( "name = %s", szName );
-      TSeeker::stop();
 	  return true;
   }
 
@@ -382,7 +380,6 @@ bool Option( const char* i_szCommande, char* o_szReponse )
   if ( strcmp( i_szCommande, "result" ) == 0 ) {
     char szTemp[255];
     fgets( szTemp, sizeof( szTemp ), stdin ); 
-	TSeeker::start();
     return true;
   }
 
@@ -393,7 +390,7 @@ bool Option( const char* i_szCommande, char* o_szReponse )
     char szText[255];
     scanf( "%s", szText );
 
-    CreateStartBook( szText );
+    createStartBook(szText);
     return true;
   }
 
@@ -406,9 +403,8 @@ bool Option( const char* i_szCommande, char* o_szReponse )
 // 
 // Code modifie de Crafty.
 //
-int InputMove(char* text, int ply, int wtm, TMove& move) 
+int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move) 
 {
-	int moves[220];
 	TMove goodmove;
 	int piece=-1, capture, promote, give_check;
 	int ffile, frank, tfile, trank;
@@ -429,14 +425,13 @@ int InputMove(char* text, int ply, int wtm, TMove& move)
 					(text[2] >= 'a') && (text[2] <= 'h') &&
 					(text[3] >= '1') && (text[3] <= '8')) {
 
-			return Parse(text, ply, wtm, move);
+		return parse(cb, text, ply, wtm, move);
 	}
 
 	/*
 	   initialize move structure in case an error is found
 	 */
 	strcpy(movetext,text);
-	moves[0]=0;
 	piece=0;
 	capture=0;
 	promote=0;
@@ -579,8 +574,8 @@ int InputMove(char* text, int ply, int wtm, TMove& move)
 	}*/
 
 	TMoveList movelist;
-	GenMoveAttaque(ply, wtm, movelist);
-	GenMovePasAttaque(ply, wtm, movelist);
+	genMoveAttaque(cb, ply, wtm, movelist);
+	genMovePasAttaque(cb, ply, wtm, movelist);
 
 	for (i=0; i<movelist.nbmove; i++ ) {
 			if (piece && (movelist.moves[i].Piece != piece)) 
@@ -598,12 +593,12 @@ int InputMove(char* text, int ply, int wtm, TMove& move)
 			if ((trank >= 0)  && (Rank(movelist.moves[i].To) != trank)) 
 					movelist.moves[i].Piece = 0;
 			if ( movelist.moves[i].Piece ) {
-					MakeMove(ply, movelist.moves[i],  wtm);
-					if (Check(wtm) || (give_check && !Check(!wtm))) {
-							UnmakeMove(ply, movelist.moves[i], wtm);
+					makeMove(cb, ply, movelist.moves[i],  wtm);
+					if (check(cb, wtm) || (give_check && !check(cb, !wtm))) {
+							unmakeMove(cb, ply, movelist.moves[i], wtm);
 							movelist.moves[i].Piece = 0;
 					}
-					else UnmakeMove(ply, movelist.moves[i], wtm);
+					else unmakeMove(cb, ply, movelist.moves[i], wtm);
 			}
 	}
 	nleft=0;

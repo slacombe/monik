@@ -17,10 +17,10 @@ struct BookPosition_t
 	unsigned int freq;
 };
 
-int ChargerCles( void );
-int SauvegarderCles( void );
-int LoadBook( void );
-int Book( TChessBoard& cb, int wtm, TMoveList& ml );
-int CreateStartBook( const char* i_szFilename );
+int chargerCles( void );
+int sauvegarderCles( void );
+int loadBook( void );
+int book(TChessBoard* cb, int wtm, TMoveList& ml);
+int createStartBook(const char* i_szFilename);
 
 #endif

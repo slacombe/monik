@@ -1,13 +1,3 @@
-//-----------------------------------------------------------------------------
-// Projet: Monik
-// Auteur: Sylvain Lacombe.
-// Debut du projet: 2 novembre 1998.
-// Fichier: ValideMove.cpp
-// Debut: 26 novembre 1998.
-//
-//
-//---------------------------------------------------------------------------
-
 #include <stdlib.h>
 
 #include "valide.h"
@@ -16,7 +6,7 @@
 #include "utile.h"
 
 // Pour voir si le killer move est toujours valide avant de le jouer.
-bool ValideMove(int ply, int wtm, TMove& move)
+bool valideMove(TChessBoard *cb, int ply, int wtm, TMove& move)
 {
   // Verifier si la case de depart contient la bonne piece.
   if ( move.Piece < 1 || move.Piece > 6 )
@@ -26,11 +16,11 @@ bool ValideMove(int ply, int wtm, TMove& move)
 
 
   if ( wtm ) {
-    if ( cb.board[move.From] != move.Piece )
+    if ( cb->board[move.From] != move.Piece )
       return false;
   }
   else {
-    if ( cb.board[move.From] != -move.Piece )
+    if ( cb->board[move.From] != -move.Piece )
       return false;
   }
 
@@ -44,22 +34,22 @@ bool ValideMove(int ply, int wtm, TMove& move)
         if ( wtm ) {
           // Roque du roi.
           if ( move.To == G1 ) {
-            if ( !(cb.Roque & ROQUEROIBLANC) &&
-                 (cb.vide & 0x6000000000000000LL) == 0x6000000000000000LL &&
-                 !Attacked(E1, !wtm) &&
-                 !Attacked(F1, !wtm) &&
-                 !Attacked(G1, !wtm) )
+            if ( !(cb->Roque & ROQUEROIBLANC) &&
+                 (cb->vide & 0x6000000000000000LL) == 0x6000000000000000LL &&
+                 !attacked(cb, E1, !wtm) &&
+                 !attacked(cb, F1, !wtm) &&
+                 !attacked(cb, G1, !wtm) )
               return true;
             else
               return false;
           }
           else {
             // Roque cote dame.
-            if ( !(cb.Roque & ROQUEDAMEBLANC) &&
-                 (cb.vide & 0x0E00000000000000LL) == 0x0E00000000000000LL &&
-                 !Attacked(E1, !wtm) &&
-                 !Attacked(D1, !wtm) &&
-                 !Attacked(C1, !wtm) )
+            if ( !(cb->Roque & ROQUEDAMEBLANC) &&
+                 (cb->vide & 0x0E00000000000000LL) == 0x0E00000000000000LL &&
+                 !attacked(cb, E1, !wtm) &&
+                 !attacked(cb, D1, !wtm) &&
+                 !attacked(cb, C1, !wtm) )
               return true;
             else
               return false;
@@ -68,21 +58,21 @@ bool ValideMove(int ply, int wtm, TMove& move)
         else {
           if ( move.To == G8 ) {
             // Roque cote roi.
-            if ( !(cb.Roque & ROQUEROINOIR) &&
-                 (cb.vide & 0x60 ) == 0x60 &&
-                 !Attacked(E8, !wtm) &&
-                 !Attacked(F8, !wtm) &&
-                 !Attacked(G8, !wtm) )
+            if ( !(cb->Roque & ROQUEROINOIR) &&
+                 (cb->vide & 0x60 ) == 0x60 &&
+                 !attacked(cb, E8, !wtm) &&
+                 !attacked(cb, F8, !wtm) &&
+                 !attacked(cb, G8, !wtm) )
               return true;
             else
               return false;
           }
           else {
-            if ( !(cb.Roque & ROQUEDAMENOIR) &&
-                 (cb.vide & 0x0E) == 0x0E &&
-                 !Attacked(E8, !wtm) &&
-                 !Attacked(D8, !wtm) &&
-                 !Attacked(C8, !wtm))
+            if ( !(cb->Roque & ROQUEDAMENOIR) &&
+                 (cb->vide & 0x0E) == 0x0E &&
+                 !attacked(cb, E8, !wtm) &&
+                 !attacked(cb, D8, !wtm) &&
+                 !attacked(cb, C8, !wtm))
               return true;
             else
               return false;
@@ -96,14 +86,14 @@ bool ValideMove(int ply, int wtm, TMove& move)
         // Le pion qui avance d'une case.
         if ( wtm ) {
           if ( move.To - move.From == -8 ) {
-            if ( move.Capture == 0 && cb.board[move.To] == 0 )
+            if ( move.Capture == 0 && cb->board[move.To] == 0 )
               return true;
             else
               return false;
           }
           else if ( move.To - move.From == -16 ) {
-            if ( move.Capture == 0 && cb.board[move.To+8] == 0 &&
-                 cb.board[move.To] == 0 )
+            if ( move.Capture == 0 && cb->board[move.To+8] == 0 &&
+                 cb->board[move.To] == 0 )
               return true;
             else
               return false;
@@ -111,14 +101,14 @@ bool ValideMove(int ply, int wtm, TMove& move)
         }
         else {
           if ( move.To - move.From == 8 ) {
-            if ( move.Capture == 0 && cb.board[move.To] == 0 )
+            if ( move.Capture == 0 && cb->board[move.To] == 0 )
               return true;
             else
               return false;
           }
           else if ( abs( int(move.To - move.From) ) == 16 ) {
-            if ( move.Capture == 0 && cb.board[move.To-8] == 0 &&
-                 cb.board[move.To] == 0 )
+            if ( move.Capture == 0 && cb->board[move.To-8] == 0 &&
+                 cb->board[move.To] == 0 )
               return true;
             else
               return false;
@@ -128,14 +118,14 @@ bool ValideMove(int ply, int wtm, TMove& move)
         if ( move.EnPassant ) {
           return false;
           if ( wtm ) {
-            if ( (unsigned)cb.EnPassantN[ply] == move.To &&
+            if ( (unsigned)cb->EnPassantN[ply] == move.To &&
                  move.Capture == pion )
               return true;
             else
               return false;
           }
           else {
-            if ( (unsigned)cb.EnPassantB[ply] == move.To &&
+            if ( (unsigned)cb->EnPassantB[ply] == move.To &&
                  move.Capture == pion )
               return true;
             else
@@ -146,13 +136,13 @@ bool ValideMove(int ply, int wtm, TMove& move)
   }
 
   if ( wtm ) {
-    if ( -move.Capture == cb.board[move.To] &&
-         (AttaqueDe(move.To, wtm) & mask[move.From]) )
+    if ( -move.Capture == cb->board[move.To] &&
+         (attaqueDe(cb, move.To, wtm) & mask[move.From]))
       return true;
   }
   else {
-    if (move.Capture == cb.board[move.To] &&
-         (AttaqueDe(move.To, wtm ) & mask[move.From]))
+    if (move.Capture == cb->board[move.To] &&
+         (attaqueDe(cb, move.To, wtm) & mask[move.From]))
       return true;
   }
 

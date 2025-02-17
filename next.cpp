@@ -16,9 +16,9 @@
 int Phase[MAXPLY];
 
 // Cette fonction genere les coups pour chaque phase
-int NextMove( TChessBoard& cb, int ply, int wtm )
+int nextMove(TChessBoard* cb, int ply, int wtm)
 {
-  register int i, max, maxpos;
+  int i, max, maxpos;
   TMove temp;
 
   switch( Phase[ply] ) {
@@ -31,67 +31,67 @@ int NextMove( TChessBoard& cb, int ply, int wtm )
       return false;
     case HASH_MOVE:
       Phase[ply] = PV_MOVE;
-      if (ValideMove(ply, wtm, cb.HashMove[ply])) {
-        cb.MoveList[ply].currmove = 0;
-        cb.MoveList[ply].moves[0] = cb.HashMove[ply];
-        cb.MoveList[ply].nbmove = 1;
+      if (valideMove(cb, ply, wtm, cb->HashMove[ply])) {
+        cb->MoveList[ply].currmove = 0;
+        cb->MoveList[ply].moves[0] = cb->HashMove[ply];
+        cb->MoveList[ply].nbmove = 1;
         return true;
       }
       else
         return false;
     case PV_MOVE:
       Phase[ply] = GENERATE_CAPTURE_MOVES;
-      if (ValideMove(ply, wtm, pv[1][ply])) {
-        cb.MoveList[ply].currmove = 0;
-        cb.MoveList[ply].moves[cb.MoveList[ply].currmove] =
+      if (valideMove(cb, ply, wtm, pv[1][ply])) {
+        cb->MoveList[ply].currmove = 0;
+        cb->MoveList[ply].moves[cb->MoveList[ply].currmove] =
           pv[1][ply];
-        cb.MoveList[ply].nbmove = 1;
+        cb->MoveList[ply].nbmove = 1;
         return true;
       }
       else
        return false;
     case GENERATE_CAPTURE_MOVES:
       Phase[ply] = CAPTURE_MOVES;
-      cb.MoveList[ply].currmove = -1;
-      cb.MoveList[ply].nbmove = 0;
-      GenMoveAttaque(ply, wtm, cb.MoveList[ply]);
-      if ( cb.MoveList[ply].nbmove == 0 ) {
+      cb->MoveList[ply].currmove = -1;
+      cb->MoveList[ply].nbmove = 0;
+      genMoveAttaque(cb, ply, wtm, cb->MoveList[ply]);
+      if ( cb->MoveList[ply].nbmove == 0 ) {
         Phase[ply] = KILLER_MOVE_1;
         return false;
       }
 
       // Calculer le gain estimer pour chacun des coups.
       // La valeur de la piece capture moins la valeur de la piece qui capture.
-      for( i=0; i<cb.MoveList[ply].nbmove; i++ ) {
+      for( i=0; i<cb->MoveList[ply].nbmove; i++ ) {
         int iScoreGain =
-          ValeurPiece[cb.MoveList[ply].moves[i].Capture]-
-          ValeurPiece[cb.MoveList[ply].moves[i].Piece];
+          ValeurPiece[cb->MoveList[ply].moves[i].Capture]-
+          ValeurPiece[cb->MoveList[ply].moves[i].Piece];
 /*        if ( iScoreGain < 0 ) {
           iScoreGain = Echange( cb,
-                                cb.MoveList[ply].moves[i].From,
-                                cb.MoveList[ply].moves[i].To,
+                                cb->MoveList[ply].moves[i].From,
+                                cb->MoveList[ply].moves[i].To,
                                 wtm );
 
         }*/
-        cb.MoveList[ply].moves[i].Score = iScoreGain;
+        cb->MoveList[ply].moves[i].Score = iScoreGain;
       }
       //return false;
 
     case CAPTURE_MOVES:
       // Prendre le meilleur coup de la liste et le mettre au debut.
-      cb.MoveList[ply].currmove++;
-      if ( cb.MoveList[ply].nbmove == 0 ) {
+      cb->MoveList[ply].currmove++;
+      if ( cb->MoveList[ply].nbmove == 0 ) {
         Phase[ply] = KILLER_MOVE_1;
         return false;
       }
-      if ( cb.MoveList[ply].currmove >= cb.MoveList[ply].nbmove ) {
+      if ( cb->MoveList[ply].currmove >= cb->MoveList[ply].nbmove ) {
         Phase[ply] = KILLER_MOVE_1;
         return false;
       }
       max = -INFINI; maxpos = -1;
-      for( i=cb.MoveList[ply].currmove; i<cb.MoveList[ply].nbmove; i++ ) {
-        if ( cb.MoveList[ply].moves[i].Score > max ) {
-          max = cb.MoveList[ply].moves[i].Score;
+      for( i=cb->MoveList[ply].currmove; i<cb->MoveList[ply].nbmove; i++ ) {
+        if ( cb->MoveList[ply].moves[i].Score > max ) {
+          max = cb->MoveList[ply].moves[i].Score;
           maxpos = i;
         }
       }
@@ -99,45 +99,45 @@ int NextMove( TChessBoard& cb, int ply, int wtm )
         Phase[ply] = KILLER_MOVE_1;
         return false;
       }
-      if ( maxpos == cb.MoveList[ply].currmove ) {
+      if ( maxpos == cb->MoveList[ply].currmove ) {
         return true;
       }
-      temp = cb.MoveList[ply].moves[maxpos];
-      cb.MoveList[ply].moves[maxpos] =
-        cb.MoveList[ply].moves[cb.MoveList[ply].currmove];
-      cb.MoveList[ply].moves[cb.MoveList[ply].currmove] = temp;
+      temp = cb->MoveList[ply].moves[maxpos];
+      cb->MoveList[ply].moves[maxpos] =
+        cb->MoveList[ply].moves[cb->MoveList[ply].currmove];
+      cb->MoveList[ply].moves[cb->MoveList[ply].currmove] = temp;
       return true;
     case KILLER_MOVE_1:
       Phase[ply] = KILLER_MOVE_2;
-      if (ValideMove(ply, wtm, cb.Killers[ply][0])) {
-        cb.MoveList[ply].moves[0] = cb.Killers[ply][0];
-        cb.MoveList[ply].currmove = 0;
-        cb.MoveList[ply].nbmove = 0;
+      if (valideMove(cb, ply, wtm, cb->Killers[ply][0])) {
+        cb->MoveList[ply].moves[0] = cb->Killers[ply][0];
+        cb->MoveList[ply].currmove = 0;
+        cb->MoveList[ply].nbmove = 0;
         return true;
       }
       return false;
     case KILLER_MOVE_2:
       Phase[ply] = GENERATE_NON_CAPTURE_MOVES;
-      if (ValideMove(ply, wtm, cb.Killers[ply][1])) {
-        cb.MoveList[ply].moves[0] = cb.Killers[ply][1];
-        cb.MoveList[ply].currmove = 0;
-        cb.MoveList[ply].nbmove = 0;
+      if (valideMove(cb, ply, wtm, cb->Killers[ply][1])) {
+        cb->MoveList[ply].moves[0] = cb->Killers[ply][1];
+        cb->MoveList[ply].currmove = 0;
+        cb->MoveList[ply].nbmove = 0;
         return true;
       }
       return false;
     case GENERATE_NON_CAPTURE_MOVES:
       Phase[ply] = NON_CAPTURE_MOVES;
-      cb.MoveList[ply].nbmove = 0;
-      GenMoveAttaque(ply, wtm, cb.MoveList[ply]);
-      GenMovePasAttaque(ply, wtm, cb.MoveList[ply]);
-      cb.MoveList[ply].currmove = -1;
-      if ( cb.MoveList[ply].nbmove == 0 ) {
+      cb->MoveList[ply].nbmove = 0;
+      genMoveAttaque(cb, ply, wtm, cb->MoveList[ply]);
+      genMovePasAttaque(cb, ply, wtm, cb->MoveList[ply]);
+      cb->MoveList[ply].currmove = -1;
+      if ( cb->MoveList[ply].nbmove == 0 ) {
         Phase[ply] = NO_MORE_MOVES;
         return false;
       }
 //      return false;
     case NON_CAPTURE_MOVES:
-      if ( cb.MoveList[ply].nbmove == 0 ) {
+      if ( cb->MoveList[ply].nbmove == 0 ) {
         Phase[ply] = NO_MORE_MOVES;
         return false;
       }
@@ -146,12 +146,12 @@ int NextMove( TChessBoard& cb, int ply, int wtm )
       // que la valeur de la piece capturee moins celle qui capture
       // est negative.
       int iScoreCapture;
-      while( cb.MoveList[ply].currmove < cb.MoveList[ply].nbmove-1 ) {
-        cb.MoveList[ply].currmove++;
-        if ( cb.MoveList[ply].CurrentMove().Capture == 0 )
+      while( cb->MoveList[ply].currmove < cb->MoveList[ply].nbmove-1 ) {
+        cb->MoveList[ply].currmove++;
+        if (currentMove(&cb->MoveList[ply]).Capture == 0 )
           return true;
-        iScoreCapture = ValeurPiece[cb.MoveList[ply].CurrentMove().Capture] -
-                        ValeurPiece[cb.MoveList[ply].CurrentMove().Piece];
+        iScoreCapture = ValeurPiece[currentMove(&cb->MoveList[ply]).Capture] -
+                        ValeurPiece[currentMove(&cb->MoveList[ply]).Piece];
         if ( iScoreCapture <= 0 )
           return true;
       }

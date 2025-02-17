@@ -17,16 +17,13 @@
 
 extern int wtm;
 
-bool loadPosition(TChessBoard& cb, const char* i_szFichier)
+bool loadPosition(TChessBoard *cb, const char* i_szFichier)
 {
   // Verifier si le fichier existe.
   // Si il n'existe pas retourner une erreur.
   FILE *fp;
   fp = fopen( i_szFichier, "rb" );
   if ( !fp ) return false;
-
-  // Vider l'echiquier.
-  memset( &cb, 0, sizeof( cb ) );
 
   // La position FEN ce lit comme suit.
   // Commencer a la case A8. Lire chaque caractere.
@@ -62,7 +59,7 @@ bool loadPosition(TChessBoard& cb, const char* i_szFichier)
       if ( !bWhite ) {
          iPiece = -iPiece;
       }
-      cb.board[iPosCourante++] = (Piece)iPiece;
+      cb->board[iPosCourante++] = (Piece)iPiece;
     }
     else if ( ch == '/' ) {
       iPosCourante = ((iPosCourante+7)/8)*8;
@@ -79,7 +76,7 @@ bool loadPosition(TChessBoard& cb, const char* i_szFichier)
     return false;
 
   fclose( fp );
-  cb.InitialiseBitboard();
+  initialiseBitboard(cb);
   
   return true;
 }

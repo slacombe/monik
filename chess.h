@@ -9,9 +9,10 @@
 #ifndef ChessH
 #define ChessH
 
-#include "types.h"
 #include <assert.h>
 #include <string.h>
+
+#include "types.h"
 
 #define ROI 6
 #define DAME 5
@@ -97,55 +98,6 @@ struct TMove
 	int Reserve : 6;
 	int Score;
 };
-
-class TChessBoard;
-
-class TMoveList
-{
-public:
-	int nbmove;
-	int currmove;
-	TMove moves[MAXMOVE];
-
-	TMoveList()
-	{
-		nbmove = 0;
-		currmove = 0;
-	}
-
-	void Copie(TMoveList &ml)
-	{
-		memcpy(moves, ml.moves, ml.nbmove * sizeof(TMove));
-	}
-
-	void Ajoute(TMove &i_move) { moves[nbmove++] = i_move; }
-
-	void Vide()
-	{
-		nbmove = 0;
-		currmove = 0;
-	}
-
-	TMove &CurrentMove() { return moves[currmove]; }
-
-	void Tri()
-	{
-		if (nbmove <= 0)
-			return;
-		for (int i = 0; i < nbmove - 1; i++)
-			for (int j = i + 1; j < nbmove; j++)
-				if (moves[i].Score < moves[j].Score)
-				{
-					TMove move = moves[i];
-					moves[i] = moves[j];
-					moves[j] = move;
-				}
-	}
-
-	void ChoisiMove(int ply, int wtm);
-	void ChoisiNonQuiet(int ply, int wtm);
-};
-
 
 #define pion       1
 #define cavalier   2

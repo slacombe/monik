@@ -20,12 +20,12 @@
 #define MORE_PIECES_BONUS			30
 #define EXCHANGE_PEN				5
 
-int Eval(int ply, int wtm, int alpha, int beta);
-SCORE EvaluateMaterial(int wtm);
-int EvaluerMat();
-int ProtectionRoiBlanc(int ply);
-int ProtectionRoiNoir(int ply);
-SCORE EvaluerCoursePionPasses(int wtm);
+int eval(TChessBoard *cb, int ply, int wtm, int alpha, int beta);
+SCORE evaluateMaterial(TChessBoard *cb, int wtm);
+int evaluerMat(TChessBoard *cb);
+int protectionRoiBlanc(TChessBoard *cb, int ply);
+int protectionRoiNoir(TChessBoard *cb, int ply);
+SCORE evaluerCoursePionPasses(TChessBoard *cb, int wtm);
 
 //---------------------------------------------------------------------------
 #endif

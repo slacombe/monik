@@ -3,14 +3,15 @@
 #define sortieH
 
 #include "chess.h"
+#include "board.h"
 
 // Prend un move et genere une chaine lisible.
-int SortieMove( TMove& move, char* i_szString );
-void Sortie( const char* i_szReponse );
-void GetPV( char* o_szContinuation, TMove* ml, int ply );
+int sortieMove(TMove move, char* i_szString );
+void sortie(const char* i_szReponse );
+void getPV(char* o_szContinuation, TMove* ml, int ply);
 void postThinking(int profondeur, int score, int elapsed, int nodes, char* continuation);
-void GetCurrent( TChessBoard& cb, char* o_szPath, int deep );
-void OutBookInfo( char* buffer );
-void PrintBoard();
+void getCurrent(TChessBoard *cb, char* o_szPath, int deep);
+void outBookInfo(char* buffer);
+void printBoard();
 //---------------------------------------------------------------------------
 #endif

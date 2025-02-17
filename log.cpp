@@ -24,21 +24,21 @@ void Log::turnOn() {
 }
 
 void Log::startNew() {
-	int iDernierNumeroJournal = TrouverDernierJournal();
+	int iDernierNumeroJournal = trouverDernierJournal();
 
 	std::stringstream s;
 	s << "game." << std::setfill('0') << std::setw(3) << iDernierNumeroJournal + 1;
 	mFilename = s.str();
 }
 
-void Log::log(const TChessBoard& cb) {
+void Log::logBoard(const TChessBoard* cb) {
 	if (!mLogGame)
 		return;
 	
 	char ligne[100], move[6];
 	strcpy(ligne, "");
 	for (int i = A8; i <= H1; i++) {
-		sprintf(move, "%2d ", cb.board[i]);
+		sprintf(move, "%2d ", cb->board[i]);
 		strcat(ligne, move);
 		if (i % 8 == 7) {
 			log(ligne);

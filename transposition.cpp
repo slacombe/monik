@@ -43,9 +43,9 @@ void createTranspositionTable(uint32 sizeInMeg)
   nbEntree = iNbEntreeBase2;
   maskCle = nbEntree - 1;
 
-  cout << "Tranposition: " << nbEntree * 2 << " positions" << endl;
-  cout << "Hash table size: " << ((nbEntree * sizeof(Bitboard) * 4) / (1024 * 1024)) << "m" << endl;
-  cout << "Mask: " << std::hex << maskCle << endl;
+  printf("Tranposition: %lu positions\n",  nbEntree * 2);
+  printf("Hash table size: %lum\n", ((nbEntree * sizeof(Bitboard) * 4) / (1024 * 1024)));
+  printf("Mask: 0x%lx\n", maskCle);
 }
 
 void freeTranspositionTable()
@@ -88,7 +88,7 @@ void reinitialize()
   }
 }
 
-uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &beta, int &danger)
+uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *beta, int *danger)
 {
   Bitboard *pTable;
   short valeur;
@@ -97,11 +97,11 @@ uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &bet
   pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb.CleHachage);
+  int iPosition = (maskCle & (int)cb->CleHachage);
   pTable += iPosition * 2;
 
   // Est-ce la bonne position?
-  if ((*(pTable + 1) ^ cb.CleHachage))
+  if ((*(pTable + 1) ^ cb->CleHachage))
   {
     return 0;
   }
@@ -120,7 +120,7 @@ uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &bet
 
   valeur = (short)GetValeur((*pTable));
 
-  danger = (int)GetDanger((*pTable));
+  *danger = (int)GetDanger((*pTable));
 
   struct DeuxMot
   {
@@ -134,7 +134,7 @@ uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &bet
   };
   Donnee coup;
   coup.deuxmot.mot1 = (int)GetCoup((*pTable));
-  cb.HashMove[ply] = coup.move;
+  cb->HashMove[ply] = coup.move;
   g_iTranspositionHit++;
   switch (iType)
   {
@@ -146,20 +146,20 @@ uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &bet
       else
         valeur += (ply - 1);
     }
-    alpha = valeur;
+    *alpha = valeur;
     return SCORE_EXACTE;
   case BORNE_SUPERIEUR:
-    if (valeur <= alpha)
+    if (valeur <= *alpha)
     {
-      alpha = valeur;
+      *alpha = valeur;
       return BORNE_SUPERIEUR;
     }
     return EVITER_NULL;
     break;
   case BORNE_INFERIEUR:
-    if (valeur >= beta)
+    if (valeur >= *beta)
     {
-      beta = valeur;
+      *beta = valeur;
       return BORNE_INFERIEUR;
     }
     return EVITER_NULL;
@@ -170,14 +170,14 @@ uint32 lookup(TChessBoard &cb, int ply, int depth, int wtm, int &alpha, int &bet
 
 // On utilise cette fonction lorsque un coup refute le coup de la couche
 // precedente.
-uint32 storeRefutation(TChessBoard &cb, uint32 ply, uint32 depth,
+uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
                        uint32 wtm, short valeur, uint32 alpha, uint32 beta,
                        uint32 danger)
 {
   Bitboard *pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb.CleHachage);
+  int iPosition = (maskCle & (int)cb->CleHachage);
   Bitboard* pPosition = pTable + iPosition * 2;
 
   // Verifier si la position est meilleur que celle qu'on a dans la table.
@@ -190,7 +190,7 @@ uint32 storeRefutation(TChessBoard &cb, uint32 ply, uint32 depth,
 
   // Mettre les informations dans la table.
   *pPosition = 0;
-  *(pPosition + 1) = cb.CleHachage;
+  *(pPosition + 1) = cb->CleHachage;
   StoreValeur((*pPosition), valeur);
   int iType = BORNE_INFERIEUR;
   StoreType((*pPosition), iType);
@@ -203,7 +203,7 @@ uint32 storeRefutation(TChessBoard &cb, uint32 ply, uint32 depth,
 
 // StoreBest est appelle quand tout les noeud d'un coup a ete explore
 // et qu'il est temps de renvoyer la valeur du meilleur coup au noeud parent.
-uint32 storeBest(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm, uint32 alpha, uint32 initial_alpha, uint32 danger)
+uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 alpha, uint32 initial_alpha, uint32 danger)
 {
   Bitboard *pTable;
 
@@ -211,7 +211,7 @@ uint32 storeBest(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
   pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb.CleHachage);
+  int iPosition = (maskCle & (int)cb->CleHachage);
   pTable += iPosition * 2;
 
   // Verifier si la position est meilleur que celle qu'on a dans la table.
@@ -221,7 +221,7 @@ uint32 storeBest(TChessBoard &cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
 
   // Mettre les informations dans la table.
   *pTable = 0;
-  *(pTable + 1) = cb.CleHachage;
+  *(pTable + 1) = cb->CleHachage;
   struct DeuxMot
   {
     int mot1;

@@ -12,8 +12,8 @@
 #include "board.h"
 #include "chess.h"
 
-int Attacked(int i_iCase, int i_bWtm );
-Bitboard AttaqueDe(int i_iCase, int wtm );
+int attacked(TChessBoard *cb, int i_iCase, int i_bWtm );
+Bitboard attaqueDe(TChessBoard *cb, int i_iCase, int wtm);
 
 //---------------------------------------------------------------------------
 #endif

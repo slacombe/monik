@@ -1,175 +1,170 @@
 #ifdef DEBUG
-#include <vcl.h>
-#pragma hdrstop
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Debug.h"
-#include "Utile.h"
-#include "Board.h"
-#include "Chess.h"
-#include "Journal.h"
-#include "Sortie.h"
-
-extern TJournal journal;
+#include "debug.h"
+#include "utile.h"
+#include "board.h"
+#include "chess.h"
+#include "sortie.h"
+#include "log.h"
 
 // Routine pour l'aide au debogage.
-void Consistence( TChessBoard& i_CBoard, TMove& move )
+void consistence(TChessBoard *cb, TMove move)
 {
   // Pour chaque case de l'echiquier, verifier si les bitboards sont
   // consistent avec.
   bool bConsistent = true;
   for( int i=A8; i<=H1; i++ ) {
     // Case vide.
-    if ( i_CBoard.board[i] == 0 ) {
-      bConsistent = bConsistent && (mask[i] & i_CBoard.piece) == 0;
+    if ( cb->board[i] == 0 ) {
+      bConsistent = bConsistent && (mask[i] & cb->piece) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et piece." );
+        gameLog.log( "Inconsistence entre board et piece." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.pieceb) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->pieceb) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceb." );
+        gameLog.log( "Inconsistence entre board et pieceb." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.piecen) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->piecen) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et piecen." );
+        gameLog.log( "Inconsistence entre board et piecen." );
 
-      bConsistent = bConsistent && (mask[Rotate90LMap[i]] & i_CBoard.pieceR90L) == 0;
+      bConsistent = bConsistent && (mask[Rotate90LMap[i]] & cb->pieceR90L) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR90L." );
+        gameLog.log( "Inconsistence entre board et pieceR90L." );
 
-      bConsistent = bConsistent && (mask[Rotate45LRealMap[i]] & i_CBoard.pieceR45L) == 0;
+      bConsistent = bConsistent && (mask[Rotate45LRealMap[i]] & cb->pieceR45L) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45L." );
+        gameLog.log( "Inconsistence entre board et pieceR45L." );
 
-      bConsistent = bConsistent && (mask[Rotate45RRealMap[i]] & i_CBoard.pieceR45R) == 0;
+      bConsistent = bConsistent && (mask[Rotate45RRealMap[i]] & cb->pieceR45R) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45R." );
+        gameLog.log( "Inconsistence entre board et pieceR45R." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.vide) == mask[i];
+      bConsistent = bConsistent && (mask[i] & cb->vide) == mask[i];
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et vide." );
+        gameLog.log( "Inconsistence entre board et vide." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.pionb) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->pionb) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pionb." );
+        gameLog.log( "Inconsistence entre board et pionb." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.pionn) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->pionn) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pionn." );
+        gameLog.log( "Inconsistence entre board et pionn." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.cavalierb) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->cavalierb) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et cavalierb." );
+        gameLog.log( "Inconsistence entre board et cavalierb." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.cavaliern) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->cavaliern) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et cavaliern." );
+        gameLog.log( "Inconsistence entre board et cavaliern." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.foub) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->foub) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et foub." );
+        gameLog.log( "Inconsistence entre board et foub." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.foun) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->foun) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et foun." );
+        gameLog.log( "Inconsistence entre board et foun." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.tourb) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->tourb) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et tourb." );
+        gameLog.log( "Inconsistence entre board et tourb." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.tourn) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->tourn) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et tourn." );
+        gameLog.log( "Inconsistence entre board et tourn." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.dameb) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->dameb) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et dameb." );
+        gameLog.log( "Inconsistence entre board et dameb." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.damen) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->damen) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et damen." );
+        gameLog.log( "Inconsistence entre board et damen." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.roib) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->roib) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et roib." );
+        gameLog.log( "Inconsistence entre board et roib." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.roin) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->roin) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et roin." );
+        gameLog.log( "Inconsistence entre board et roin." );
 
       if ( !bConsistent ) {
         char Erreur[255];
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
-        journal.Log( "Erreur: La case du board est vide." );
-        journal.Log( Erreur );
-        sprintf( Erreur, "Case %d contient %d", i, i_CBoard.board[i] );
-        journal.Log( Erreur );
-        GetCurrent( ChessBoard, Erreur, 4 );
-        journal.Log( Erreur );
+        gameLog.log( "Erreur: La case du board est vide." );
+        gameLog.log( Erreur );
+        sprintf( Erreur, "Case %d contient %d", i, cb->board[i] );
+        gameLog.log( Erreur );
+        getCurrent(cb, Erreur, 4 );
+        gameLog.log( Erreur );
         exit(1);
       }
     }
     // Avec une piece blanche.
-    else if ( i_CBoard.board[i] > 0 ) {
-      bConsistent = bConsistent && mask[i] & i_CBoard.piece;
+    else if ( cb->board[i] > 0 ) {
+      bConsistent = bConsistent && mask[i] & cb->piece;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et piece." );
+        gameLog.log( "Inconsistence entre board et piece." );
 
-      bConsistent = bConsistent && mask[i] & i_CBoard.pieceb;
+      bConsistent = bConsistent && mask[i] & cb->pieceb;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceb." );
+        gameLog.log( "Inconsistence entre board et pieceb." );
 
-      bConsistent = bConsistent && mask[Rotate90LMap[i]] & i_CBoard.pieceR90L;
+      bConsistent = bConsistent && mask[Rotate90LMap[i]] & cb->pieceR90L;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR90L b." );
+        gameLog.log( "Inconsistence entre board et pieceR90L b." );
 
-      bConsistent = bConsistent && mask[Rotate45LRealMap[i]] & i_CBoard.pieceR45L;
+      bConsistent = bConsistent && mask[Rotate45LRealMap[i]] & cb->pieceR45L;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45L b." );
+        gameLog.log( "Inconsistence entre board et pieceR45L b." );
 
-      bConsistent = bConsistent && mask[Rotate45RRealMap[i]] & i_CBoard.pieceR45R;
+      bConsistent = bConsistent && mask[Rotate45RRealMap[i]] & cb->pieceR45R;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45R b." );
+        gameLog.log( "Inconsistence entre board et pieceR45R b." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.vide) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->vide) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et vide." );
+        gameLog.log( "Inconsistence entre board et vide." );
 
-      switch( i_CBoard.board[i] ) {
+      switch( cb->board[i] ) {
         case pion:
-          bConsistent = bConsistent && mask[i] & i_CBoard.pionb;
+          bConsistent = bConsistent && mask[i] & cb->pionb;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et pionb." );
+            gameLog.log( "Inconsistence entre board et pionb." );
 
           break;
         case cavalier:
-          bConsistent = bConsistent && mask[i] & i_CBoard.cavalierb;
+          bConsistent = bConsistent && mask[i] & cb->cavalierb;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et cavalierb." );
+            gameLog.log( "Inconsistence entre board et cavalierb." );
           break;
         case fou:
-          bConsistent = bConsistent && mask[i] & i_CBoard.foub;
+          bConsistent = bConsistent && mask[i] & cb->foub;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et foub." );
+            gameLog.log( "Inconsistence entre board et foub." );
           break;
         case tour:
-          bConsistent = bConsistent && mask[i] & i_CBoard.tourb;
+          bConsistent = bConsistent && mask[i] & cb->tourb;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et tourb." );
+            gameLog.log( "Inconsistence entre board et tourb." );
           break;
         case dame:
-          bConsistent = bConsistent && mask[i] & i_CBoard.dameb;
+          bConsistent = bConsistent && mask[i] & cb->dameb;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et dameb." );
+            gameLog.log( "Inconsistence entre board et dameb." );
           break;
         case roi:
-          bConsistent = bConsistent && mask[i] & i_CBoard.roib;
+          bConsistent = bConsistent && mask[i] & cb->roib;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et roib." );
+            gameLog.log( "Inconsistence entre board et roib." );
           break;
       }
       if ( !bConsistent ) {
@@ -177,71 +172,71 @@ void Consistence( TChessBoard& i_CBoard, TMove& move )
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
-        journal.Log( "Erreur: La case du board contient une piece blanche." );
-        journal.Log( Erreur );
-        sprintf( Erreur, "Case %d contient %d", i, i_CBoard.board[i] );
-        journal.Log( Erreur );
-        GetCurrent( ChessBoard, Erreur, 4 );
-        journal.Log( Erreur );
+        gameLog.log( "Erreur: La case du board contient une piece blanche." );
+        gameLog.log( Erreur );
+        sprintf( Erreur, "Case %d contient %d", i, cb->board[i] );
+        gameLog.log( Erreur );
+        getCurrent(cb, Erreur, 4);
+        gameLog.log( Erreur );
         exit(1);
       }
     }
     // Avec une piece noire.
     else {
-      bConsistent = bConsistent && mask[i] & i_CBoard.piece;
+      bConsistent = bConsistent && mask[i] & cb->piece;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et piece." );
+        gameLog.log( "Inconsistence entre board et piece." );
 
-      bConsistent = bConsistent && mask[i] & i_CBoard.piecen;
+      bConsistent = bConsistent && mask[i] & cb->piecen;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et piecen." );
+        gameLog.log( "Inconsistence entre board et piecen." );
 
-      bConsistent = bConsistent && mask[Rotate90LMap[i]] & i_CBoard.pieceR90L;
+      bConsistent = bConsistent && mask[Rotate90LMap[i]] & cb->pieceR90L;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR90L n." );
+        gameLog.log( "Inconsistence entre board et pieceR90L n." );
 
-      bConsistent = bConsistent && mask[Rotate45LRealMap[i]] & i_CBoard.pieceR45L;
+      bConsistent = bConsistent && mask[Rotate45LRealMap[i]] & cb->pieceR45L;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45L n." );
+        gameLog.log( "Inconsistence entre board et pieceR45L n." );
 
-      bConsistent = bConsistent && mask[Rotate45RRealMap[i]] & i_CBoard.pieceR45R;
+      bConsistent = bConsistent && mask[Rotate45RRealMap[i]] & cb->pieceR45R;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et pieceR45R n." );
+        gameLog.log( "Inconsistence entre board et pieceR45R n." );
 
-      bConsistent = bConsistent && (mask[i] & i_CBoard.vide) == 0;
+      bConsistent = bConsistent && (mask[i] & cb->vide) == 0;
       if ( !bConsistent )
-        journal.Log( "Inconsistence entre board et vide." );
+        gameLog.log( "Inconsistence entre board et vide." );
 
-      switch( i_CBoard.board[i] ) {
+      switch( cb->board[i] ) {
         case -pion:
-          bConsistent = bConsistent && mask[i] & i_CBoard.pionn;
+          bConsistent = bConsistent && mask[i] & cb->pionn;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et pionn." );
+            gameLog.log( "Inconsistence entre board et pionn." );
           break;
         case cavalier:
-          bConsistent = bConsistent && mask[i] & i_CBoard.cavaliern;
+          bConsistent = bConsistent && mask[i] & cb->cavaliern;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et cavaliern." );
+            gameLog.log( "Inconsistence entre board et cavaliern." );
           break;
         case -fou:
-          bConsistent = bConsistent && mask[i] & i_CBoard.foun;
+          bConsistent = bConsistent && mask[i] & cb->foun;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et foun." );
+            gameLog.log( "Inconsistence entre board et foun." );
           break;
         case -tour:
-          bConsistent = bConsistent && mask[i] & i_CBoard.tourn;
+          bConsistent = bConsistent && mask[i] & cb->tourn;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et tourn." );
+            gameLog.log( "Inconsistence entre board et tourn." );
           break;
         case -dame:
-          bConsistent = bConsistent && mask[i] & i_CBoard.damen;
+          bConsistent = bConsistent && mask[i] & cb->damen;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et damen." );
+            gameLog.log( "Inconsistence entre board et damen." );
           break;
         case -roi:
-          bConsistent = bConsistent && mask[i] & i_CBoard.roin;
+          bConsistent = bConsistent && mask[i] & cb->roin;
           if ( !bConsistent )
-            journal.Log( "Inconsistence entre board et roin." );
+            gameLog.log( "Inconsistence entre board et roin." );
           break;
       }
       if ( !bConsistent ) {
@@ -249,12 +244,12 @@ void Consistence( TChessBoard& i_CBoard, TMove& move )
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
-        journal.Log( "Erreur: La case du board contient une piece noire." );
-        journal.Log( Erreur );
-        sprintf( Erreur, "Case %d contient %d", i, i_CBoard.board[i] );
-        journal.Log( Erreur );
-        GetCurrent( ChessBoard, Erreur, 4 );
-        journal.Log( Erreur );
+        gameLog.log( "Erreur: La case du board contient une piece noire." );
+        gameLog.log( Erreur );
+        sprintf(Erreur, "Case %d contient %d", i, cb->board[i]);
+        gameLog.log( Erreur );
+        getCurrent(cb, Erreur, 4 );
+        gameLog.log( Erreur );
         exit(1);
       }
     }

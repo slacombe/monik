@@ -27,7 +27,7 @@ extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char *nomProgramme = "Monik v2.2.8";
+const char *nomProgramme = "Monik v2.3";
 
 void Interrupt(int)
 {
@@ -37,7 +37,6 @@ void Interrupt(int)
 int main(int argc, char **argv)
 {
   // Initialisation.
-  TMoveList movelist;
   setbuf(stdout, 0);
   signal(SIGINT, Interrupt);
   signal(SIGTERM, Interrupt);
@@ -95,15 +94,22 @@ int main(int argc, char **argv)
   // la reponse de l'ordinateur.
   char szCommande[255];
   char szReponse[255];
-  TSeeker::start();
+
+  initialiseData();
+
+  TChessBoard* cb = (TChessBoard*)malloc(sizeof(TChessBoard));;
+  initialiseBoard(cb);
+  initialiseBitboard(cb);
+
   do
   {
 
     g_bAbort = false;
     fflush(0);
-    Entree(szCommande);
+    
+    entree(cb, szCommande);
 
-    bool bSucces = Engine(szCommande, szReponse);
+    bool bSucces = engine(cb, szCommande, szReponse);
 
     if (!bSucces)
     {
@@ -116,7 +122,7 @@ int main(int argc, char **argv)
       // On retourne
       if (!g_bModeAnalyse)
       {
-        Sortie(szReponse);
+        sortie(szReponse);
       }
     }
 #ifdef TRANSPOSITION

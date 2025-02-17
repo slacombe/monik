@@ -24,7 +24,7 @@ public:
 	void turnOn();
 	void startNew();
 	void log(const char* i_szMessage, ...);
-	void log(const TChessBoard& cb);
+	void logBoard(const TChessBoard* cb);
 };
 
 extern Log gameLog;

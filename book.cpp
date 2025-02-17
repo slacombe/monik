@@ -26,7 +26,7 @@ int book_size = 0;
 int startBook = 0;
 int bookLoaded = 0;
 
-int InitializeBook(void)
+int initializeBook(void)
 {
 	//
 	// Allouer la memoire pour l'initialisation du livre.
@@ -44,7 +44,7 @@ int InitializeBook(void)
 	return 0;
 }
 
-int ReadCommand(FILE *fp, char *o_szCommande)
+int readCommand(FILE *fp, char *o_szCommande)
 {
 	//
 	// Lire le fichier jusqu'a ce qu'on
@@ -65,7 +65,7 @@ int ReadCommand(FILE *fp, char *o_szCommande)
 	return 1;
 }
 
-int ReadComment(FILE *fp)
+int readComment(FILE *fp)
 {
 	//
 	// Lire le fichier jusqu'a ce qu'on
@@ -79,7 +79,7 @@ int ReadComment(FILE *fp)
 	return 1;
 }
 
-int ReadText(FILE *fp, char *o_szText, int i_iMax)
+int readText(FILE *fp, char *o_szText, int i_iMax)
 {
 	//
 	// Lire jusqu'a un ' '
@@ -100,23 +100,23 @@ int ReadText(FILE *fp, char *o_szText, int i_iMax)
 	return 1;
 }
 
-int UnmakeAll(int i_iPly, int i_iWtm)
+int unmakeAll(TChessBoard *cb, int i_iPly, int i_iWtm)
 {
 	//
 	// Unmake all the move made so far.
 	//
 	int wtm = i_iWtm;
 	int ply = i_iPly;
-	for (int iNoMove = cb.NoCoups - 1; iNoMove >= 0; iNoMove--)
+	for (int iNoMove = cb->NoCoups - 1; iNoMove >= 0; iNoMove--)
 	{
-		UnmakeMove(ply, cb.ListeMove[iNoMove], wtm);
+		unmakeMove(cb, ply, cb->ListeMove[iNoMove], wtm);
 		wtm = !wtm;
 	}
 
 	return true;
 }
 
-int ChargerCles(void)
+int chargerCles(void)
 {
 	//
 	// Charger les cles du livre.
@@ -218,7 +218,7 @@ int SauvegarderCles(void)
 	return 1;
 }
 
-int AddToBook(TChessBoard *cb, int ply, int wtm)
+int addToBook(TChessBoard *cb, int ply, int wtm)
 {
 	// Calculate the key.
 	uint64 pos = book_hash & cb->CleHachage;
@@ -304,13 +304,12 @@ int SaveBook(void)
 	return 1;
 }
 
-int LoadBook(void)
+int loadBook(void)
 {
 	char bookpath[255];
 	MakePath(bookpath, "book.bin");
 	FILE *fp = fopen(bookpath, "rb");
-	if (!fp)
-	{
+	if (!fp) {
 		fprintf(stderr, "Could not open book file.\n");
 		return 0;
 	}
@@ -322,8 +321,7 @@ int LoadBook(void)
 
 	fseek(fp, 0, SEEK_SET);
 	BookPosition_t bookPos;
-	for (int i = 0; i < book_size; i++)
-	{
+	for (int i = 0; i < book_size; i++) {
 		fread(&bookPos, sizeof(BookPosition_t), 1, fp);
 		book_table[i] = bookPos;
 	}
@@ -334,8 +332,7 @@ int LoadBook(void)
 }
 
 // Binary search in the book.
-BookPosition_t *
-binLookup(Bitboard key, int wtm, int lo, int hi)
+BookPosition_t *binLookup(Bitboard key, int wtm, int lo, int hi)
 {
 	BookPosition_t *book_pos;
 	if (lo > hi)
@@ -372,9 +369,9 @@ int BookLookup(Bitboard key, int wtm)
 	return 0;
 }
 
-int Book(TChessBoard &cb, int wtm, TMoveList &ml)
+int book(TChessBoard *cb, int wtm, TMoveList &ml)
 {
-	if (!bookLoaded || cb.OutOfBook >= 3)
+	if (!bookLoaded || cb->OutOfBook >= 3)
 	{
 		return 0;
 	}
@@ -385,8 +382,8 @@ int Book(TChessBoard &cb, int wtm, TMoveList &ml)
 	int i, j;
 	for (i = 0; i < ml.nbmove; i++)
 	{
-		MakeMove(1, ml.moves[i], wtm);
-		int freq = BookLookup(cb.CleHachage, wtm);
+		makeMove(cb, 1, ml.moves[i], wtm);
+		int freq = BookLookup(cb->CleHachage, wtm);
 		if (freq > 0)
 		{
 			ml.moves[i].Score = freq;
@@ -395,7 +392,7 @@ int Book(TChessBoard &cb, int wtm, TMoveList &ml)
 		{
 			ml.moves[i].Score = 0;
 		}
-		UnmakeMove(1, ml.moves[i], wtm);
+		unmakeMove(cb, 1, ml.moves[i], wtm);
 	}
 
 	//
@@ -472,15 +469,17 @@ int Book(TChessBoard &cb, int wtm, TMoveList &ml)
 	}
 	else
 	{
-		cb.OutOfBook++;
+		cb->OutOfBook++;
 		return false;
 	}
 }
 
-int CreateStartBook(const char *i_szFilename)
+int createStartBook(const char *i_szFilename)
 {
+	TChessBoard *cb = new TChessBoard;
+
 	int line = 1;
-	InitializeBook();
+	initializeBook();
 
 	SauvegarderCles();
 
@@ -510,7 +509,7 @@ int CreateStartBook(const char *i_szFilename)
 		//
 		if (ch == '[')
 		{
-			UnmakeAll(ply, !wtm);
+			unmakeAll(cb, ply, !wtm);
 			wtm = 1;
 			ply = 0;
 			illegal = 0;
@@ -532,7 +531,7 @@ int CreateStartBook(const char *i_szFilename)
 		//
 		if (ch == '{')
 		{
-			ReadComment(fp);
+			readComment(fp);
 			continue;
 		}
 		//
@@ -554,14 +553,14 @@ int CreateStartBook(const char *i_szFilename)
 		{
 			char szText[10];
 			ungetc(ch, fp);
-			ReadText(fp, szText, sizeof(szText) - 1);
+			readText(fp, szText, sizeof(szText) - 1);
 
 			//
 			// Convertir le coup dans un format
 			// que Monik comprendra.
 			//
 			TMove move;
-			if (!InputMove(szText, ply, wtm, move))
+			if (!inputMove(cb, szText, ply, wtm, move))
 			{
 				fprintf(stderr, "Line: %d, Illegal move: %s\n", line, szText);
 				// Jump to next game.
@@ -571,8 +570,8 @@ int CreateStartBook(const char *i_szFilename)
 			//
 			// Jouer le coup sur le board.
 			//
-			MakeMove(ply, move, wtm);
-			AddToBook(&cb, ply, wtm);
+			makeMove(cb, ply, move, wtm);
+			addToBook(cb, ply, wtm);
 			wtm = !wtm;
 			ply++;
 		}

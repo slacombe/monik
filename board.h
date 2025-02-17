@@ -14,10 +14,15 @@
 extern TMove pv[MAXPLY][MAXPLY];
 extern int pv_length[MAXPLY];
 
-// Les positions.
-class TChessBoard
-{
+typedef struct {
 public:
+	int nbmove;
+	int currmove;
+	TMove moves[MAXMOVE];
+} TMoveList;
+
+// Les positions.
+typedef struct {
   int NoCoups;
   TMove ListeMove[MAXMOVE];
   int ListeRoque[MAXMOVE];
@@ -66,7 +71,6 @@ public:
 
   SCORE ScoreTourBlanche;
   SCORE ScoreTourNoir;
-
 
   // Case de la possibilite d'un en passant.
   int EnPassantB[MAXPLY], EnPassantN[MAXPLY];
@@ -170,14 +174,20 @@ public:
 
   // 2 Killer move.
   TMove Killers[MAXPLY][2];
-  void AddKiller( TMove* move, int ply );
+} TChessBoard;
 
-  TChessBoard();  // Constructeur.
-  void InitialiseBoard();
-  void InitialiseBitboard();
-};
+void copie(TMoveList *dest, TMoveList *src);
+void tri(TMoveList *ml);
+void vide(TMoveList *ml);
 
-extern TChessBoard cb;
+TMove currentMove(TMoveList* ml); 
+void choisiMove(TChessBoard *cb, TMoveList *ml, int ply, int wtm);
+void choisiNonQuiet(TChessBoard *cb, TMoveList& ml, int ply, int wtm);  
+void setCurrentMoveScore(TMoveList *ml, int score);
+void initialiseBoard(TChessBoard *cb);
+void initialiseBitboard(TChessBoard *cb);
+void addKiller(TChessBoard *cb, TMove move, int ply);
+void ajouteMove(TMoveList *cb, TMove move);
 
 //---------------------------------------------------------------------------
 #endif

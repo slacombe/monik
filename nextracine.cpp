@@ -15,17 +15,17 @@
 #include "utile.h"
 
 // Cette fonction genere les coups pour chaque phase
-int NextMoveRacine( TChessBoard& cb, int wtm )
+int nextMoveRacine(TChessBoard *cb, int wtm )
 {
-  cb.MoveList[1].currmove++;
-  if ( cb.MoveList[1].nbmove == 0 ) {
+  cb->MoveList[1].currmove++;
+  if ( cb->MoveList[1].nbmove == 0 ) {
     Phase[1] = NO_MORE_MOVES;
     return false;
   }
 
-  if ( cb.MoveList[1].currmove >= cb.MoveList[1].nbmove ) {
+  if ( cb->MoveList[1].currmove >= cb->MoveList[1].nbmove ) {
     Phase[1] = NO_MORE_MOVES;
-//    cb.MoveList[1].currmove--;
+//    cb->MoveList[1].currmove--;
     return false;
   }
   

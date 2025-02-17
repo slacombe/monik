@@ -4,7 +4,7 @@
 
 extern int Phase[MAXPLY];
 
-int NextMoveRacine( TChessBoard& cb, int wtm );
+int nextMoveRacine(TChessBoard* cb, int wtm );
 
 //---------------------------------------------------------------------------
 #endif

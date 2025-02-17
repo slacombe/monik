@@ -47,53 +47,54 @@ using namespace std;
 //
 // Cette routine appelle la negamax par iteration.
 //
-int Iteration(int wtm)
+int iteration(TChessBoard *cb, int wtm)
 {
+#ifdef TRANSPOSITION
   g_iTranspositionHit = g_iTranspositionCollision = 0;
   g_iRefutation = 0;
+#endif
   pvsresearch = 0;
   root_wtm = wtm;
 
   // On genere tous les coups pour ce noeud.
-  cb.MoveList[1].nbmove = 0;
-  GenMoveAttaque(1, wtm, cb.MoveList[1]);
-  GenMovePasAttaque(1, wtm, cb.MoveList[1]);
+  cb->MoveList[1].nbmove = 0;
+  genMoveAttaque(cb, 1, wtm, cb->MoveList[1]);
+  genMovePasAttaque(cb, 1, wtm, cb->MoveList[1]);
 
   // On verifie si tous les coups sont valide.
-  cb.MoveList[1].ChoisiMove(1, wtm);
+  choisiMove(cb, &cb->MoveList[1], 1, wtm);
 
-  if ( Book( cb, wtm, cb.MoveList[1] ) ) {
+  if (book( cb, wtm, cb->MoveList[1])) {
 	return BOOKMOVE;
   }
 
-
   // Maintenant, executer chaque coup et l'evaluer pour lui donner un score de
   // depart.
-  for( int i=0; i<cb.MoveList[1].nbmove; i++ ) {
-    MakeMove(1, cb.MoveList[1].moves[i], wtm);
+  for( int i=0; i<cb->MoveList[1].nbmove; i++ ) {
+    makeMove(cb, 1, cb->MoveList[1].moves[i], wtm);
     if ( wtm ) {
-      cb.MoveList[1].moves[i].Score = Eval(1, wtm, -INFINI, INFINI);
-	  if ( cb.MoveList[1].moves[i].Capture ) {
-		  cb.MoveList[1].moves[i].Score -= ValeurPiece[cb.MoveList[1].moves[i].Piece];
+      cb->MoveList[1].moves[i].Score = eval(cb, 1, wtm, -INFINI, INFINI);
+	  if ( cb->MoveList[1].moves[i].Capture ) {
+		  cb->MoveList[1].moves[i].Score -= ValeurPiece[cb->MoveList[1].moves[i].Piece];
 	  }
     }
     else {
-      cb.MoveList[1].moves[i].Score = -Eval(1, wtm, -INFINI, INFINI);
-	  if ( cb.MoveList[1].moves[i].Capture ) {
-		  cb.MoveList[1].moves[i].Score -= ValeurPiece[cb.MoveList[1].moves[i].Piece];
+      cb->MoveList[1].moves[i].Score = -eval(cb, 1, wtm, -INFINI, INFINI);
+	  if ( cb->MoveList[1].moves[i].Capture ) {
+		  cb->MoveList[1].moves[i].Score -= ValeurPiece[cb->MoveList[1].moves[i].Piece];
 	  }
     }
-    UnmakeMove(1, cb.MoveList[1].moves[i], wtm);
+    unmakeMove(cb, 1, cb->MoveList[1].moves[i], wtm);
   }
 
   // Trier le tout.
-  cb.MoveList[1].Tri();
+  tri(&cb->MoveList[1]);
 
   // Le temps restant.
   timestamp = TempsCenti();
 
   // Nb de coups � faire pour ce temps.
-  int nbCoups = cb.NoCoups/2;
+  int nbCoups = cb->NoCoups/2;
   nbCoups = nbCoups % iNbCoups;
   int coupsRestants = iNbCoups - nbCoups;
   if (coupsRestants < 4) 
@@ -122,7 +123,7 @@ int Iteration(int wtm)
   char szContinuation[200];
   while( iProfondeurIteration < MAXPLY && (!timeabort || g_bModeAnalyse)) {
 
-    cb.MoveList[1].currmove = -1;
+    cb->MoveList[1].currmove = -1;
 //    printf( "\n" );
     // Si on est a la premiere iteration, grande fenetre.
     // Sinon, alpha = dernier score - 40 et beta = score + 40.
@@ -138,17 +139,17 @@ int Iteration(int wtm)
       root_beta = INFINI;
     }
 
-    root_score = SearchRacine(iProfondeurIteration, wtm, root_alpha, root_beta);
+    root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
     if ( root_score >= root_beta ) {
 	  // Stretch the beta limit.
       root_alpha = root_beta-1;
       root_beta = INFINI;
 
 	  // Display the move that failed high.
-	  SortieMove( cb.MoveList[1].CurrentMove(), szContinuation );
+	  sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
 
 	  // Prepare to research the move.
-	  cb.MoveList[1].currmove--;
+	  cb->MoveList[1].currmove--;
 	  if ( xboard ) {
 		  if ( g_bModeAnalyse ) {
 			printf( "%d %d %d %d %s!\n", iProfondeurIteration,
@@ -166,21 +167,21 @@ int Iteration(int wtm)
 	  else {
 		printf( "\r [%d] (%2d/%d)  n: %8d  %5.2f        ++ %s!\n",
 			iProfondeurIteration,
-			cb.MoveList[1].currmove+2,
-			cb.MoveList[1].nbmove,
+			cb->MoveList[1].currmove+2,
+			cb->MoveList[1].nbmove,
 			iNodes,	
 			(TempsCenti()-timestamp)/100.0,
 			szContinuation );
 	  }
 	  gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        ++ %s!",
 		iProfondeurIteration,
-		cb.MoveList[1].currmove+2,
-		cb.MoveList[1].nbmove,
+		cb->MoveList[1].currmove+2,
+		cb->MoveList[1].nbmove,
 		iNodes,
 		(TempsCenti()-timestamp)/100.0,
 		szContinuation );
 		  
-	root_score = SearchRacine(iProfondeurIteration, wtm, root_alpha, root_beta);
+	root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
     }
     else if ( root_score <= root_alpha && !timeabort && !interrupted ) {
 
@@ -189,10 +190,10 @@ int Iteration(int wtm)
 	root_alpha = -INFINI;
 
 	  // Display the move that failed low.
-	  SortieMove( cb.MoveList[1].CurrentMove(), szContinuation );
+	  sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
 
 	  // Research the move.
-	cb.MoveList[1].currmove--;
+	cb->MoveList[1].currmove--;
 	if ( xboard ) {
 		printf( "%d %d %d %d %s?\n", iProfondeurIteration,
 		root_score,
@@ -202,19 +203,19 @@ int Iteration(int wtm)
 	else {
 		printf( "\r [%d] (%2d/%d)  n: %8d  %5.2f       --  %s?\n",
 			iProfondeurIteration,
-			cb.MoveList[1].currmove+2,
-			cb.MoveList[1].nbmove,
+			cb->MoveList[1].currmove+2,
+			cb->MoveList[1].nbmove,
 			iNodes,	
 			(TempsCenti()-timestamp)/100.0,
 			szContinuation );
 	}
 	gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        -- %s?", iProfondeurIteration,
-		cb.MoveList[1].currmove+2,
-		cb.MoveList[1].nbmove,
+		cb->MoveList[1].currmove+2,
+		cb->MoveList[1].nbmove,
 		iNodes,
 		(TempsCenti()-timestamp)/100.0,
 		szContinuation );
-      root_score = SearchRacine(iProfondeurIteration, wtm, root_alpha, root_beta);
+      root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
     }
 
     if ( interrupted ) {
@@ -224,7 +225,7 @@ int Iteration(int wtm)
 		if (c == '.') {
 			cin >> buf;
 		    char continuation[200];
-			GetPV(continuation, &pv[1][1], iProfondeurIteration);
+			getPV(continuation, &pv[1][1], iProfondeurIteration);
 			printf( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
                 (TempsCenti() - timestamp),
        	        iNodes, continuation );
@@ -251,11 +252,11 @@ int Iteration(int wtm)
     if ( iProfondeurIteration >= 40 && root_score == 0 )
       break;
 
-	if ( cb.MoveList[1].nbmove == 1 && iProfondeurIteration > 3 ) {
+	if ( cb->MoveList[1].nbmove == 1 && iProfondeurIteration > 3 ) {
 		break;
 	}
 
-	cb.MoveList[1].Tri();
+	tri(&cb->MoveList[1]);
 
     iProfondeurIteration++;
     prev_root_score = root_score;

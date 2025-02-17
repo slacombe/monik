@@ -41,17 +41,17 @@ extern int iProfondeurIteration;
 extern int timestamp;
 extern int interrupted;
 
-bool Engine(const char *i_szCommande, char* o_szReponse) {
+bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 	// En mode d'édition.
 	gameLog.log("force = %d", Force);
 	if (g_bEdit) {
-		Edit(cb, i_szCommande, o_szReponse);
+		edit(cb, i_szCommande, o_szReponse);
 		gameLog.log("Edit command: %s", i_szCommande);
 		return false;
 	}
 
 	// Verifier si la commande est une option.
-	bool bOption = Option(i_szCommande, o_szReponse);
+	bool bOption = option(cb, i_szCommande, o_szReponse);
 	if (bOption) {
 		// La commande est une option.
 		// Retourner directement la reponse.
@@ -63,18 +63,18 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 	TMove move;
 	TMoveList movelist;
 	if (strcmp(i_szCommande, "undo") == 0) {
-		UndoMove(); // Un coup de reculons.
+		undoMove(cb); // Un coup de reculons.
 	} else {
 		// Si c'est le tour du joueur on le joue sinon on passe
 		// au moteur.
 		if (!Moteur || (Force && (strcmp(i_szCommande, "analyze") != 0))) {
 			if (wtm)
-				gameLog.log("Blanc (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
+				gameLog.log("Blanc (%d): %s", cb->NoCoups / 2 + 1, i_szCommande);
 			else
-				gameLog.log("Noir (%d): %s", cb.NoCoups / 2 + 1, i_szCommande);
+				gameLog.log("Noir (%d): %s", cb->NoCoups / 2 + 1, i_szCommande);
 
 			// On prend le coup du joueur et on le transforme.
-			if (!Parse(i_szCommande, 0, wtm, move)) {
+			if (!parse(cb, i_szCommande, 0, wtm, move)) {
 				sprintf(o_szReponse, "Illegal move (parsing): %s", i_szCommande);
 				gameLog.log("Illegal move (parsing): %s", i_szCommande);
 				return false;
@@ -84,8 +84,8 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 			// Generer tout les coups possible du joueur et verifier si le
 			// coup est dans la liste.
 			// Ensuite, jouer le coup et verifier si le joueur n'est pas en echec.
-			GenMoveAttaque(1, wtm, movelist);
-			GenMovePasAttaque(1, wtm, movelist);
+			genMoveAttaque(cb, 1, wtm, movelist);
+			genMovePasAttaque(cb, 1, wtm, movelist);
 			int iFound = -1;
 			for (int i = 0; i < movelist.nbmove; i++) {
 				if (movelist.moves[i].From == move.From &&
@@ -103,17 +103,17 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 			// Remplacer par celui genere car il possede plus d'information.
 			move = movelist.moves[iFound];
 
-			MakeMove(0, move, wtm);
+			makeMove(cb, 0, move, wtm);
 
-			if (Check(wtm)) {
-				UnmakeMove(0, move, wtm);
+			if (check(cb, wtm)) {
+				unmakeMove(cb, 0, move, wtm);
 				sprintf(o_szReponse, "Illegal move: %s", i_szCommande);
 				gameLog.log("Coup illégale, met en echec: %s", i_szCommande);
 				return false;
 			}
-			UnmakeMove(0, move, wtm);
+			unmakeMove(cb, 0, move, wtm);
 
-			MakeMoveRoot(move, wtm);
+			makeMoveRoot(cb, move, wtm);
 
 			if (Force) {
 				printf("%s\n", i_szCommande);
@@ -127,26 +127,22 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 		}
 	}
 
-	movelist.Vide();
-	GenMoveAttaque(1, wtm, movelist);
-	GenMovePasAttaque(1, wtm, movelist);
-	movelist.ChoisiMove(1, wtm);
+	vide(&movelist);
+	genMoveAttaque(cb, 1, wtm, movelist);
+	genMovePasAttaque(cb, 1, wtm, movelist);
+	choisiMove(cb, &movelist, 1, wtm);
 	if (movelist.nbmove == 0) {
 		if (wtm) {
-			if (Check(wtm)) {
+			if (check(cb, wtm)) {
 				strcpy(o_szReponse, "0-1 {Black mates}");
-				TSeeker::start();
 			} else {
 				strcpy(o_szReponse, "1/2-1/2 {Stalemate}");
-				TSeeker::start();
 			}
 		} else {
-			if (Check(wtm)) {
+			if (check(cb, wtm)) {
 				strcpy(o_szReponse, "1-0 {White mates}");
-				TSeeker::start();
 			} else {
 				strcpy(o_szReponse, "1/2-1/2 {Stalemate}");
-				TSeeker::start();
 			}
 		}
 		gameLog.log("%s", o_szReponse);
@@ -154,7 +150,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 	}
 
 	// Verifier pour la nulle.
-	if (RepetitionNulle(wtm)) {
+	if (repetitionNulle(cb, wtm)) {
 		strcpy(o_szReponse, "1/2-1/2\n");
 		gameLog.log("%s", o_szReponse);
 		return false;
@@ -165,35 +161,34 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 
 		// C'est ici qu'on décole.
 		// Logger le board 
-		gameLog.log(cb);
+		gameLog.logBoard(cb);
 
 		// On prend en note le temps.
 		timestamp = TempsCenti();
 
 		// On démarre.
-		int Score = Iteration(wtm);
+		int Score = iteration(cb, wtm);
 
 		// Si le moteur retourne un score nulle alors verifier si
 		// on a une partie nulle.
 		if (Score == 0) {
-			if (RepetitionNulle(wtm)) {
+			if (repetitionNulle(cb, wtm)) {
 				strcpy(o_szReponse, "result 1/2-1/2\n");
 				gameLog.log("%s", o_szReponse);
-				TSeeker::start();
 				return false;
 			}
 		}
 
 		if (!g_bModeAnalyse) {
 			char szContinuation[255];
-			GetPV(szContinuation, &pv[1][1], 1);
+			getPV(szContinuation, &pv[1][1], 1);
 			Secondes = (TempsCenti() - timestamp) / 100;
 			if (Secondes < 1)
 				Secondes = 1;
 			if (xboard) {
 				if (Score == BOOKMOVE) {
 					char szBookInfo[2000];
-					OutBookInfo(szBookInfo);
+					outBookInfo(szBookInfo);
 					printf("%d %d %d %d %s\n",
 						iProfondeurIteration,
 						0,
@@ -214,7 +209,7 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 				if (whisper) {
 					if (Score == BOOKMOVE) {
 						char szBookInfo[2000];
-						OutBookInfo(szBookInfo);
+						outBookInfo(szBookInfo);
 #ifdef  ICSTALK
 						printf("tellics whisper %s\n", szBookInfo);
 #endif
@@ -241,16 +236,18 @@ bool Engine(const char *i_szCommande, char* o_szReponse) {
 					iNodes / Secondes,
 					szContinuation);
 			}
-			MakeMoveRoot(pv[1][1], wtm);
+			makeMoveRoot(cb, pv[1][1], wtm);
 
 			wtm = !wtm;
 
+#ifdef TRANSPOSITION			
 			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n",
 				g_iTranspositionHit, g_iTranspositionCollision);
 			gameLog.log("Refutation: %d\n", g_iRefutation);
+#endif			
 			gameLog.log("nps: %dk", (iNodes / Secondes) / 1000);
 			gameLog.log("eps: %dk", (nbevals / Secondes) / 1000);
-			SortieMove(pv[1][1], o_szReponse);
+			sortieMove(pv[1][1], o_szReponse);
 			gameLog.log("My move: %s", o_szReponse);
 
 			char szText[1000];
