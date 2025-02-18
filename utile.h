@@ -7,6 +7,7 @@
 
 #include "board.h"
 #include "chess.h"
+#include "attaque.h"
 
 extern int Rotate90RMap[];
 extern int Rotate90LMap[];
@@ -140,15 +141,16 @@ int gagneOpposition(int doit_joue, int roi_blanc, int roi_noir);
 #define RoqueBlanc(x) And(RoqueBlancDame(x),RoqueBlancRoi(x))
 #define	RoqueNoir(x)  And(RoqueNoirDame(x),RoqueNoirRoi(x))
 
-class TSeeker
+// Verifie si le joueur est en echec.
+inline int check(TChessBoard *cb, int wtm)
 {
-	static void parseseekfile();
-public:
-	static void start();
-	static void stop();
-	static void handler_alarm( int signum );
-};
-
+  if ( wtm ) {
+    return attacked(cb, cb->PositionRoiBlanc, !wtm);
+  }
+  else {
+    return attacked(cb, cb->PositionRoiNoir, !wtm);
+  }
+}
 
 //---------------------------------------------------------------------------
 #endif

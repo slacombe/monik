@@ -334,17 +334,6 @@ Bitboard attaqueFou(TChessBoard *cb, int i_iPosition)
   return att;
 }
 
-// Verifie si le joueur est en echec.
-int check(TChessBoard *cb, int wtm)
-{
-  if ( wtm ) {
-    return attacked(cb, cb->PositionRoiBlanc, !wtm);
-  }
-  else {
-    return attacked(cb, cb->PositionRoiNoir, !wtm);
-  }
-}
-
 void swap(TMove& m1, TMove& m2 )
 {
   TMove T = m1;

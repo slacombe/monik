@@ -1,7 +1,7 @@
 CC	= g++
 
 CPPFLAGS = -Wall -O2 -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION
-#CPPFLAGS = -Wall -DDEBUG -g 
+#CPPFLAGS = -Wall -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DDEBUG -g
 LDFLAGS = -static -g
 
 windows-objs := obj/system-windows.o

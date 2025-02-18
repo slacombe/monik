@@ -22,9 +22,9 @@ Bitboard *blackTranspositionTable = 0;
 
 void createTranspositionTable(uint32 sizeInMeg)
 {
-  int sizeInBytes = sizeInMeg * 1024 * 1024;
+  uint32 sizeInBytes = sizeInMeg * 1024 * 1024;
 
-  int nbOfPositionsInTable = sizeInBytes / (sizeof(Bitboard) * 2);
+  uint32 nbOfPositionsInTable = sizeInBytes / (sizeof(Bitboard) * 2);
 
   // Reconvertir en mega-octets.
   int iNbEntreeBase2 = 1;
