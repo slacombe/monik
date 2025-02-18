@@ -25,6 +25,7 @@
 #include "repetition.h"
 #include "system.h"
 #include "search.h"
+#include "transposition.h"
 
 bool Moteur = false; // true, tour moteur, false tour joueur.
 bool Force = false; // Mode force. Voir doc. winboard.
@@ -241,9 +242,9 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 			wtm = !wtm;
 
 #ifdef TRANSPOSITION			
-			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n",
-				g_iTranspositionHit, g_iTranspositionCollision);
+			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n", g_iTranspositionHit, g_iTranspositionCollision);
 			gameLog.log("Refutation: %d\n", g_iRefutation);
+			displayTranspositionStats();
 #endif			
 			gameLog.log("nps: %dk", (iNodes / Secondes) / 1000);
 			gameLog.log("eps: %dk", (nbevals / Secondes) / 1000);

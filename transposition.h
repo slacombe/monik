@@ -75,6 +75,8 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm,
 uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, 
                       uint32 alpha, uint32 initial_alpha, uint32 danger);
 
+void displayTranspositionStats();
+
 #endif
 
 //---------------------------------------------------------------------------

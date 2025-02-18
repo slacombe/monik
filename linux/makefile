@@ -32,6 +32,3 @@ clean:
 install:
 	docker build -t monik-chess .
 	docker run -i --name monik-chess monik-chess
-
-
-

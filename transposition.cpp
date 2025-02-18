@@ -251,4 +251,12 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
 
   return true;
 }
+
+void displayTranspositionStats() {
+  printf("Transposition table stats:\n");
+  printf("Hit: %d\n", g_iTranspositionHit);
+  printf("Collision: %d\n", g_iTranspositionCollision);
+  printf("Refutation: %d\n", g_iRefutation);
+  printf("Total: %d\n", g_iTranspositionHit + g_iTranspositionCollision + g_iRefutation);
+}
 #endif
