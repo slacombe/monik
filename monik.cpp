@@ -126,9 +126,7 @@ int main(int argc, char **argv)
       }
     }
 #ifdef TRANSPOSITION
-    // Cette fonction peut etre longue a etre executer.
-    // C'est pourquoi je l'ai mise apres avoir envoye le coup a WinBoard.
-    initializeTranspositionTable();
+    clearStats();
 #endif
   } while (strcmp(szCommande, "quit"));
 

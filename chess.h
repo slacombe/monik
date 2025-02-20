@@ -141,8 +141,8 @@ extern bool g_bAbort;
 extern bool g_bModeAnalyse;
 extern const char *nomProgramme;
 
-extern int g_iTranspositionHit, g_iTranspositionCollision;
-extern int g_iRefutation;
+extern int g_transpositionHit, g_transpositionOverwrite;
+extern int g_transpositionRefutation;
 extern char MonikHome[255];
 
 //---------------------------------------------------------------------------

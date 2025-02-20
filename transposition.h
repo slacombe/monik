@@ -63,7 +63,9 @@ void createTranspositionTable(uint32 sizeInMeg);
 void freeTranspositionTable();
 
 void initializeTranspositionTable();
-void reinitialise();
+
+void displayStats();
+void clearStats();
 
 // Chercher une position dans la table.
 uint32 lookup(TChessBoard *cb, int ply, int depth,
@@ -74,8 +76,6 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm,
 
 uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, 
                       uint32 alpha, uint32 initial_alpha, uint32 danger);
-
-void displayTranspositionStats();
 
 #endif
 

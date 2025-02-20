@@ -96,16 +96,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
 
   // Verifier si ce n'est pas une nulle.
   if (repetition(cb, wtm)) {
-    // if ( 0 < beta ) {
-    //		pv[ply-1][ply-1] = cb->CurrentPath.moves[ply-1];
     return 0;
-    //		if ( wtm ) {
-    //			return DRAWSCORE;
-    //		}
-    //		else {
-    //			return -DRAWSCORE;
-    //		}
-    //}
   }
 
   // Regarder dans la table de transposition pour voir si cette position
@@ -278,7 +269,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
         if (Valeur >= beta) {
 #ifdef TRANSPOSITION
           storeRefutation(cb, ply, depth, wtm, Valeur, alpha, beta, check_ext);
-          g_iRefutation++;
+          g_transpositionRefutation++;
 #endif
           // Verifier si on peu l'utiliser comme killer move.
           if (Phase[ply] == NON_CAPTURE_MOVES)

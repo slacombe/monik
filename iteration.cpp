@@ -50,8 +50,8 @@ using namespace std;
 int iteration(TChessBoard *cb, int wtm)
 {
 #ifdef TRANSPOSITION
-  g_iTranspositionHit = g_iTranspositionCollision = 0;
-  g_iRefutation = 0;
+  g_transpositionHit = g_transpositionOverwrite = 0;
+  g_transpositionRefutation = 0;
 #endif
   pvsresearch = 0;
   root_wtm = wtm;

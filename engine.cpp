@@ -242,9 +242,9 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 			wtm = !wtm;
 
 #ifdef TRANSPOSITION			
-			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n", g_iTranspositionHit, g_iTranspositionCollision);
-			gameLog.log("Refutation: %d\n", g_iRefutation);
-			displayTranspositionStats();
+			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n", g_transpositionHit, g_transpositionOverwrite);
+			gameLog.log("Refutation: %d\n", g_transpositionRefutation);
+			displayStats();
 #endif			
 			gameLog.log("nps: %dk", (iNodes / Secondes) / 1000);
 			gameLog.log("eps: %dk", (nbevals / Secondes) / 1000);

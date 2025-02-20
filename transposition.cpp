@@ -10,9 +10,10 @@
 
 using namespace std;
 
-int g_iTranspositionHit;
-int g_iTranspositionCollision;
-int g_iRefutation;
+int g_transpositionHit;
+int g_transpositionWrite;
+int g_transpositionOverwrite;
+int g_transpositionRefutation;
 
 uint32 nbEntree;
 uint32 maskCle;
@@ -70,6 +71,21 @@ void initializeTranspositionTable()
   memset(blackTranspositionTable, 0, nbEntree * 2 * sizeof(Bitboard));
 }
 
+void displayStats() {
+  printf("Transposition table stats:\n");
+  printf("Hit: %d\n", g_transpositionHit);
+  printf("Overwrite: %d\n", g_transpositionOverwrite);
+  printf("Write: %d\n", g_transpositionWrite);
+  printf("Refutation: %d\n", g_transpositionRefutation);
+}
+
+void clearStats() {
+  g_transpositionHit = 0;
+  g_transpositionOverwrite = 0;
+  g_transpositionWrite = 0;
+  g_transpositionRefutation = 0;
+}
+
 void reinitialize()
 {
   Bitboard *entree;
@@ -106,14 +122,12 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
     return 0;
   }
 
-  int iType;
-  int DepthValide = (int)GetDepth((*pTable));
-  if (DepthValide < depth)
+  if (GetDepth((*pTable)) < depth)
   {
     return 0;
   }
-  else
-    iType = (int)GetType((*pTable));
+  
+  int type = (int)GetType((*pTable));
 
   // Effacer le bit de l'age.
   ClearAge((*pTable));
@@ -135,8 +149,8 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
   Donnee coup;
   coup.deuxmot.mot1 = (int)GetCoup((*pTable));
   cb->HashMove[ply] = coup.move;
-  g_iTranspositionHit++;
-  switch (iType)
+  g_transpositionHit++;
+  switch (type)
   {
   case SCORE_EXACTE:
     if (abs(valeur) >= MATE - 100)
@@ -180,20 +194,19 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
   int iPosition = (maskCle & (int)cb->CleHachage);
   Bitboard* pPosition = pTable + iPosition * 2;
 
-  // Verifier si la position est meilleur que celle qu'on a dans la table.
-  // Si l'age est setter alors toujours remplacer.
-  if (!GetAge((*pTable)) && GetDepth((*pPosition)) > depth)
+  if (GetCoup((*pPosition)))
   {
-    g_iTranspositionCollision++;
-    return false;
+    g_transpositionOverwrite++;
+  } else {
+    g_transpositionWrite++;
   }
 
   // Mettre les informations dans la table.
   *pPosition = 0;
   *(pPosition + 1) = cb->CleHachage;
   StoreValeur((*pPosition), valeur);
-  int iType = BORNE_INFERIEUR;
-  StoreType((*pPosition), iType);
+  int type = BORNE_INFERIEUR;
+  StoreType((*pPosition), type);
   StoreDanger((*pPosition), danger);
   StoreCoup((*pPosition), 0);
   StoreDepth((*pPosition), depth);
@@ -214,10 +227,12 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
   int iPosition = (maskCle & (int)cb->CleHachage);
   pTable += iPosition * 2;
 
-  // Verifier si la position est meilleur que celle qu'on a dans la table.
-  // Si l'age est setter alors toujours remplacer.
-  if (!GetAge((*pTable)) && GetDepth((*pTable)) >= depth)
-    return false;
+  if (GetCoup((*pTable)))
+  {
+    g_transpositionOverwrite++;
+  } else {
+    g_transpositionWrite++;
+  }
 
   // Mettre les informations dans la table.
   *pTable = 0;
@@ -236,27 +251,20 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
   coup.move = pv[ply][ply];
   StoreCoup((*pTable), coup.deuxmot.mot1);
   StoreDepth((*pTable), depth);
-  int iType;
+  int type;
   if (alpha > initial_alpha)
   {
-    iType = SCORE_EXACTE;
+    type = SCORE_EXACTE;
     StoreValeur((*pTable), alpha);
   }
   else
   {
-    iType = BORNE_SUPERIEUR;
+    type = BORNE_SUPERIEUR;
     StoreValeur((*pTable), alpha);
   }
-  StoreType((*pTable), iType);
+  StoreType((*pTable), type);
 
   return true;
 }
 
-void displayTranspositionStats() {
-  printf("Transposition table stats:\n");
-  printf("Hit: %d\n", g_iTranspositionHit);
-  printf("Collision: %d\n", g_iTranspositionCollision);
-  printf("Refutation: %d\n", g_iRefutation);
-  printf("Total: %d\n", g_iTranspositionHit + g_iTranspositionCollision + g_iRefutation);
-}
 #endif
