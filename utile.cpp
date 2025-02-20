@@ -272,7 +272,7 @@ uint32 dernierBit( Bitboard bitboard )
   }
 }
 
-Bitboard AttaqueRangee(TChessBoard *cb, int i_iPosition )
+Bitboard attaqueRangee(TChessBoard *cb, int i_iPosition )
 {
 	int iRangee = i_iPosition/8;
 	Bitboard tempR = cb->piece >> iRangee*8;
@@ -280,7 +280,7 @@ Bitboard AttaqueRangee(TChessBoard *cb, int i_iPosition )
 	return cb->AttRangee[i_iPosition][(unsigned char)tempR];
 }
 
-Bitboard AttaqueColonne(TChessBoard *cb, int i_iPosition )
+Bitboard attaqueColonne(TChessBoard *cb, int i_iPosition )
 {
 	int iColonne = i_iPosition&7;
 	Bitboard tempC = cb->pieceR90L >> (7-iColonne)*8;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <Windows.h>
 
 #include "system.h"
 #include "chess.h"
@@ -28,12 +29,12 @@ long int inter() {
 }
 
 int TempsCenti() {
-	return GetTickCount()/10;
+	return GetTickCount64()/10;
 }
 
 // Cette fonction cherche le dernier numero du fichier de journal
 // pour savoir quel est le numero de journal a creer.
-int TrouverDernierJournal() {
+int trouverDernierJournal() {
 	WIN32_FIND_DATAA fd;
 	int lastlog = 0;
 	

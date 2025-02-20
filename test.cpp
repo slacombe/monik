@@ -29,7 +29,7 @@ void testTransposition()
 	printf("Storing refutation\n");
 	storeRefutation(cb, ply, depth, wtm, score, alpha, beta, danger);
 	printf("Calling lookup\n");
-	uint32 res = lookup(cb, ply, depth, wtm, alpha, beta, danger);
+	uint32 res = lookup(cb, ply, depth, wtm, &alpha, &beta, &danger);
 	wtm = 0;
 	storeRefutation(cb, ply, depth, wtm, score, alpha, beta, danger);
 

@@ -14,7 +14,7 @@
 extern TMove pv[MAXPLY][MAXPLY];
 extern int pv_length[MAXPLY];
 
-typedef struct {
+typedef struct MoveList {
 public:
 	int nbmove;
 	int currmove;

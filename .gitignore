@@ -1,5 +1,9 @@
 linux/obj
 monik-linux
 
+windows/monik.exe
+windows/obj/*
+
 .vscode/*
+.vs/*
 
