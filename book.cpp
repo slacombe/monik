@@ -44,7 +44,7 @@ int initializeBook(void)
 	return 0;
 }
 
-int readCommand(FILE *fp, char *o_szCommande)
+int readCommand(FILE *fp)
 {
 	//
 	// Lire le fichier jusqu'a ce qu'on
@@ -56,11 +56,9 @@ int readCommand(FILE *fp, char *o_szCommande)
 		ch = fgetc(fp);
 		if (ch != ']')
 		{
-			o_szCommande[nbChar] = ch;
 			nbChar++;
 		}
 	}
-	o_szCommande[nbChar] = 0;
 
 	return 1;
 }
@@ -84,12 +82,12 @@ int readText(FILE *fp, char *o_szText, int i_iMax)
 	//
 	// Lire jusqu'a un ' '
 	//
-	int ch = 0;
+	char ch = 0;
 	int nbCar = 0;
 	while (ch != ' ' && ch != '\n' && nbCar < i_iMax)
 	{
 		ch = fgetc(fp);
-		if (ch != ' ' && ch != '\n')
+		if (ch != ' ' && ch != '\n' && ch != '\r')
 		{
 			o_szText[nbCar] = ch;
 			nbCar++;
@@ -283,8 +281,8 @@ int SaveBook(void)
 	}
 
 	// Sort the table.
-	// FIXME: No qsort!!!
-	// qsort( book_table, book_size, sizeof( BookPosition_t ), KeyCompare );
+	qsort( book_table, book_size, sizeof( BookPosition_t ), KeyCompare );
+
 	// Go thru the book table and save the positions
 	// to the file.
 	Bitboard lastkey = 0;
@@ -477,7 +475,9 @@ int book(TChessBoard *cb, int wtm, TMoveList &ml)
 int createStartBook(const char *i_szFilename)
 {
 	TChessBoard *cb = new TChessBoard;
-
+	initialiseBoard(cb);
+	initialiseBitboard(cb);
+      
 	int line = 1;
 	initializeBook();
 
@@ -501,7 +501,7 @@ int createStartBook(const char *i_szFilename)
 		//
 		// Lire un caractere.
 		//
-		int ch = fgetc(fp);
+		char ch = fgetc(fp);
 
 		//
 		// Si le caractere est un '[', alors
@@ -514,6 +514,7 @@ int createStartBook(const char *i_szFilename)
 			ply = 0;
 			illegal = 0;
 			printf(".");
+			readCommand(fp);
 			continue;
 		}
 
@@ -572,8 +573,32 @@ int createStartBook(const char *i_szFilename)
 			//
 			makeMove(cb, ply, move, wtm);
 			addToBook(cb, ply, wtm);
+			printf("+");
 			wtm = !wtm;
 			ply++;
+		}
+
+		if (strchr("012", ch)) {
+			char szText[10];
+			bool gameFinished = false;
+			ungetc(ch, fp);
+			readText(fp, szText, sizeof(szText) - 1);	
+			if (strcmp(szText, "1-0") == 0) {
+				printf("White wins\n");
+				gameFinished = true;
+			} else if (strcmp(szText, "0-1") == 0) {
+				printf("Black wins\n");
+				gameFinished = true;
+			} else if (strcmp(szText, "1/2-1/2") == 0) {
+				printf("Draw\n");
+				gameFinished = true;
+			}
+			if (gameFinished) {	
+				unmakeAll(cb, ply, !wtm);
+				wtm = 1;
+				ply = 0;
+				illegal = 0;
+			}
 		}
 	}
 

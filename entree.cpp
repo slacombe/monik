@@ -574,6 +574,7 @@ int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move)
 	}*/
 
 	TMoveList movelist;
+  vide(&movelist);
 	genMoveAttaque(cb, ply, wtm, movelist);
 	genMovePasAttaque(cb, ply, wtm, movelist);
 
