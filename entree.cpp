@@ -383,6 +383,10 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
     return true;
   }
 
+  if (strcmp(i_szCommande, "?") == 0) {
+    return true;
+  }
+
   //
   // Generation de la librairie d'ouverture de depart.
   //
