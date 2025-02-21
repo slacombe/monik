@@ -26,6 +26,7 @@
 #include "system.h"
 #include "search.h"
 #include "transposition.h"
+#include "stats.h"
 
 bool Moteur = false; // true, tour moteur, false tour joueur.
 bool Force = false; // Mode force. Voir doc. winboard.
@@ -63,6 +64,7 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 
 	TMove move;
 	TMoveList movelist;
+	vide(&movelist);
 	if (strcmp(i_szCommande, "undo") == 0) {
 		undoMove(cb); // Un coup de reculons.
 	} else {
@@ -244,16 +246,27 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 #ifdef TRANSPOSITION			
 			gameLog.log("\n\nTransposition hits: %d, collisions: %d\n", g_transpositionHit, g_transpositionOverwrite);
 			gameLog.log("Refutation: %d\n", g_transpositionRefutation);
-			displayStats();
+			if (!xboard) {
+				displayTranspositionStats();
+			}
 #endif			
+
 			gameLog.log("nps: %dk", (iNodes / Secondes) / 1000);
 			gameLog.log("eps: %dk", (nbevals / Secondes) / 1000);
+			gameLog.log("PVS Research: %d\n", pvsresearch);
+			gameLog.log("Null Move Refutation Count: %d\n", nullMoveRefutationCount);
+			gameLog.log("Killer Refutation Count: %d\n", killerMoveRefutationCount);
+			gameLog.log("Alpha-Beta Cutoffs: %d\n", alphaBetaCutoffs);
+		
 			sortieMove(pv[1][1], o_szReponse);
 			gameLog.log("My move: %s", o_szReponse);
 
 			char szText[1000];
 			sprintf(szText, "pvsresearch: %d\n", pvsresearch);
 			gameLog.log(szText);
+			if (!xboard) {
+				displayStats();
+			}
 		}
 	}
 

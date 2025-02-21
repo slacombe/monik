@@ -22,6 +22,7 @@
 #include "racine.h"
 #include "system.h"
 #include "book.h"
+#include "stats.h"
 
 int prev_root_score, root_score, root_alpha, root_beta;
 
@@ -38,7 +39,6 @@ int timestamp;
 int timeslot;
 int timeabort;
 int interrupted;
-int pvsresearch;
 
 int iProfondeurIteration;
 
@@ -54,6 +54,9 @@ int iteration(TChessBoard *cb, int wtm)
   g_transpositionRefutation = 0;
 #endif
   pvsresearch = 0;
+  nullMoveRefutationCount = 0;
+  killerMoveRefutationCount = 0;
+  alphaBetaCutoffs = 0;
   root_wtm = wtm;
 
   // On genere tous les coups pour ce noeud.

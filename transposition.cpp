@@ -71,7 +71,7 @@ void initializeTranspositionTable()
   memset(blackTranspositionTable, 0, nbEntree * 2 * sizeof(Bitboard));
 }
 
-void displayStats() {
+void displayTranspositionStats() {
   printf("Transposition table stats:\n");
   printf("Hit: %d\n", g_transpositionHit);
   printf("Overwrite: %d\n", g_transpositionOverwrite);
@@ -84,24 +84,6 @@ void clearStats() {
   g_transpositionOverwrite = 0;
   g_transpositionWrite = 0;
   g_transpositionRefutation = 0;
-}
-
-void reinitialize()
-{
-  Bitboard *entree;
-
-  entree = whiteTranspositionTable;
-  for (uint32 i = 0; i < nbEntree; i++)
-  {
-    SetAge((*entree));
-    entree += 2;
-  }
-  entree = blackTranspositionTable;
-  for (uint32 i = 0; i < nbEntree; i++)
-  {
-    SetAge((*entree));
-    entree += 2;
-  }
 }
 
 uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *beta, int *danger)

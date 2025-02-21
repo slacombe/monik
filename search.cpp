@@ -1,12 +1,3 @@
-//-----------------------------------------------------------------------------
-// Projet: Monik
-// Auteur: Sylvain Lacombe.
-// Debut du projet: 2 novembre 1998.
-// Fichier: Search.cpp
-// Debut: 2 novembre 1998.
-//
-//---------------------------------------------------------------------------
-
 #include "search.h"
 
 #include <stdio.h>
@@ -26,6 +17,7 @@
 #include "unmake.h"
 #include "utile.h"
 #include "valide.h"
+#include "stats.h"
 
 #ifdef TRANSPOSITION
 #include "transposition.h"
@@ -104,6 +96,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
 #ifdef TRANSPOSITION
   switch (lookup(cb, ply, depth, wtm, &alpha, &beta, &danger)) {
   case SCORE_EXACTE:
+    alphaBetaCutoffs++;
     return alpha;
   case BORNE_SUPERIEUR:
     return alpha;
@@ -132,6 +125,8 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
 #ifdef TRANSPOSITION
         storeRefutation(cb, ply, depth, wtm, Valeur, alpha, beta, danger);
 #endif
+        nullMoveRefutationCount++;
+        alphaBetaCutoffs++;
         return Valeur;
       }
       if (Valeur <= -MATE + 50)
@@ -272,12 +267,18 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
           g_transpositionRefutation++;
 #endif
           // Verifier si on peu l'utiliser comme killer move.
-          if (Phase[ply] == NON_CAPTURE_MOVES)
+          if (Phase[ply] == NON_CAPTURE_MOVES) {
             addKiller(cb, cb->CurrentPath.moves[ply - 1], ply - 1);
-          else if (Phase[ply] == KILLER_MOVE_2)
+          } else if (Phase[ply] == KILLER_MOVE_2) {
             cb->Killers[ply - 1][0].Score++;
-          else if (Phase[ply] == GENERATE_NON_CAPTURE_MOVES)
+          } else if (Phase[ply] == GENERATE_NON_CAPTURE_MOVES) {
             cb->Killers[ply - 1][1].Score++;
+          }
+          alphaBetaCutoffs++;
+          if (Phase[ply] == KILLER_MOVE_1 || Phase[ply] == KILLER_MOVE_2) {
+            killerMoveRefutationCount++;
+          }
+
           return Valeur;
         }
         pv[ply][ply] = cb->CurrentPath.moves[ply];

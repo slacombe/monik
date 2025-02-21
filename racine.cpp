@@ -119,18 +119,17 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
     consistence(cb, currentMove(&cb->MoveList[1]));
 #endif
     // Est-elle meilleur que notre valeur actuelle?
-    if ( !timeabort || g_bModeAnalyse ) {
-      if ( Valeur > alpha ) {
+    if (!timeabort || g_bModeAnalyse) {
+      if (Valeur > alpha) {
         pv[1][1] = cb->CurrentPath.moves[1];
-		pv_length[1] = pv_length[2];
-		memcpy( &pv[1][2], &pv[2][2], sizeof( TMove )*(pv_length[1]-1));
+        pv_length[1] = pv_length[2];
+        memcpy(&pv[1][2], &pv[2][2], sizeof(TMove) * (pv_length[1] - 1));
         affichePV(cb, iProfondeurIteration);
-        if ( Valeur >= beta ) {
-			return Valeur;
-		}
+        if (Valeur >= beta) {
+          return Valeur;
+        }
         alpha = Valeur;
-      }
-      else if ( cb->MoveList[1].currmove == 0 )
+      } else if (cb->MoveList[1].currmove == 0)
         return alpha;
     }
   } // while

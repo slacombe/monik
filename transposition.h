@@ -18,6 +18,11 @@
 
 #ifdef TRANSPOSITION
 
+extern int g_transpositionHit;
+extern int g_transpositionWrite;
+extern int g_transpositionOverwrite;
+extern int g_transpositionRefutation;
+
 #define   SCORE_EXACTE      1
 #define   BORNE_SUPERIEUR   2
 #define   BORNE_INFERIEUR   3
@@ -64,7 +69,7 @@ void freeTranspositionTable();
 
 void initializeTranspositionTable();
 
-void displayStats();
+void displayTranspositionStats();
 void clearStats();
 
 // Chercher une position dans la table.
