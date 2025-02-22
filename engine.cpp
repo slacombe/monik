@@ -272,9 +272,18 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 			if (!xboard) {
 				displayStats();
 			}
+		} else {
+			char szBookInfo[2000];
+			outBookInfo(szBookInfo);
+			printf("%d %d %d %d %s\n",
+				iProfondeurIteration,
+				0,
+				(TempsCenti() - timestamp),
+				0,
+				szBookInfo);
 		}
 	}
-
+	
 	if (!g_bModeAnalyse)
 		Moteur = !Moteur;
 

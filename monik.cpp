@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 #ifdef TRANSPOSITION
     clearStats();
 #endif
-  } while (strcmp(szCommande, "quit"));
+  } while (!exiting);
 
 #ifdef TRANSPOSITION
   if (transpositionTableCreated())

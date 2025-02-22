@@ -7,6 +7,8 @@
 
 using namespace std;
 
+extern bool exiting;
+
 void entree(TChessBoard *cb, char* o_szCommande);
 
 bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_Move);

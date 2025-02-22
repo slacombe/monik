@@ -1,6 +1,8 @@
 #ifndef BENCMARK_H
 #define BENCMARK_H
 
-void benchmark();
+#include "board.h"
+
+void benchmark(TChessBoard* cb);
 
 #endif

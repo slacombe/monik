@@ -114,108 +114,6 @@ int unmakeAll(TChessBoard *cb, int i_iPly, int i_iWtm)
 	return true;
 }
 
-int chargerCles(void)
-{
-	//
-	// Charger les cles du livre.
-	//
-	char bookpath[255];
-	MakePath(bookpath, "bookc.bin");
-	FILE *fp = fopen(bookpath, "rb");
-	if (!fp)
-	{
-		return 0;
-	}
-
-	for (int i = A8; i <= H1; i++)
-	{
-		if (1 != fread(&ClePionB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&ClePionN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleCavalierB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleCavalierN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleFouB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleFouN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleTourB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleTourN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleDameB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleDameN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleRoiB[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-		if (1 != fread(&CleRoiN[i], sizeof(Bitboard), 1, fp))
-		{
-			exit(1);
-		}
-	}
-
-	fclose(fp);
-
-	return 1;
-}
-
-int SauvegarderCles(void)
-{
-	//
-	// Sauvegarde les cles dans le livre.
-	//
-	FILE *fp = fopen("bookc.bin", "wb");
-	if (!fp)
-	{
-		return 0;
-	}
-
-	for (int i = A8; i <= H1; i++)
-	{
-		fwrite(&ClePionB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&ClePionN[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleCavalierB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleCavalierN[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleFouB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleFouN[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleTourB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleTourN[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleDameB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleDameN[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleRoiB[i], sizeof(Bitboard), 1, fp);
-		fwrite(&CleRoiN[i], sizeof(Bitboard), 1, fp);
-	}
-
-	fclose(fp);
-
-	return 1;
-}
-
 int addToBook(TChessBoard *cb, int ply, int wtm)
 {
 	// Calculate the key.
@@ -481,8 +379,6 @@ int createStartBook(const char *i_szFilename)
 	int line = 1;
 	initializeBook();
 
-	SauvegarderCles();
-
 	//
 	// Try to open the file.
 	//
@@ -493,6 +389,10 @@ int createStartBook(const char *i_szFilename)
 		return 1;
 	}
 
+	fseek(fp, 0L, SEEK_END);
+	uint32 fileSize = ftell(fp);
+	fseek(fp, 0L, SEEK_SET);
+
 	int ply = 0;
 	int wtm = 1;
 	int illegal = 0;
@@ -502,7 +402,6 @@ int createStartBook(const char *i_szFilename)
 		// Lire un caractere.
 		//
 		char ch = fgetc(fp);
-
 		//
 		// Si le caractere est un '[', alors
 		// c'est une commande.
@@ -513,7 +412,6 @@ int createStartBook(const char *i_szFilename)
 			wtm = 1;
 			ply = 0;
 			illegal = 0;
-			printf(".");
 			readCommand(fp);
 			continue;
 		}
@@ -573,7 +471,6 @@ int createStartBook(const char *i_szFilename)
 			//
 			makeMove(cb, ply, move, wtm);
 			addToBook(cb, ply, wtm);
-			printf("+");
 			wtm = !wtm;
 			ply++;
 		}
@@ -584,13 +481,13 @@ int createStartBook(const char *i_szFilename)
 			ungetc(ch, fp);
 			readText(fp, szText, sizeof(szText) - 1);	
 			if (strcmp(szText, "1-0") == 0) {
-				printf("White wins\n");
+				//printf("White wins\n");
 				gameFinished = true;
 			} else if (strcmp(szText, "0-1") == 0) {
-				printf("Black wins\n");
+				//printf("Black wins\n");
 				gameFinished = true;
 			} else if (strcmp(szText, "1/2-1/2") == 0) {
-				printf("Draw\n");
+				//printf("Draw\n");
 				gameFinished = true;
 			}
 			if (gameFinished) {	
@@ -599,6 +496,11 @@ int createStartBook(const char *i_szFilename)
 				ply = 0;
 				illegal = 0;
 			}
+		}
+
+		uint32 pos = ftell(fp);
+		if (pos % 10 == 0 || pos == fileSize) {
+			printf("Progress: %3lu%%\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", (pos * 100) / fileSize);
 		}
 	}
 

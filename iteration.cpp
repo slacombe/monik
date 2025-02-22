@@ -67,7 +67,7 @@ int iteration(TChessBoard *cb, int wtm)
   // On verifie si tous les coups sont valide.
   choisiMove(cb, &cb->MoveList[1], 1, wtm);
 
-  if (book( cb, wtm, cb->MoveList[1])) {
+  if (book(cb, wtm, cb->MoveList[1])) {
 	return BOOKMOVE;
   }
 
@@ -124,7 +124,7 @@ int iteration(TChessBoard *cb, int wtm)
   timeabort = false;
   pv[1][1].Score = 0;
   char szContinuation[200];
-  while( iProfondeurIteration < MAXPLY && (!timeabort || g_bModeAnalyse)) {
+  while(iProfondeurIteration < MAXPLY && (!timeabort || g_bModeAnalyse)) {
 
     cb->MoveList[1].currmove = -1;
 //    printf( "\n" );

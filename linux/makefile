@@ -1,10 +1,9 @@
 CC	= g++
 
-#CPPFLAGS = -Wall -O2 -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION
-CPPFLAGS = -Wall -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DDEBUG -g
+CPPFLAGS = -Wall -O2 -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION
+#CPPFLAGS = -Wall -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DDEBUG -g
 LDFLAGS = -static -g
 
-windows-objs := obj/system-windows.o
 linux-objs := obj/system-linux.o
 
 objects := obj/board.o obj/init.o obj/iteration.o obj/racine.o obj/make.o obj/unmake.o obj/engine.o\
@@ -29,6 +28,6 @@ test: $(testobjs)
 clean:
 	-rm -f *~ obj/*.o monik-linux
 
-install:
+install: monik
 	docker build -t monik-chess .
 	docker run -i --name monik-chess monik-chess

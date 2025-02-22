@@ -56,11 +56,12 @@ bool loadPosition(TChessBoard *cb, const string& filename)
 //     les majuscules.
 //     P = pion, N = cavalier, B = fou, R = tour, Q = dame, K = king.
 // /   Saute a la prochaine rangee.
-void parseFen(TChessBoard *cb, const string& fen) {
+bool parseFen(TChessBoard *cb, const string& fen) {
+  char ch;
   int posCourante = A8;
-  int i = 0;
-  char ch = fen[i];
-  while (ch != ' ' && i < fen.size()) {
+  uint32 i = 0;
+  memset(cb, 0, sizeof(TChessBoard));
+  while (fen[i] != ' ' && i < fen.size()) {
       char ch = fen[i];
       if (isdigit(ch)) {
           posCourante += ch - '0';
@@ -70,7 +71,7 @@ void parseFen(TChessBoard *cb, const string& fen) {
           const char* szCode = "PNBRQK";
           const char* pPiece = strchr(szCode, ch);
           if (!pPiece) {
-              return;
+              return false;
           }
           int piece = pPiece - szCode + 1;
           if (!bWhite) {
@@ -84,6 +85,7 @@ void parseFen(TChessBoard *cb, const string& fen) {
   }
 
   // C'est a qui a jouer.
+  i++;
   ch = fen[i];
   wtm = ch == 'w';
 
@@ -94,6 +96,7 @@ void parseFen(TChessBoard *cb, const string& fen) {
     tokens.push_back(parsed);
   }
 
+  assert(tokens.size() >= 1);
   if (tokens[0].find('K') != std::string::npos) {
     cb->Roque |= ROQUEROIBLANC;
   }
@@ -108,6 +111,7 @@ void parseFen(TChessBoard *cb, const string& fen) {
   }  
 
   // Les coups en passant.
+  assert(tokens.size() >= 2);
   std::string enPassant = tokens[1];
   if (enPassant != "-") {
     int colonne = enPassant[0] - 'a';
@@ -122,4 +126,6 @@ void parseFen(TChessBoard *cb, const string& fen) {
   cb->NoCoups = atoi(tokens[3].c_str());
 
   initialiseBitboard(cb);
+
+  return true;
 }

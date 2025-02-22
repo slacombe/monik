@@ -78,10 +78,6 @@ void initialiseBoard(TChessBoard *cb) {
 
   cb->PositionRoiBlanc = E1;
   cb->PositionRoiNoir = E8;
-
-  memset(cb->EnPassant, 0, sizeof(cb->EnPassant));
-
-  cb->NoCoups = 0;
 }
 
 void initialiseBitboard(TChessBoard *cb) {

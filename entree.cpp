@@ -43,6 +43,7 @@ extern int iNbCoups;
 extern int iOppTime;
 extern const char* g_szNomProgramme;
 bool xboard = 0;   // Interface graphique ou non.
+bool exiting  = false;
 extern int whisper;
 
 // Routine qui obtient une commande a partir de la console.
@@ -149,6 +150,7 @@ bool option(TChessBoard *cb, const string command, string& response)
 
   if (command == "quit") {
     gameLog << cb;
+    exiting = true;
     return true;
   }
 
@@ -180,6 +182,7 @@ bool option(TChessBoard *cb, const string command, string& response)
     wtm = true;
     Moteur = false;
     Force = false;
+    g_bModeAnalyse = false;
     iEngTime = 5*60*100;  // 5 minutes par defaut.
     iOppTime = 5*60*100;
     return true;
@@ -217,10 +220,10 @@ bool option(TChessBoard *cb, const string command, string& response)
 
   // On demande une mise à jour d'analyse.
   if (command == ".") {
-	if (g_bModeAnalyse)
-		return true;
-	else
-		return false;
+    if (g_bModeAnalyse)
+      return true;
+    else
+      return false;
   }
 
   // Do whisper.
@@ -391,7 +394,8 @@ bool option(TChessBoard *cb, const string command, string& response)
 
   // Benchmark Monik
   if (command == "bench") {
-    benchmark();
+    benchmark(cb);
+    return true;
   }
 
   return false;
@@ -613,7 +617,7 @@ int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move)
 			move = goodmove;
 			return 1;
 	}
-	if (nleft == 0) gameLog.log( "Illegal move: %s\n",text);
+	if (nleft == 0) gameLog.log( "Illegal move: %s\n", text);
 	else if (piece < 0) gameLog.log( "Illegal move (unrecognizable): %s\n", text );
 	else gameLog.log( "Illegal move (ambiguous): %s\n", text );
 

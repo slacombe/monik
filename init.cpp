@@ -3,8 +3,18 @@
 #include "utile.h"
 #include "book.h"
 
-void initialiseData()
-{
+void generateKeys(const char* pieceName) {
+  printf("Bitboard %s[] = {", pieceName);
+  for (int i = A8; i <= H1; i++) {
+    printf("0x%016llXULL", Random64());
+    if (i != H1) {
+      printf(", ");
+    }
+  }
+  printf("};\n");
+}
+
+void initialiseData() {
   // On initialise les premiers bits.
   // Au depart la position du bit est 0.
   // Ex.
@@ -38,25 +48,6 @@ void initialiseData()
       PosBit++;
     }
   }
-
-	if (chargerCles() == 0) {
-
-  		// Initialisation des cles de hachages.
-  		for( int i=A8; i<=H1; i++ ) {
-    		ClePionB[i] = Random64();
-  		  	ClePionN[i] = Random64();
-   		 	CleCavalierB[i] = Random64();
-  		  	CleCavalierN[i] = Random64();
-		    CleFouB[i] = Random64();
-   		 	CleFouN[i] = Random64();
-   		 	CleTourB[i] = Random64();
-    		CleTourN[i] = Random64();
-    		CleDameB[i] = Random64();
-    		CleDameN[i] = Random64();
-    		CleRoiB[i] = Random64();
-    		CleRoiN[i] = Random64();
-  		}
-	}
 
 	loadBook();
 }
