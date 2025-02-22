@@ -121,8 +121,8 @@ void genMoveAttaque(TChessBoard *cb,
     // On ajoute le pion pouvant etre pris en passant
     // si c'est le cas.
     Bitboard temppiecen = cb->piecen;
-    if ( cb->EnPassantN[ ply ] >= 0 )
-      temppiecen |= mask[cb->EnPassantN[ ply ]];
+    if ( cb->EnPassant[ply] >= 0 )
+      temppiecen |= mask[cb->EnPassant[ply]];
     // Prise par la droite.
     // On enleve la colonne H.
     piecebd = cb->pionb & 0xFEFEFEFEFEFEFEFELL;
@@ -308,8 +308,8 @@ void genMoveAttaque(TChessBoard *cb,
     // On ajoute le pion pouvant etre pris en passant
     // si c'est le cas.
     Bitboard temppieceb = cb->pieceb;
-    if ( cb->EnPassantB[ ply ] >= 0 )
-      temppieceb |= mask[cb->EnPassantB[ ply ]];
+    if ( cb->EnPassant[ ply ] >= 0 )
+      temppieceb |= mask[cb->EnPassant[ply]];
     // Prise par la droite.
     // On enleve la colonne H.
     piecebd = cb->pionn & 0xFEFEFEFEFEFEFEFELL;

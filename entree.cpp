@@ -7,6 +7,7 @@
 //
 //---------------------------------------------------------------------------
 
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,10 +24,13 @@
 #include "book.h"
 #include "log.h"
 #include "eval.h"
+#include "benchmark.h"
 
 #ifdef   TRANSPOSITION
 #include "transposition.h"
 #endif
+
+using namespace std;
 
 extern int wtm;
 extern bool Moteur;
@@ -60,7 +64,7 @@ void entree(TChessBoard *cb, char* o_szCommande)
   }
 
 
-  strcpy( o_szCommande, "" );
+  strcpy(o_szCommande, "" );
   do { 
 	scanf( "%s", o_szCommande );
 	gameLog.log("entree: %s", o_szCommande);
@@ -139,51 +143,38 @@ bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_M
 // Cette routine verifie si une commande est execute, l'execute et
 // retourne true. Sinon elle retourne false pour que le moteur sache
 // que c'est un coup.
-bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
+bool option(TChessBoard *cb, const string command, string& response)
 {
-  strcpy( o_szReponse, "" );
+  response = "";
 
-  if ( strcmp( i_szCommande, "quit" ) == 0 ) {
-    char szBoard[1000];
-    char szText[10];
-    strcpy( szBoard, "" );
-    for( int i=A8; i<=H1; i++ ) {
-      sprintf( szText, "%+2d", cb->board[i] );
-      strcat( szBoard, szText );
-      if ( i % 8 == 7 )
-        strcat( szBoard, "\n" );
-    }
-    gameLog.log( szBoard );
+  if (command == "quit") {
+    gameLog << cb;
     return true;
   }
 
-  if (strcmp(i_szCommande, "eval") == 0) {
+  if (command == "eval") {
 	  int score = eval(cb, 1, wtm, -INFINI, INFINI);
-	  printf("score = %d\n", score);
+    cout << "score = " << score << endl;
 	  gameLog.log("score = %d", score);
 	  return true;
   }
 
-  if (strcmp(i_szCommande, "board") == 0) {
-	  for(int i=A8; i<=H1; i++) {
-		  printf(" %2d ", cb->board[i]);
-		  if (i % 8 == 7) 
-			  printf("\n");
-	  }
+  if (command == "board") {
+    cout << cb;
 	  return true;
   }
 
   // On verifie la commande.
   // On demande le mode xboard.
   // Il n'y a pas de possibilite de retourne au mode normal.
-  if ( strcmp( i_szCommande, "xboard" ) == 0 ) {
+  if (command == "xboard") {
     gameLog.log( "Interface graphique: Winboard" );
     xboard = 1;
     return true;
   }
 
   // On demande une nouvelle partie.
-  if ( strcmp( i_szCommande, "new" ) == 0 ) {
+  if (command == "new") {
     initialiseBoard(cb);
     initialiseBitboard(cb);
     wtm = true;
@@ -196,7 +187,7 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
 
   // Le moteur est mis en mode edit.
   // Permet d'entrer une position specifique.
-  if ( strcmp( i_szCommande, "edit" ) == 0 ) {
+  if (command == "edit") {
     gameLog.log( "Edit." );
     g_bEdit = true;
     g_bBlanche = true;
@@ -204,11 +195,11 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Chargement d'une position.
-  if ( strcmp( i_szCommande, "loadpos" ) == 0 ) {
-    char szFichier[60];
+  if (command == "loadpos") {
+    char filename[60];
     printf( "Entrez le nom de fichier: " );
-    scanf( "%s", szFichier );
-    if (loadPosition(cb, szFichier))
+    scanf("%s", filename);
+    if (loadPosition(cb, filename))
       printf( "Chargement ok." );
     else
       printf( "Chargement pas reussi." );
@@ -216,7 +207,7 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Le moteur est mis en mode d'analyse.
-  if ( strcmp( i_szCommande, "analyze" ) == 0 ) {
+  if (command == "analyze") {
     gameLog.log( "Analyse." );
     Moteur = true;
     g_bModeAnalyse = true;
@@ -225,7 +216,7 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // On demande une mise à jour d'analyse.
-  if (strcmp(i_szCommande, ".") == 0) {
+  if (command == ".") {
 	if (g_bModeAnalyse)
 		return true;
 	else
@@ -233,17 +224,17 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Do whisper.
-  if ( strcmp( i_szCommande, "dowhisper" ) == 0 ) {
+  if (command == "dowhisper") {
 	  whisper = true;
   }
 
   // Do whisper.
-  if ( strcmp( i_szCommande, "nowhisper" ) == 0 ) {
+  if (command == "nowhisper") {
 	  whisper = false;
   }
 
   // Le moteur doit etre sortie du mode d'analyse.
-  if ( strcmp( i_szCommande, "exit" ) == 0 ) {
+  if (command == "exit") {
     gameLog.log( "Exit." );
     Moteur = false;
     Force = false;
@@ -252,7 +243,7 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Le moteur joue le joueur courant.
-  if ( strcmp( i_szCommande, "go" ) == 0 ) {
+  if (command == "go") {
     gameLog.startNew();
     gameLog.log( "Demarrage." );
     // Je sais que c'est une option et que je devrais retourner true, mais
@@ -267,26 +258,26 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Les blancs jouent les prochains.
-  if ( strcmp( i_szCommande, "white" ) == 0 ) {
+  if (command == "white") {
     gameLog.log( "Les blancs jouent." );
     wtm = true;
     return true;
   }
 
   // Les noirs jouent les prochains.
-  if ( strcmp( i_szCommande, "black" ) == 0 ) {
+  if (command == "black") {
     gameLog.log( "Les noirs jouent." );
     wtm = false;
     return true;
   }
 
   // Met le moteur avec un peu de random, pas implante.
-  if ( strcmp( i_szCommande, "random" ) == 0 ) {
+  if (command == "random") {
     return true;
   }
 
   // On set le level.
-  if ( strcmp( i_szCommande, "level" ) == 0 ) {
+  if (command == "level") {
     char szNbCoups[10], szNbMinute[10], szIncrement[10];
     scanf("%s", szNbCoups);
     scanf("%s", szNbMinute);
@@ -299,37 +290,37 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // Show thinking.
-  if ( strcmp( i_szCommande, "post" ) == 0 ) {
+  if (command == "post") {
     Post = true;
     return true;
   }
 
   // No show thinking.
-  if ( strcmp( i_szCommande, "nopost" ) == 0 ) {
+  if (command == "nopost") {
     Post = false;
     return true;
   }
 
   // Le moteur peu penser sur le temps du joueur au prochain coup.
-  if ( strcmp( i_szCommande, "hard" ) == 0 ) {
+  if (command == "hard") {
     printf( "(no pondering)\n" );
     return true;
   }
 
   // Le moteur ne pense que sur son temps.
-  if ( strcmp( i_szCommande, "easy" ) == 0 ) {
+  if (command == "easy") {
     printf( "(no pondering)\n" );
     return true;
   }
 
-  if (strcmp(i_szCommande, "st") == 0) {
-	scanf("%d", &iMoveTime);
-	gameLog.log("move time = %d", iMoveTime);
-	return true;
+  if (command == "st") {
+    scanf("%d", &iMoveTime);
+    gameLog.log("move time = %d", iMoveTime);
+    return true;
   }
 
   // Set l'horloge.
-  if ( strcmp( i_szCommande, "time" ) == 0 ) {
+  if (command == "time") {
     scanf( "%d", &iEngTime );
     char szTemp[20];
     sprintf( szTemp, "%d", iEngTime );
@@ -338,20 +329,20 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   }
 
   // La deuxieme horloge.
-  if ( strcmp( i_szCommande, "otim" ) == 0 ) {
+  if (command == "otim") {
     scanf( "%d", &iOppTime );
     gameLog.log("otime = %d", iOppTime);
     return true;
   }
 
-  if ( strcmp( i_szCommande, "name" ) == 0 ) {
+  if (command == "name") {
 	  char szName[40];
 	  scanf( "%s", szName );
 	  gameLog.log( "name = %s", szName );
 	  return true;
   }
 
-  if ( strcmp( i_szCommande, "rating" ) == 0 ) {
+  if (command == "rating") {
 	  int myrating, rating;
 	  scanf( "%d", &myrating );
 	  gameLog.log( "my rating = %d", myrating );
@@ -360,7 +351,7 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
 	  return true;
   }
 
-  if ( strcmp( i_szCommande, "protover" ) == 0 ) {
+  if (command == "protover") {
 	  float version;
 	  scanf( "%f", &version );
 	  gameLog.log( "proto version: %f\n", version );
@@ -370,32 +361,37 @@ bool option(TChessBoard *cb, const char* i_szCommande, char* o_szReponse )
   // Le moteur est mis off-line. Les prochains coups recus doit
   // etre verifier pour validite mais le moteur ne reponds pas par un
   // coup et ne pense pas non plus (no pondering)
-  if ( strcmp( i_szCommande, "force" ) == 0 ) {
+  if (command == "force") {
     Force = true;
     return true;
   }
 
   // La partie est finie, on recoit le resultat.
   // Pas implante.
-  if ( strcmp( i_szCommande, "result" ) == 0 ) {
+  if (command == "result") {
     char szTemp[255];
     fgets( szTemp, sizeof( szTemp ), stdin ); 
     return true;
   }
 
-  if (strcmp(i_szCommande, "?") == 0) {
+  if (command == "?") {
     return true;
   }
 
   //
   // Generation de la librairie d'ouverture de depart.
   //
-  if ( strcmp( i_szCommande, "createbook" ) == 0 ) {
+  if (command == "createbook") {
     char szText[255];
     scanf( "%s", szText );
 
     createStartBook(szText);
     return true;
+  }
+
+  // Benchmark Monik
+  if (command == "bench") {
+    benchmark();
   }
 
   return false;

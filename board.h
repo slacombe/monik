@@ -9,7 +9,10 @@
 #ifndef BoardH
 #define BoardH
 
+#include <iostream>
 #include "chess.h"
+
+using namespace std;
 
 extern TMove pv[MAXPLY][MAXPLY];
 extern int pv_length[MAXPLY];
@@ -36,7 +39,7 @@ typedef struct {
   Bitboard Positions[MAXMOVE];
 
   // Etat des pieces pour le roque.
-  // bit 1 = piece bouge.
+  // bit 1 = piece a bouge.
   // Bit poid fort = noir.
   // Bit poid faible = blanc.
   // Bit 2 et 5 = tour dame.
@@ -73,7 +76,7 @@ typedef struct {
   SCORE ScoreTourNoir;
 
   // Case de la possibilite d'un en passant.
-  int EnPassantB[MAXPLY], EnPassantN[MAXPLY];
+  int EnPassant[MAXPLY];
 
   // Le board.
   Piece board[BOARDSIZE];
@@ -188,6 +191,7 @@ void initialiseBoard(TChessBoard *cb);
 void initialiseBitboard(TChessBoard *cb);
 void addKiller(TChessBoard *cb, TMove move, int ply);
 void ajouteMove(TMoveList *cb, TMove move);
+ostream& operator<<(ostream& os, const TChessBoard* cb);
 
 //---------------------------------------------------------------------------
 #endif

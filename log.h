@@ -23,8 +23,8 @@ public:
 	Log();
 	void turnOn();
 	void startNew();
-	void log(const char* i_szMessage, ...);
-	void logBoard(const TChessBoard* cb);
+	void log(const string message, ...);
+	Log& operator<<(const TChessBoard* cb);
 };
 
 extern Log gameLog;

@@ -6,7 +6,12 @@
 // Debut: 18 janvier 1999.
 //
 //---------------------------------------------------------------------------
+#include <string>
+#include <fstream>
+#include <vector>
+
 #include <stdio.h>
+#include <sstream>
 #include <string.h>
 #include <ctype.h>
 
@@ -15,68 +20,106 @@
 
 #include "chargeur.h"
 
+using namespace std;
+
 extern int wtm;
 
-bool loadPosition(TChessBoard *cb, const char* i_szFichier)
+bool loadPosition(TChessBoard *cb, const string& filename)
 {
   // Verifier si le fichier existe.
   // Si il n'existe pas retourner une erreur.
-  FILE *fp;
-  fp = fopen( i_szFichier, "rb" );
-  if ( !fp ) return false;
-
-  // La position FEN ce lit comme suit.
-  // Commencer a la case A8. Lire chaque caractere.
-  // Les caracteres signifient ceci:
-  // #   Un chiffre de 1 a 7. Donne le nombre de case vide avant
-  //     la prochaine piece.
-  // x   Une piece noir pour les minuscules ou une piece blanche pour
-  //     les majuscules.
-  //     P = pion, N = cavalier, B = fou, R = tour, Q = dame, K = king.
-  // /   Saute a la prochaine rangee.
-
-  int iPosCourante = A8;
-  int ch = 0;
-  while( ch != ' ' && !feof( fp ) ) {
-    // Lecture d'un caractere.
-    ch = fgetc( fp );
-
-    // Verifier si c'est un chiffre.
-    if ( isdigit( ch ) ) {
-      // Augmenter du nombre de case specifie.
-      iPosCourante += ch-'0';
-    }
-    else if ( isalpha( ch ) ) {
-      int bWhite = isupper( ch );
-      ch = toupper( ch );
-      const char* szCode = "PNBRQK";
-      const char* pPiece = strchr( szCode, ch );
-      if ( !pPiece ) {
-        fclose( fp );
-        return false;
-      }
-      int iPiece = pPiece - szCode + 1;
-      if ( !bWhite ) {
-         iPiece = -iPiece;
-      }
-      cb->board[iPosCourante++] = (Piece)iPiece;
-    }
-    else if ( ch == '/' ) {
-      iPosCourante = ((iPosCourante+7)/8)*8;
-    }
-  } // while.
-
-  // C'est a qui a jouer.
-  ch = fgetc( fp );
-  if ( ch == 'w' )
-    wtm = true;
-  else if ( ch == 'b' )
-    wtm = false;
-  else
+  std::fstream f;
+  f.open(filename, ios::in);
+  if (!f.is_open()) {
     return false;
+  }
+  
+  std::string line;
+  std::getline(f, line);
 
-  fclose( fp );
+  parseFen(cb, line);
+
+  f.close();
+
   initialiseBitboard(cb);
   
   return true;
+}
+
+
+// La position FEN ce lit comme suit.
+// Commencer a la case A8. Lire chaque caractere.
+// Les caracteres signifient ceci:
+// #   Un chiffre de 1 a 7. Donne le nombre de case vide avant
+//     la prochaine piece.
+// x   Une piece noir pour les minuscules ou une piece blanche pour
+//     les majuscules.
+//     P = pion, N = cavalier, B = fou, R = tour, Q = dame, K = king.
+// /   Saute a la prochaine rangee.
+void parseFen(TChessBoard *cb, const string& fen) {
+  int posCourante = A8;
+  int i = 0;
+  char ch = fen[i];
+  while (ch != ' ' && i < fen.size()) {
+      char ch = fen[i];
+      if (isdigit(ch)) {
+          posCourante += ch - '0';
+      } else if (isalpha(ch)) {
+          int bWhite = isupper(ch);
+          ch = toupper(ch);
+          const char* szCode = "PNBRQK";
+          const char* pPiece = strchr(szCode, ch);
+          if (!pPiece) {
+              return;
+          }
+          int piece = pPiece - szCode + 1;
+          if (!bWhite) {
+              piece = -piece;
+          }
+          cb->board[posCourante++] = (Piece)piece;
+      } else if (ch == '/') {
+          posCourante = ((posCourante + 7) / 8) * 8;
+      }
+      i++;
+  }
+
+  // C'est a qui a jouer.
+  ch = fen[i];
+  wtm = ch == 'w';
+
+  std::string parsed, input=fen.substr(i + 2);
+  std::stringstream input_stringstream(fen.substr(i + 2));
+  std::vector<std::string> tokens;
+  while(getline(input_stringstream, parsed, ' ')) {
+    tokens.push_back(parsed);
+  }
+
+  if (tokens[0].find('K') != std::string::npos) {
+    cb->Roque |= ROQUEROIBLANC;
+  }
+  if (tokens[0].find('Q') != std::string::npos) {
+    cb->Roque |= ROQUEDAMEBLANC;
+  }
+  if (tokens[0].find('k') != std::string::npos) {
+    cb->Roque |= ROQUEROINOIR;
+  }
+  if (tokens[0].find('q') != std::string::npos) {
+    cb->Roque |= ROQUEDAMENOIR;
+  }  
+
+  // Les coups en passant.
+  std::string enPassant = tokens[1];
+  if (enPassant != "-") {
+    int colonne = enPassant[0] - 'a';
+    int rangee = 8 - (enPassant[1] - '0');
+    cb->EnPassant[0] = rangee * 8 + colonne;
+  }
+
+  // Le nombre de coups depuis le dernier coup de pion ou de capture.
+  cb->Regle50Coup = atoi(tokens[2].c_str());
+
+  // Le nombre de coups.
+  cb->NoCoups = atoi(tokens[3].c_str());
+
+  initialiseBitboard(cb);
 }

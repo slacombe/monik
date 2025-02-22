@@ -114,13 +114,11 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
   if (do_null) {
     int nbPiece = wtm ? cb->TotalMaterielBlanc : cb->TotalMaterielNoir;
     if (!cb->inCheck[ply] && nbPiece > 5 && depth > 3 && alpha == beta - 1) {
-      int EnPassantB = cb->EnPassantB[ply + 1];
-      int EnPassantN = cb->EnPassantN[ply + 1];
-      cb->EnPassantB[ply + 1] = -1;
-      cb->EnPassantN[ply + 1] = -1;
+      int EnPassant = cb->EnPassant[ply + 1];
+      cb->EnPassant[ply + 1] = -1;
+      cb->EnPassant[ply + 1] = -1;
       Valeur = -search(cb, depth - 3, ply + 1, !wtm, -beta, -beta + 1, false);
-      cb->EnPassantB[ply + 1] = EnPassantB;
-      cb->EnPassantN[ply + 1] = EnPassantN;
+      cb->EnPassant[ply + 1] = EnPassant;
       if (Valeur >= beta) {
 #ifdef TRANSPOSITION
         storeRefutation(cb, ply, depth, wtm, Valeur, alpha, beta, danger);

@@ -7,6 +7,9 @@
 //
 //---------------------------------------------------------------------------
 
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,6 +20,9 @@
 #include "make.h"
 #include "unmake.h"
 #include "utile.h"
+#include "log.h"
+
+using namespace std;
 
 TMove pv[MAXPLY][MAXPLY];
 int pv_length[MAXPLY];
@@ -73,10 +79,7 @@ void initialiseBoard(TChessBoard *cb) {
   cb->PositionRoiBlanc = E1;
   cb->PositionRoiNoir = E8;
 
-  for (i = 0; i < MAXPLY; i++) {
-    cb->EnPassantN[i] = -1;
-    cb->EnPassantB[i] = -1;
-  }
+  memset(cb->EnPassant, 0, sizeof(cb->EnPassant));
 
   cb->NoCoups = 0;
 }
@@ -557,3 +560,13 @@ TMove currentMove(TMoveList *ml) { return ml->moves[ml->currmove]; }
 void setCurrentMoveScore(TMoveList *ml, int score) {
   ml->moves[ml->currmove].Score = score;
 }
+
+ostream& operator<<(ostream& os, const TChessBoard* cb) {
+  for(int i=A8; i<=H1; i++) {
+    cout << setw(2) << (int)cb->board[i] << " ";
+    if (i % 8 == 7) 
+      cout << endl;
+  }
+  return os;
+}
+

@@ -11,7 +11,7 @@ objects := obj/board.o obj/init.o obj/iteration.o obj/racine.o obj/make.o obj/un
 	obj/search.o obj/chess.o obj/utile.o obj/quies.o obj/genmove.o obj/eval.o obj/next.o\
 	obj/valide.o obj/repetition.o obj/sortie.o obj/entree.o obj/log.o obj/nextracine.o\
 	obj/edit.o obj/attaque.o obj/chargeur.o obj/book.o obj/transposition.o obj/time.o\
-	obj/system.o obj/debug.o obj/stats.o
+	obj/system.o obj/debug.o obj/stats.o obj/benchmark.o
 
 monikobj := $(objects) $(linux-objs) obj/monik.o
 

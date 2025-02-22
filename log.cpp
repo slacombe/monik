@@ -31,9 +31,9 @@ void Log::startNew() {
 	mFilename = s.str();
 }
 
-void Log::logBoard(const TChessBoard* cb) {
+Log& Log::operator<<(const TChessBoard* cb) {
 	if (!mLogGame)
-		return;
+		return *this;
 	
 	char ligne[100], move[6];
 	strcpy(ligne, "");
@@ -45,9 +45,10 @@ void Log::logBoard(const TChessBoard* cb) {
 			strcpy(ligne, "");
 		}
 	}
+	return *this;
 }
 
-void Log::log(const char* i_szMessage, ...) {
+void Log::log(const string message, ...) {
 	if (!mLogGame)
 		return;
 	
@@ -59,8 +60,8 @@ void Log::log(const char* i_szMessage, ...) {
 		return;
 
 	va_list listeParametres;
-	va_start(listeParametres, i_szMessage);
-	vsprintf(szTexte, i_szMessage, listeParametres);
+	va_start(listeParametres, message.c_str());
+	vsprintf(szTexte, message.c_str(), listeParametres);
 	fs << szTexte << std::endl;
 	va_end(listeParametres);
 

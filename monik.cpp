@@ -21,13 +21,15 @@
 #include "transposition.h"
 #include "test.h"
 
+using namespace std;
+
 //---------------------------------------------------------------------------
 extern int interrupted;
 extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char *nomProgramme = "Monik v2.3";
+const char *nomProgramme = "Monik v2.2.8";
 
 void Interrupt(int)
 {

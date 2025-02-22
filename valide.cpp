@@ -118,14 +118,14 @@ bool valideMove(TChessBoard *cb, int ply, int wtm, TMove& move)
         if ( move.EnPassant ) {
           return false;
           if ( wtm ) {
-            if ( (unsigned)cb->EnPassantN[ply] == move.To &&
+            if ( (unsigned)cb->EnPassant[ply] == move.To &&
                  move.Capture == pion )
               return true;
             else
               return false;
           }
           else {
-            if ( (unsigned)cb->EnPassantB[ply] == move.To &&
+            if ((unsigned)cb->EnPassant[ply] == move.To &&
                  move.Capture == pion )
               return true;
             else

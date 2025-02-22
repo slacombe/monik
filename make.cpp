@@ -37,13 +37,13 @@ void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
     MovePiece( cb->pieceb, move );
     // Si il y avait une piece noire, elle a ete capture.
     ClearBit( cb->piecen, move.To );
-    cb->EnPassantB[ply+1] = -1;
+    cb->EnPassant[ply+1] = -1;
   }
   else {
     MovePiece( cb->piecen, move );
     // Si il y avait une piece blanche, elle a ete capture.
     ClearBit( cb->pieceb, move.To );
-    cb->EnPassantN[ply+1] = -1;
+    cb->EnPassant[ply+1] = -1;
   }
 
   cb->board[move.From] = 0;
@@ -443,11 +443,11 @@ void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
   if ( move.Piece == pion ) {
     if ( wtm ) {
       if ( move.From - move.To == 16 )
-        cb->EnPassantB[ply+1] = move.To + 8;
+        cb->EnPassant[ply+1] = move.To + 8;
     }
     else {
       if ( move.To - move.From == 16 )
-        cb->EnPassantN[ply+1] = move.To - 8;
+        cb->EnPassant[ply+1] = move.To - 8;
     }
   }
 
@@ -459,6 +459,5 @@ void makeMoveRoot(TChessBoard *cb, TMove move, int wtm)
 {
 	makeMove(cb, 1, move, wtm);
 
-	cb->EnPassantB[1] = cb->EnPassantB[2];
-	cb->EnPassantN[1] = cb->EnPassantN[2];
+	cb->EnPassant[1] = cb->EnPassant[2];
 }

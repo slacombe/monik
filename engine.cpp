@@ -28,6 +28,8 @@
 #include "transposition.h"
 #include "stats.h"
 
+using namespace std;
+
 bool Moteur = false; // true, tour moteur, false tour joueur.
 bool Force = false; // Mode force. Voir doc. winboard.
 bool g_bEdit = false; // Mode edit. Voir doc. winboard.
@@ -53,10 +55,13 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 	}
 
 	// Verifier si la commande est une option.
-	bool bOption = option(cb, i_szCommande, o_szReponse);
+	string command = i_szCommande;
+	string response;
+	bool bOption = option(cb, command, response);
 	if (bOption) {
 		// La commande est une option.
 		// Retourner directement la reponse.
+		strcpy(o_szReponse, response.c_str());
 		gameLog.log("Command: %s", i_szCommande);
 		if (!g_bModeAnalyse)
 			return false;
@@ -164,7 +169,7 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 
 		// C'est ici qu'on décole.
 		// Logger le board 
-		gameLog.logBoard(cb);
+		gameLog << cb;
 
 		// On prend en note le temps.
 		timestamp = TempsCenti();
