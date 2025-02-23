@@ -6,10 +6,6 @@
 // Debut: 2 novembre 1998.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-
 #include "chess.h"
 #include "board.h"
 #include "entree.h"
@@ -67,9 +63,7 @@ int main(int argc, char **argv)
           printf("\nMauvaise largeur de table.");
           return 1;
         }
-        int tableSize = atoi(argv[i + 1]);
-        createTranspositionTable(tableSize);
-        initializeTranspositionTable();
+        createTranspositionTable(argv[i + 1]);
       }
 
 #endif // TRANSPOSITION
@@ -87,7 +81,6 @@ int main(int argc, char **argv)
   {
     // At least 32 meg of transposition table.
     createTranspositionTable(32);
-    initializeTranspositionTable();
   }
 #endif
 

@@ -112,7 +112,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
 #ifdef TRANSPOSITION
   Phase[ply] = HASH_MOVE;
 #else
-  Phase[ply] = PV_MOVE;
+  Phase[ply] = GENERATE_CAPTURE_MOVES;
 #endif
 
   // Maintenant, evaluer chaque coup.

@@ -49,16 +49,7 @@ int readCommand(FILE *fp)
 	//
 	// Lire le fichier jusqu'a ce qu'on
 	// trouve un ']'
-	int nbChar = 0;
-	int ch = 0;
-	while (ch != ']')
-	{
-		ch = fgetc(fp);
-		if (ch != ']')
-		{
-			nbChar++;
-		}
-	}
+	while (fgetc(fp) != ']');
 
 	return 1;
 }

@@ -23,6 +23,11 @@ extern int g_transpositionWrite;
 extern int g_transpositionOverwrite;
 extern int g_transpositionRefutation;
 
+typedef struct HASH_ENTRY {
+  Bitboard data;
+  Bitboard key;
+} hash_entry;
+
 #define   SCORE_EXACTE      1
 #define   BORNE_SUPERIEUR   2
 #define   BORNE_INFERIEUR   3
@@ -64,10 +69,9 @@ extern int g_transpositionRefutation;
   (x & 0xFFF)
 
 bool transpositionTableCreated();
-void createTranspositionTable(uint32 sizeInMeg);
+void createTranspositionTable(uint64 sizeInMeg);
+void createTranspositionTable(std::string size);
 void freeTranspositionTable();
-
-void initializeTranspositionTable();
 
 void displayTranspositionStats();
 void clearStats();

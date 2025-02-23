@@ -9,8 +9,8 @@
 #ifndef ChessH
 #define ChessH
 
-#include <assert.h>
-#include <string.h>
+#include <string>
+#include <cassert>
 
 #include "types.h"
 

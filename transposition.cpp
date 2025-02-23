@@ -1,9 +1,6 @@
 #ifdef TRANSPOSITION
 
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 #include "board.h"
 #include "transposition.h"
@@ -15,60 +12,79 @@ int g_transpositionWrite;
 int g_transpositionOverwrite;
 int g_transpositionRefutation;
 
-uint32 nbEntree;
-uint32 maskCle;
+uint64 nb_entree;
+uint64 mask_cle;
 
-Bitboard *whiteTranspositionTable = 0;
-Bitboard *blackTranspositionTable = 0;
+hash_entry *white_hash_table = 0;
+hash_entry *black_hash_table = 0;
 
-void createTranspositionTable(uint32 sizeInMeg)
+constexpr uint64 multiplier_meg = 1024 * 1024;
+constexpr uint64 multiplier_gig = 1024 * 1024 * 1024;
+
+void createTranspositionTable(uint64 size_in_bytes)
 {
-  uint32 sizeInBytes = sizeInMeg * 1024 * 1024;
-
-  uint32 nbOfPositionsInTable = sizeInBytes / (sizeof(Bitboard) * 2);
+  uint64 pos_in_table = size_in_bytes / (sizeof(Bitboard) * 2);
 
   // Reconvertir en mega-octets.
-  int iNbEntreeBase2 = 1;
-  while (nbOfPositionsInTable)
+  uint64 nb_entree_base2 = 1;
+  while (pos_in_table)
   {
-    nbOfPositionsInTable >>= 1;
-    iNbEntreeBase2 <<= 1;
+    pos_in_table >>= 1;
+    nb_entree_base2 <<= 1;
   }
   // Une de trop et diviser en deux, une moitie pour chaque table.
-  iNbEntreeBase2 >>= 2;
+  nb_entree_base2 >>= 2;
 
   // Alouer la memoire necessaire.
-  whiteTranspositionTable = (Bitboard *)malloc(iNbEntreeBase2 * sizeof(Bitboard) * 2);
-  blackTranspositionTable = (Bitboard *)malloc(iNbEntreeBase2 * sizeof(Bitboard) * 2);
+  white_hash_table = (hash_entry *)calloc(nb_entree_base2, sizeof(hash_entry));
+  black_hash_table = (hash_entry *)calloc(nb_entree_base2, sizeof(hash_entry));
 
-  nbEntree = iNbEntreeBase2;
-  maskCle = nbEntree - 1;
+  nb_entree = nb_entree_base2;
+  mask_cle = nb_entree - 1;
 
-  printf("Tranposition: %lu positions\n",  nbEntree * 2);
-  printf("Hash table size: %lum\n", ((nbEntree * sizeof(Bitboard) * 4) / (1024 * 1024)));
-  printf("Mask: 0x%lx\n", maskCle);
+  cout << "Transposition: " << nb_entree * 2 << " positions" << endl;
+  cout << "Hash table size: " << ((nb_entree * sizeof(Bitboard) * 4) / (1024 * 1024)) << "m" << endl;
+  cout << "Mask: 0x" << hex << mask_cle << dec << endl;
+}
+
+void createTranspositionTable(std::string size) {
+  int l = size.length();
+  char unit = size[l - 1];
+  string units = size.substr(0, l - 1);
+  uint64 multiplier;
+  switch(unit)  {
+    case 'm':
+    case 'M':
+      multiplier = multiplier_meg;
+      break;
+    case 'g':
+    case 'G':
+      multiplier = multiplier_gig;
+      break;
+    default:
+      cout << "Invalid unit: " << unit << endl;
+      cout << "Using megabytes by default" << endl;
+      multiplier = multiplier_meg;
+      return;
+  }
+
+  createTranspositionTable(stoi(units) * multiplier);
 }
 
 void freeTranspositionTable()
 {
-  if (whiteTranspositionTable)
+  if (white_hash_table)
   {
-    free(whiteTranspositionTable);
-    free(blackTranspositionTable);
-    whiteTranspositionTable = 0;
-    blackTranspositionTable = 0;
+    free(white_hash_table);
+    free(black_hash_table);
+    white_hash_table = 0;
+    black_hash_table = 0;
   }
 }
 
 bool transpositionTableCreated()
 {
-  return whiteTranspositionTable;
-}
-
-void initializeTranspositionTable()
-{
-  memset(whiteTranspositionTable, 0, nbEntree * 2 * sizeof(Bitboard));
-  memset(blackTranspositionTable, 0, nbEntree * 2 * sizeof(Bitboard));
+  return white_hash_table;
 }
 
 void displayTranspositionStats() {
@@ -88,35 +104,34 @@ void clearStats() {
 
 uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *beta, int *danger)
 {
-  Bitboard *pTable;
+  hash_entry* pTable;
   short valeur;
 
   // Blanc ou noir?
-  pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
+  pTable = (wtm) ? white_hash_table : black_hash_table;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb->CleHachage);
-  pTable += iPosition * 2;
+  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
 
   // Est-ce la bonne position?
-  if ((*(pTable + 1) ^ cb->CleHachage))
+  if (pPosition->key ^ cb->CleHachage)
   {
     return 0;
   }
 
-  if (GetDepth((*pTable)) < depth)
+  if (GetDepth((pPosition->data)) < depth)
   {
     return 0;
   }
   
-  int type = (int)GetType((*pTable));
+  int type = (int)GetType((pPosition->data));
 
   // Effacer le bit de l'age.
-  ClearAge((*pTable));
+  ClearAge(pPosition->data);
 
-  valeur = (short)GetValeur((*pTable));
+  valeur = (short)GetValeur(pPosition->data);
 
-  *danger = (int)GetDanger((*pTable));
+  *danger = (int)GetDanger(pPosition->data);
 
   struct DeuxMot
   {
@@ -129,7 +144,7 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
     DeuxMot deuxmot;
   };
   Donnee coup;
-  coup.deuxmot.mot1 = (int)GetCoup((*pTable));
+  coup.deuxmot.mot1 = (int)GetCoup(pPosition->data);
   cb->HashMove[ply] = coup.move;
   g_transpositionHit++;
   switch (type)
@@ -170,13 +185,12 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
                        uint32 wtm, short valeur, uint32 alpha, uint32 beta,
                        uint32 danger)
 {
-  Bitboard *pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
+  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb->CleHachage);
-  Bitboard* pPosition = pTable + iPosition * 2;
+  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
 
-  if (GetCoup((*pPosition)))
+  if (GetCoup((pPosition->data)))
   {
     g_transpositionOverwrite++;
   } else {
@@ -184,14 +198,13 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
   }
 
   // Mettre les informations dans la table.
-  *pPosition = 0;
-  *(pPosition + 1) = cb->CleHachage;
-  StoreValeur((*pPosition), valeur);
+  pPosition->key = cb->CleHachage;
+  StoreValeur(pPosition->data, valeur);
   int type = BORNE_INFERIEUR;
-  StoreType((*pPosition), type);
-  StoreDanger((*pPosition), danger);
-  StoreCoup((*pPosition), 0);
-  StoreDepth((*pPosition), depth);
+  StoreType(pPosition->data, type);
+  StoreDanger(pPosition->data, danger);
+  StoreCoup(pPosition->data, 0);
+  StoreDepth(pPosition->data, depth);
 
   return true;
 }
@@ -200,16 +213,15 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
 // et qu'il est temps de renvoyer la valeur du meilleur coup au noeud parent.
 uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 alpha, uint32 initial_alpha, uint32 danger)
 {
-  Bitboard *pTable;
+  hash_entry* pTable;
 
   // Blanc ou noir?
-  pTable = (wtm) ? whiteTranspositionTable : blackTranspositionTable;
+  pTable = (wtm) ? white_hash_table : black_hash_table;
 
   // Retrouver la position dans la table.
-  int iPosition = (maskCle & (int)cb->CleHachage);
-  pTable += iPosition * 2;
+  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
 
-  if (GetCoup((*pTable)))
+  if (GetCoup(pPosition->data))
   {
     g_transpositionOverwrite++;
   } else {
@@ -217,8 +229,7 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
   }
 
   // Mettre les informations dans la table.
-  *pTable = 0;
-  *(pTable + 1) = cb->CleHachage;
+  pPosition->key = cb->CleHachage;
   struct DeuxMot
   {
     int mot1;
@@ -231,20 +242,20 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
   };
   Donnee coup;
   coup.move = pv[ply][ply];
-  StoreCoup((*pTable), coup.deuxmot.mot1);
-  StoreDepth((*pTable), depth);
+  StoreCoup(pPosition->data, coup.deuxmot.mot1);
+  StoreDepth(pPosition->data, depth);
   int type;
   if (alpha > initial_alpha)
   {
     type = SCORE_EXACTE;
-    StoreValeur((*pTable), alpha);
+    StoreValeur(pPosition->data, alpha);
   }
   else
   {
     type = BORNE_SUPERIEUR;
-    StoreValeur((*pTable), alpha);
+    StoreValeur(pPosition->data, alpha);
   }
-  StoreType((*pTable), type);
+  StoreType(pPosition->data, type);
 
   return true;
 }
