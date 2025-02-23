@@ -70,7 +70,7 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
     }
     else if ( !xboard ) {
       printf( "\r [%d] (%2d/%d)", iProfondeurIteration, cb->MoveList[1].currmove+1,
-               cb->MoveList[1].nbmove );
+               cb->MoveList[1].nbmove);
     }
 
     // On execute le coup.

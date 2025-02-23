@@ -25,6 +25,7 @@
 #include "log.h"
 #include "eval.h"
 #include "benchmark.h"
+#include "test.h"
 
 #ifdef   TRANSPOSITION
 #include "transposition.h"
@@ -394,6 +395,12 @@ bool option(TChessBoard *cb, const string command, string& response)
   // Benchmark Monik
   if (command == "bench") {
     startBenchmark(cb);
+    return true;
+  }
+
+  // Test transpoition table
+  if (command == "testhash") {
+    testTransposition();
     return true;
   }
 

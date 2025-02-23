@@ -43,7 +43,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
   int Valeur, extension = 0, MoveCherche, danger = 0;
 #ifdef TRANSPOSITION  
   int check_ext = 0;
-  int alphaInitialie = alpha;
+  int old_alpha = alpha;
 #endif
 
   if (ply >= MAXPLY - 1)
@@ -101,10 +101,6 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
   case SCORE_EXACTE:
     alphaBetaCutoffs++;
     return alpha;
-  case BORNE_SUPERIEUR:
-    return alpha;
-  case BORNE_INFERIEUR:
-    return beta;
   }
 
 #endif
@@ -231,7 +227,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
       if (Valeur > alpha) {
         if (Valeur >= beta) {
 #ifdef TRANSPOSITION
-          storeRefutation(cb, ply, depth, wtm, Valeur, alpha, beta, check_ext);
+          storeRefutation(cb, ply, depth, wtm, Valeur, check_ext);
           g_transpositionRefutation++;
 #endif
           // Verifier si on peu l'utiliser comme killer move.
@@ -277,7 +273,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
   }
 
 #ifdef TRANSPOSITION
-  storeBest(cb, ply, depth, wtm, alpha, alphaInitialie, danger);
+  storeBest(cb, ply, depth, wtm, alpha, old_alpha, danger);
 #endif
 
   return alpha;

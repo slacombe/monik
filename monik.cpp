@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   if (!transpositionTableCreated())
   {
     // At least 32 meg of transposition table.
-    createTranspositionTable(32);
+    createTranspositionTable(32*multiplier_meg);
   }
 #endif
 

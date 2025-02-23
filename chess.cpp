@@ -292,3 +292,11 @@ bool g_bModeAnalyse = false;
 
 int ValeurPiece[] = { 0, VALPION, VALCAVALIER, VALFOU,
                          VALTOUR, VALDAME, VALROI };
+
+std::ostream& operator<<(std::ostream& os, const TMove& move) {
+	os << "TMove.From = " << move.From << endl;
+	os << "TMove.To = " << move.To << endl;
+	os << "TMove.Piece = " << move.Piece << endl;
+	os << "TMove.Capture " << move.Capture << endl;
+	return os;
+}

@@ -9,7 +9,7 @@
 #ifndef BoardH
 #define BoardH
 
-#include <iostream>
+#include <ostream>
 #include "chess.h"
 
 using namespace std;
@@ -192,6 +192,7 @@ void initialiseBoard(TChessBoard *cb);
 void initialiseBitboard(TChessBoard *cb);
 void addKiller(TChessBoard *cb, TMove move, int ply);
 void ajouteMove(TMoveList *cb, TMove move);
+
 ostream& operator<<(ostream& os, const TChessBoard* cb);
 
 //---------------------------------------------------------------------------

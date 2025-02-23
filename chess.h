@@ -9,8 +9,10 @@
 #ifndef ChessH
 #define ChessH
 
+#include <ostream>
 #include <string>
 #include <cassert>
+#include <string.h>
 
 #include "types.h"
 
@@ -57,7 +59,7 @@ constexpr int VALPION = 100;
 constexpr int VALCAVALIER = 320;
 constexpr int VALFOU = 330;
 constexpr int VALTOUR = 500;
-constexpr int VALDAME = 1200;
+constexpr int VALDAME = 900;
 constexpr int VALROI = 2000;
 
 constexpr int BOOKMOVE = 100000;
@@ -84,7 +86,7 @@ constexpr int FORKUNCERTAIN = 50;
 
 // Structure pour representer un move.
 
-class TMove
+struct TMove
 {
 public:
 	// Une structure de 64 bit.
@@ -147,6 +149,8 @@ extern char MonikHome[255];
 // benchmark
 extern bool benchmark;
 extern TMove moveToFind;
+
+std::ostream& operator<<(std::ostream& os, const TMove& move);
 
 //---------------------------------------------------------------------------
 #endif

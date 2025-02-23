@@ -18,12 +18,9 @@ uint64 mask_cle;
 hash_entry *white_hash_table = 0;
 hash_entry *black_hash_table = 0;
 
-constexpr uint64 multiplier_meg = 1024 * 1024;
-constexpr uint64 multiplier_gig = 1024 * 1024 * 1024;
-
 void createTranspositionTable(uint64 size_in_bytes)
 {
-  uint64 pos_in_table = size_in_bytes / (sizeof(Bitboard) * 2);
+  uint64 pos_in_table = size_in_bytes / sizeof(hash_entry);
 
   // Reconvertir en mega-octets.
   uint64 nb_entree_base2 = 1;
@@ -49,7 +46,11 @@ void createTranspositionTable(uint64 size_in_bytes)
 
 void createTranspositionTable(std::string size) {
   int l = size.length();
-  char unit = size[l - 1];
+  if (!isalpha(size[l-1])) {
+    size += 'm';
+  }
+  l = size.length();
+  char unit = size[l-1];
   string units = size.substr(0, l - 1);
   uint64 multiplier;
   switch(unit)  {
@@ -65,7 +66,6 @@ void createTranspositionTable(std::string size) {
       cout << "Invalid unit: " << unit << endl;
       cout << "Using megabytes by default" << endl;
       multiplier = multiplier_meg;
-      return;
   }
 
   createTranspositionTable(stoi(units) * multiplier);
@@ -96,19 +96,16 @@ void displayTranspositionStats() {
 }
 
 void clearStats() {
-  g_transpositionHit = 0;
-  g_transpositionOverwrite = 0;
   g_transpositionWrite = 0;
   g_transpositionRefutation = 0;
 }
 
 uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *beta, int *danger)
 {
-  hash_entry* pTable;
   short valeur;
 
   // Blanc ou noir?
-  pTable = (wtm) ? white_hash_table : black_hash_table;
+  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
 
   // Retrouver la position dans la table.
   hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
@@ -119,7 +116,7 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
     return 0;
   }
 
-  if (GetDepth((pPosition->data)) < depth)
+  if (GetDepth(pPosition->data) < depth)
   {
     return 0;
   }
@@ -165,7 +162,7 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
       *alpha = valeur;
       return BORNE_SUPERIEUR;
     }
-    return EVITER_NULL;
+    return HASH_MISS;
     break;
   case BORNE_INFERIEUR:
     if (valeur >= *beta)
@@ -173,17 +170,15 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
       *beta = valeur;
       return BORNE_INFERIEUR;
     }
-    return EVITER_NULL;
     break;
   }
-  return EVITER_NULL;
+  return HASH_MISS;
 }
 
 // On utilise cette fonction lorsque un coup refute le coup de la couche
 // precedente.
-uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
-                       uint32 wtm, short valeur, uint32 alpha, uint32 beta,
-                       uint32 danger)
+uint32 storeRefutation(TChessBoard *cb, int ply, int depth,
+                       int wtm, short valeur, int danger)
 {
   hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
 
@@ -203,7 +198,19 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
   int type = BORNE_INFERIEUR;
   StoreType(pPosition->data, type);
   StoreDanger(pPosition->data, danger);
-  StoreCoup(pPosition->data, 0);
+  struct DeuxMot
+  {
+    int mot1;
+    int mot2;
+  };
+  union Donnee
+  {
+    TMove move;
+    DeuxMot deuxmot;
+  };
+  Donnee coup;
+  coup.move = pv[ply][ply];
+  StoreCoup(pPosition->data, coup.deuxmot.mot1);
   StoreDepth(pPosition->data, depth);
 
   return true;
@@ -211,15 +218,12 @@ uint32 storeRefutation(TChessBoard *cb, uint32 ply, uint32 depth,
 
 // StoreBest est appelle quand tout les noeud d'un coup a ete explore
 // et qu'il est temps de renvoyer la valeur du meilleur coup au noeud parent.
-uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 alpha, uint32 initial_alpha, uint32 danger)
-{
-  hash_entry* pTable;
-
+uint32 storeBest(TChessBoard *cb, int ply, int depth, int wtm, int alpha, int initial_alpha, int danger) {
   // Blanc ou noir?
-  pTable = (wtm) ? white_hash_table : black_hash_table;
+  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
 
   // Retrouver la position dans la table.
-  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
+  hash_entry *pPosition = pTable + (mask_cle & (int)cb->CleHachage);
 
   if (GetCoup(pPosition->data))
   {
@@ -241,20 +245,20 @@ uint32 storeBest(TChessBoard *cb, uint32 ply, uint32 depth, uint32 wtm, uint32 a
     DeuxMot deuxmot;
   };
   Donnee coup;
-  coup.move = pv[ply][ply];
-  StoreCoup(pPosition->data, coup.deuxmot.mot1);
   StoreDepth(pPosition->data, depth);
   int type;
   if (alpha > initial_alpha)
   {
+    coup.move = pv[ply][ply];
     type = SCORE_EXACTE;
-    StoreValeur(pPosition->data, alpha);
   }
   else
   {
+    coup.deuxmot.mot1 = 0;
     type = BORNE_SUPERIEUR;
-    StoreValeur(pPosition->data, alpha);
   }
+  StoreValeur(pPosition->data, alpha);
+  StoreCoup(pPosition->data, coup.deuxmot.mot1);
   StoreType(pPosition->data, type);
 
   return true;

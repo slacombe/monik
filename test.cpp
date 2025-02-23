@@ -1,45 +1,55 @@
-#include <stdlib.h>
+#include <iostream>
 
 #include "test.h"
 #include "board.h"
 #include "stdio.h"
 #include "init.h"
 
-#ifdef TRANSPOSITION
 #include "transposition.h"
+
+#ifdef TRANSPOSITION
+
+using namespace std;
 
 void testTransposition()
 {
-	int ply = 0, depth = 6, wtm = 1, score = 100, alpha = -200, beta = 200, danger = 0;
+	int ply = 1, depth = 6, wtm = 1, score = 100, alpha = -200, beta = 200, danger = 1;
 
-	printf("Creating transposition table\n");
-	createTranspositionTable(32);
-	printf("Initializing transposition table\n");
-	initializeTranspositionTable();
+	cout << "Creating transposition table" << endl;
+	createTranspositionTable(32*1024*1024);
+	cout << "Initializing transposition table" << endl;
 
-	printf("Creating board\n");
+	cout << "Creating board" << endl;
 	TChessBoard* cb = (TChessBoard*)malloc(sizeof(TChessBoard));;
-	printf("Initializing data\n");
+	cout << "Initializing data" << endl;
 	initialiseData();
-	printf("Initializing board\n");
+	cout << "Initializing board" << endl;
 	initialiseBoard(cb);
-	printf("Initializing bitboard\n");
+	cout << "Initializing bitboard" << endl;
 	initialiseBitboard(cb);
 
-	printf("Storing refutation\n");
-	storeRefutation(cb, ply, depth, wtm, score, alpha, beta, danger);
-	printf("Calling lookup\n");
+	cout << "Storing refutation" << endl;
+	storeRefutation(cb, ply, depth, wtm, score, danger);
+	cout << "Calling lookup" << endl;
 	uint32 res = lookup(cb, ply, depth, wtm, &alpha, &beta, &danger);
-	wtm = 0;
-	storeRefutation(cb, ply, depth, wtm, score, alpha, beta, danger);
+	cout << "danger = " << danger << endl;
+	cout << "alpha = " << alpha << endl;
+	cout << "beta = " << beta << endl;
+	cout << "res = " << res << endl;
 
-	printf("res = %lu\n", res);
+	TMove move;
+	move.From = 62;
+	move.To = 45;
+	move.Piece = CAVALIER;
+	wtm = 0; alpha = 100; beta = 101; danger = 0;
+	pv[1][1] = move;
+	storeBest(cb, ply, 2, wtm, alpha, 0, danger);
+	uint32 resbest = lookup(cb, ply, 2, wtm, &alpha, &beta, &danger);
+	cout << "alpha = " << alpha << endl;
+	cout << "beta = " << beta << beta << endl;
+	cout << "danger = " << danger << endl;
+	cout << cb->HashMove[ply] << endl;
+	cout << "resbest = " << resbest << endl;
 	getchar();
 }
 #endif
-
-int main(int argc, char **argv) {
-	printf("Calling testTransposition\n");
-	testTransposition();
-}
-
