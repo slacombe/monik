@@ -982,8 +982,8 @@ void startBenchmark(TChessBoard* cb) {
         int wtm;
         int points = 0;
         int position = 0;
-        int timeInSecondes;
-        uint32 numberOfPositionToTest;
+        int timeInSecondes = 0;
+        uint32 numberOfPositionToTest = 0;
         char continuation[255];
         vector<BenchmarkResult> results;
 
@@ -1026,5 +1026,6 @@ void startBenchmark(TChessBoard* cb) {
         }
         benchmark = false;
         cout << "Total points: " << points << "/" << numberOfPositionToTest << endl;
+        cout << "Results percentage: " << points * 100 / numberOfPositionToTest << "%" << endl;
         initialiseBoard(cb);
 }

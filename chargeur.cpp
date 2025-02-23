@@ -100,16 +100,16 @@ bool parseFen(TChessBoard *cb, const string& fen, string& move, int &wtm) {
 
   assert(tokens.size() >= 1);
   if (tokens[0].find('K') != std::string::npos) {
-    cb->Roque |= ROQUEROIBLANC;
+    cb->Roque &= ROQUEROIBLANC;
   }
   if (tokens[0].find('Q') != std::string::npos) {
-    cb->Roque |= ROQUEDAMEBLANC;
+    cb->Roque &= ROQUEDAMEBLANC;
   }
   if (tokens[0].find('k') != std::string::npos) {
-    cb->Roque |= ROQUEROINOIR;
+    cb->Roque &= ROQUEROINOIR;
   }
   if (tokens[0].find('q') != std::string::npos) {
-    cb->Roque |= ROQUEDAMENOIR;
+    cb->Roque &= ROQUEDAMENOIR;
   }  
 
   // Les coups en passant.
