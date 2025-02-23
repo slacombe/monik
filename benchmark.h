@@ -3,6 +3,6 @@
 
 #include "board.h"
 
-void benchmark(TChessBoard* cb);
+void startBenchmark(TChessBoard* cb);
 
 #endif

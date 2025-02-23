@@ -557,6 +557,10 @@ void setCurrentMoveScore(TMoveList *ml, int score) {
   ml->moves[ml->currmove].Score = score;
 }
 
+int movesAreEqual(TMove *dest, TMove *src) {
+  return dest->From == src->From && dest->To == src->To;
+}
+
 ostream& operator<<(ostream& os, const TChessBoard* cb) {
   for(int i=A8; i<=H1; i++) {
     cout << setw(2) << (int)cb->board[i] << " ";

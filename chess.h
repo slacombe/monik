@@ -143,5 +143,9 @@ extern const char *nomProgramme;
 
 extern char MonikHome[255];
 
+// benchmark
+extern bool benchmark;
+extern TMove moveToFind;
+
 //---------------------------------------------------------------------------
 #endif

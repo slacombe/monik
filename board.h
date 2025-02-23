@@ -182,6 +182,7 @@ typedef struct {
 void copie(TMoveList *dest, TMoveList *src);
 void tri(TMoveList *ml);
 void vide(TMoveList *ml);
+int movesAreEqual(TMove *dest, TMove *src);
 
 TMove currentMove(TMoveList* ml); 
 void choisiMove(TChessBoard *cb, TMoveList *ml, int ply, int wtm);

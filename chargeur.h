@@ -8,7 +8,7 @@
 using namespace std;
 
 bool loadPosition(TChessBoard *cb, const string& filename);
-bool parseFen(TChessBoard *cb, const string& fen);
+bool parseFen(TChessBoard *cb, const string& fen, string& move, int &wtm);
 
 //---------------------------------------------------------------------------
 #endif

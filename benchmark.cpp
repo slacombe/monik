@@ -4,8 +4,16 @@
 #include "chargeur.h"
 #include "board.h"
 #include "init.h"
+#include "iteration.h"
+#include "make.h"
+#include "entree.h"
+#include "chess.h"
+#include "sortie.h"
+#include "system.h"
 
 using namespace std;
+
+// EPD took here: https://github.com/ChrisWhittington/Chess-EPDs/blob/master/benchmark.epd
 
 const vector<string> testPositions = {
         "1R6/1brk2p1/4p2p/p1P1Pp2/P7/6P1/1P4P1/2R3K1 w - - 0 1 bm b8b7",
@@ -958,10 +966,65 @@ const vector<string> testPositions = {
         "8/3b2kp/4p1p1/pr1n4/N1N4P/1P4P1/1K3P2/3R4 w - - 0 1 bm a4c3"
 };
 
-void benchmark(TChessBoard* cb) {
-        for (const string& fen : testPositions) {
-                cout << "FEN: " << fen << endl;
-                parseFen(cb, fen);
-                cout << cb << endl;
+bool benchmark;
+TMove moveToFind;
+
+typedef struct {
+        string fen;
+        int timeToFind;
+        int depthToFind;
+        int scoreReturned;
+        string pv;
+} BenchmarkResult;
+
+void startBenchmark(TChessBoard* cb) {
+        string move;
+        int wtm;
+        int points = 0;
+        int position = 0;
+        int timeInSecondes;
+        uint32 numberOfPositionToTest;
+        char continuation[255];
+        vector<BenchmarkResult> results;
+
+        cout << "Time per position in secondes? ";
+        cin >> timeInSecondes;
+        cout << "Number of positions to test (1-" << testPositions.size() << ")? ";
+        while(numberOfPositionToTest < 1 || numberOfPositionToTest > testPositions.size()) {
+                cin >> numberOfPositionToTest;
         }
+
+        benchmark = true;
+        for (uint32 i=0; i<numberOfPositionToTest-1; i++) {
+                string fen = testPositions[i];
+                position++;
+                cout << "Number: " << position << "/" << numberOfPositionToTest << endl;
+                cout << "FEN: "  << fen << endl;
+                parseFen(cb, fen, move, wtm);
+                parse(cb, move.c_str(), 1, wtm, moveToFind);
+                iMoveTime = timeInSecondes * 100;
+                int timestamp = TempsCenti();
+                int score = iteration(cb, wtm);
+                if (interrupted) {
+                        cout << "Interrupted!" << endl;
+                        break;;
+                }
+                cout << endl;
+                if (movesAreEqual(&pv[1][1], &moveToFind)) {
+                        cout << "Found: " << ++points << "/" << numberOfPositionToTest << endl;
+
+                        BenchmarkResult result;
+                        result.fen = fen;
+                        result.timeToFind = TempsCenti() - timestamp;
+                        result.depthToFind = iProfondeurIteration;
+                        result.scoreReturned = score;
+                        getPV(continuation, &pv[1][1], 1);
+                        result.pv = continuation;
+                } else {
+                        cout << "Not found: " << points << "/" << numberOfPositionToTest << endl;
+                }
+        }
+        benchmark = false;
+        cout << "Total points: " << points << "/" << numberOfPositionToTest << endl;
+        initialiseBoard(cb);
 }

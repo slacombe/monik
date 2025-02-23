@@ -7,7 +7,7 @@ objects = obj/monik.obj obj/board.obj obj/init.obj obj/iteration.obj obj/racine.
 	  obj/search.obj obj/chess.obj obj/utile.obj obj/quies.obj obj/genmove.obj obj/eval.obj obj/next.obj\
 	  obj/valide.obj obj/repetition.obj obj/sortie.obj obj/entree.obj obj/log.obj obj/nextracine.obj\
 	  obj/edit.obj obj/attaque.obj obj/chargeur.obj obj/book.obj obj/transposition.obj obj/time.obj\
-	  obj/system.obj obj/system-windows.obj obj/stats.obj obj/benchmark.obj
+	  obj/system.obj obj/system-windows.obj obj/stats.obj obj/startBenchmark.obj
 
 obj/%.obj: ../%.cpp
 	$(CC) $(CPPFLAGS) -c $< -o $@ 

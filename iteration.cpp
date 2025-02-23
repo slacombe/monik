@@ -2,27 +2,27 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 
-#include "log.h"
-#include "iteration.h"
 #include "board.h"
+#include "book.h"
+#include "chess.h"
+#include "eval.h"
 #include "genmove.h"
+#include "hung.h"
+#include "iteration.h"
+#include "log.h"
 #include "make.h"
-#include "unmake.h"
+#include "quies.h"
+#include "racine.h"
 #include "search.h"
 #include "sortie.h"
-#include "eval.h"
-#include "quies.h"
-#include "hung.h"
-#include "utile.h"
-#include "transposition.h"
-#include "chess.h"
-#include "racine.h"
-#include "system.h"
-#include "book.h"
 #include "stats.h"
+#include "system.h"
+#include "transposition.h"
+#include "unmake.h"
+#include "utile.h"
 
 int prev_root_score, root_score, root_alpha, root_beta;
 
@@ -47,8 +47,7 @@ using namespace std;
 //
 // Cette routine appelle la negamax par iteration.
 //
-int iteration(TChessBoard *cb, int wtm)
-{
+int iteration(TChessBoard *cb, int wtm) {
 #ifdef TRANSPOSITION
   g_transpositionHit = g_transpositionOverwrite = 0;
   g_transpositionRefutation = 0;
@@ -68,24 +67,25 @@ int iteration(TChessBoard *cb, int wtm)
   choisiMove(cb, &cb->MoveList[1], 1, wtm);
 
   if (book(cb, wtm, cb->MoveList[1])) {
-	return BOOKMOVE;
+    return BOOKMOVE;
   }
 
   // Maintenant, executer chaque coup et l'evaluer pour lui donner un score de
   // depart.
-  for( int i=0; i<cb->MoveList[1].nbmove; i++ ) {
+  for (int i = 0; i < cb->MoveList[1].nbmove; i++) {
     makeMove(cb, 1, cb->MoveList[1].moves[i], wtm);
-    if ( wtm ) {
+    if (wtm) {
       cb->MoveList[1].moves[i].Score = eval(cb, 1, wtm, -INFINI, INFINI);
-	  if ( cb->MoveList[1].moves[i].Capture ) {
-		  cb->MoveList[1].moves[i].Score -= ValeurPiece[cb->MoveList[1].moves[i].Piece];
-	  }
-    }
-    else {
+      if (cb->MoveList[1].moves[i].Capture) {
+        cb->MoveList[1].moves[i].Score -=
+            ValeurPiece[cb->MoveList[1].moves[i].Piece];
+      }
+    } else {
       cb->MoveList[1].moves[i].Score = -eval(cb, 1, wtm, -INFINI, INFINI);
-	  if ( cb->MoveList[1].moves[i].Capture ) {
-		  cb->MoveList[1].moves[i].Score -= ValeurPiece[cb->MoveList[1].moves[i].Piece];
-	  }
+      if (cb->MoveList[1].moves[i].Capture) {
+        cb->MoveList[1].moves[i].Score -=
+            ValeurPiece[cb->MoveList[1].moves[i].Piece];
+      }
     }
     unmakeMove(cb, 1, cb->MoveList[1].moves[i], wtm);
   }
@@ -97,22 +97,21 @@ int iteration(TChessBoard *cb, int wtm)
   timestamp = TempsCenti();
 
   // Nb de coups � faire pour ce temps.
-  int nbCoups = cb->NoCoups/2;
+  int nbCoups = cb->NoCoups / 2;
   nbCoups = nbCoups % iNbCoups;
   int coupsRestants = iNbCoups - nbCoups;
-  if (coupsRestants < 4) 
-	  coupsRestants = 4;
+  if (coupsRestants < 4)
+    coupsRestants = 4;
   // La tranche de temps allou�e.
   if (iMoveTime != 0)
-	timeslot = iMoveTime;
+    timeslot = iMoveTime;
   else
-	timeslot = iEngTime / coupsRestants;
-
+    timeslot = iEngTime / coupsRestants;
 
 #ifdef JOURNAL
   char Text[80];
-  sprintf( Text, "iTempRestants: %d", iTempRestants );
-  log.log( Text );
+  sprintf(Text, "iTempRestants: %d", iTempRestants);
+  log.log(Text);
 #endif
 
   // On creuse.
@@ -124,142 +123,125 @@ int iteration(TChessBoard *cb, int wtm)
   timeabort = false;
   pv[1][1].Score = 0;
   char szContinuation[200];
-  while(iProfondeurIteration < MAXPLY && (!timeabort || g_bModeAnalyse)) {
+  while (iProfondeurIteration < MAXPLY && (!timeabort || g_bModeAnalyse)) {
 
     cb->MoveList[1].currmove = -1;
-//    printf( "\n" );
+    //    printf( "\n" );
     // Si on est a la premiere iteration, grande fenetre.
     // Sinon, alpha = dernier score - 40 et beta = score + 40.
     // Si ce n'est pas le premier coup de la liste alors la fenetre
     // est retrecie a n et n+1.
-    if ( iProfondeurIteration > 1 ) {
+    if (iProfondeurIteration > 1) {
       root_alpha = prev_root_score - 40;
-	  root_beta = prev_root_score + 40;
-	  gameLog.log( "root_alpha = %d, root_beta = %d", root_alpha, root_beta );
-    }
-    else {
+      root_beta = prev_root_score + 40;
+      gameLog.log("root_alpha = %d, root_beta = %d", root_alpha, root_beta);
+    } else {
       root_alpha = -INFINI;
       root_beta = INFINI;
     }
 
-    root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
-    if ( root_score >= root_beta ) {
-	  // Stretch the beta limit.
-      root_alpha = root_beta-1;
+    root_score =
+        searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
+    if (root_score >= root_beta) {
+      // Stretch the beta limit.
+      root_alpha = root_beta - 1;
       root_beta = INFINI;
 
-	  // Display the move that failed high.
-	  sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
+      // Display the move that failed high.
+      sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
 
-	  // Prepare to research the move.
-	  cb->MoveList[1].currmove--;
-	  if ( xboard ) {
-		  if ( g_bModeAnalyse ) {
-			printf( "%d %d %d %d %s!\n", iProfondeurIteration,
-					root_score,
-					(TempsCenti()-timestamp),
-					iNodes, szContinuation );
-		  }
-		  else {
-			printf( "%d %d %d %d %s!\n", iProfondeurIteration,
-					root_score,
-					(TempsCenti()-timestamp),
-					iNodes, szContinuation );
-		  }
-	  }
-	  else {
-		printf( "\r [%d] (%2d/%d)  n: %8d  %5.2f        ++ %s!\n",
-			iProfondeurIteration,
-			cb->MoveList[1].currmove+2,
-			cb->MoveList[1].nbmove,
-			iNodes,	
-			(TempsCenti()-timestamp)/100.0,
-			szContinuation );
-	  }
-	  gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        ++ %s!",
-		iProfondeurIteration,
-		cb->MoveList[1].currmove+2,
-		cb->MoveList[1].nbmove,
-		iNodes,
-		(TempsCenti()-timestamp)/100.0,
-		szContinuation );
-		  
-	root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
-    }
-    else if ( root_score <= root_alpha && !timeabort && !interrupted ) {
+      // Prepare to research the move.
+      cb->MoveList[1].currmove--;
+      if (xboard) {
+        if (g_bModeAnalyse) {
+          printf("%d %d %d %d %s!\n", iProfondeurIteration, root_score,
+                 (TempsCenti() - timestamp), iNodes, szContinuation);
+        } else {
+          printf("%d %d %d %d %s!\n", iProfondeurIteration, root_score,
+                 (TempsCenti() - timestamp), iNodes, szContinuation);
+        }
+      } else {
+        printf("\r [%d] (%2d/%d)  n: %8d  %5.2f        ++ %s!\n",
+               iProfondeurIteration, cb->MoveList[1].currmove + 2,
+               cb->MoveList[1].nbmove, iNodes,
+               (TempsCenti() - timestamp) / 100.0, szContinuation);
+      }
+      gameLog.log("[%2d] (%2d/%d) n: %8d  %5.2f        ++ %s!",
+                  iProfondeurIteration, cb->MoveList[1].currmove + 2,
+                  cb->MoveList[1].nbmove, iNodes,
+                  (TempsCenti() - timestamp) / 100.0, szContinuation);
 
-	  // Stretch the alpha limit.
-	  //root_beta = root_alpha+1;
-	root_alpha = -INFINI;
+      root_score =
+          searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
+    } else if (root_score <= root_alpha && !timeabort && !interrupted) {
 
-	  // Display the move that failed low.
-	  sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
+      // Stretch the alpha limit.
+      // root_beta = root_alpha+1;
+      root_alpha = -INFINI;
 
-	  // Research the move.
-	cb->MoveList[1].currmove--;
-	if ( xboard ) {
-		printf( "%d %d %d %d %s?\n", iProfondeurIteration,
-		root_score,
-		(TempsCenti()-timestamp),
-		iNodes, szContinuation );
-	}
-	else {
-		printf( "\r [%d] (%2d/%d)  n: %8d  %5.2f       --  %s?\n",
-			iProfondeurIteration,
-			cb->MoveList[1].currmove+2,
-			cb->MoveList[1].nbmove,
-			iNodes,	
-			(TempsCenti()-timestamp)/100.0,
-			szContinuation );
-	}
-	gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f        -- %s?", iProfondeurIteration,
-		cb->MoveList[1].currmove+2,
-		cb->MoveList[1].nbmove,
-		iNodes,
-		(TempsCenti()-timestamp)/100.0,
-		szContinuation );
-      root_score = searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
+      // Display the move that failed low.
+      sortieMove(currentMove(&cb->MoveList[1]), szContinuation);
+
+      // Research the move.
+      cb->MoveList[1].currmove--;
+      if (xboard) {
+        printf("%d %d %d %d %s?\n", iProfondeurIteration, root_score,
+               (TempsCenti() - timestamp), iNodes, szContinuation);
+      } else {
+        printf("\r [%d] (%2d/%d)  n: %8d  %5.2f       --  %s?\n",
+               iProfondeurIteration, cb->MoveList[1].currmove + 2,
+               cb->MoveList[1].nbmove, iNodes,
+               (TempsCenti() - timestamp) / 100.0, szContinuation);
+      }
+      gameLog.log("[%2d] (%2d/%d) n: %8d  %5.2f        -- %s?",
+                  iProfondeurIteration, cb->MoveList[1].currmove + 2,
+                  cb->MoveList[1].nbmove, iNodes,
+                  (TempsCenti() - timestamp) / 100.0, szContinuation);
+      root_score =
+          searchRacine(cb, iProfondeurIteration, wtm, root_alpha, root_beta);
     }
 
-    if ( interrupted ) {
-		char buf[4];
-		int c = getc(stdin);
-		gameLog.log("Interrompu pour: %c", c);
-		if (c == '.') {
-			cin >> buf;
-		    char continuation[200];
-			getPV(continuation, &pv[1][1], iProfondeurIteration);
-			printf( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
-                (TempsCenti() - timestamp),
-       	        iNodes, continuation );
-			gameLog.log( "%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
-                (TempsCenti() - timestamp),
-       	        iNodes, continuation);
-			interrupted = false;
-		}
-		else {
-			ungetc(c, stdin);
-			break;
-		}
-	}
+    if (interrupted) {
+      char buf[4];
+      int c = getc(stdin);
+      gameLog.log("Interrompu pour: %c", c);
+      if (c == '.') {
+        cin >> buf;
+        char continuation[200];
+        getPV(continuation, &pv[1][1], iProfondeurIteration);
+        printf("%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
+               (TempsCenti() - timestamp), iNodes, continuation);
+        gameLog.log("%d %d %d %d %s\n", iProfondeurIteration, pv[1][1].Score,
+                    (TempsCenti() - timestamp), iNodes, continuation);
+        interrupted = false;
+      } else {
+        ungetc(c, stdin);
+        break;
+      }
+    }
 
-    if ( !g_bModeAnalyse && root_score >= MATE-50 ) {
-      printf( "Mate\n" );
+    if (!g_bModeAnalyse && root_score >= MATE - 50) {
+      printf("Mate\n");
       break;
     }
 
-    if ( !g_bModeAnalyse && root_score <= -MATE+50 ) {
+    if (!g_bModeAnalyse && root_score <= -MATE + 50) {
       break;
     }
 
-    if ( iProfondeurIteration >= 40 && root_score == 0 )
+    if (iProfondeurIteration >= 40 && root_score == 0) {
       break;
+    }
 
-	if ( cb->MoveList[1].nbmove == 1 && iProfondeurIteration > 3 ) {
-		break;
-	}
+    if (cb->MoveList[1].nbmove == 1 && iProfondeurIteration > 3) {
+      break;
+    }
 
-	tri(&cb->MoveList[1]);
+    if (benchmark && movesAreEqual(&pv[1][1], &moveToFind)) {
+	    break;
+    }
+
+    tri(&cb->MoveList[1]);
 
     iProfondeurIteration++;
     prev_root_score = root_score;

@@ -37,7 +37,9 @@ bool loadPosition(TChessBoard *cb, const string& filename)
   std::string line;
   std::getline(f, line);
 
-  parseFen(cb, line);
+  int wtm;
+  string move;
+  parseFen(cb, line, move, wtm);
 
   f.close();
 
@@ -56,7 +58,7 @@ bool loadPosition(TChessBoard *cb, const string& filename)
 //     les majuscules.
 //     P = pion, N = cavalier, B = fou, R = tour, Q = dame, K = king.
 // /   Saute a la prochaine rangee.
-bool parseFen(TChessBoard *cb, const string& fen) {
+bool parseFen(TChessBoard *cb, const string& fen, string& move, int &wtm) {
   char ch;
   int posCourante = A8;
   uint32 i = 0;
@@ -124,6 +126,8 @@ bool parseFen(TChessBoard *cb, const string& fen) {
 
   // Le nombre de coups.
   cb->NoCoups = atoi(tokens[3].c_str());
+
+  move = tokens[tokens.size() - 1];
 
   initialiseBitboard(cb);
 

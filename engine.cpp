@@ -27,6 +27,7 @@
 #include "search.h"
 #include "transposition.h"
 #include "stats.h"
+#include "benchmark.h"
 
 using namespace std;
 

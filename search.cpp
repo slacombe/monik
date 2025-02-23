@@ -79,6 +79,9 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
         } else {
           interrupted = true;
         }
+      } if (c == 'x') {
+        benchmark = false;
+        interrupted = true;
       } else {
         ungetc(c, stdin);
         interrupted = true;

@@ -9,6 +9,9 @@ extern int maxply;
 extern int prev_root_score, root_score, root_alpha, root_beta;
 extern int timestamp, timeslot, timeabort, timeextension;
 extern int nbevals, iNodes;
+extern int iMoveTime;
+extern int iProfondeurIteration;
+extern int interrupted;
 
 int iteration(TChessBoard *cb, int wtm);
 

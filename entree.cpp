@@ -150,8 +150,7 @@ bool option(TChessBoard *cb, const string command, string& response)
 
   if (command == "quit") {
     gameLog << cb;
-    exiting = true;
-    return true;
+    exit(0);
   }
 
   if (command == "eval") {
@@ -394,7 +393,7 @@ bool option(TChessBoard *cb, const string command, string& response)
 
   // Benchmark Monik
   if (command == "bench") {
-    benchmark(cb);
+    startBenchmark(cb);
     return true;
   }
 
