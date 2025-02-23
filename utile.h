@@ -100,7 +100,7 @@ int gagneOpposition(int doit_joue, int roi_blanc, int roi_noir);
 
 // Macro qui determine si c'est le temp d'appeler quiescence ou
 // encore Search.
-#define ABSearch(cb, depth, ply, wtm, alpha, beta, do_null ) (depth<=0?quiescence(cb, ply, wtm, alpha, beta ):search(cb, depth, ply, wtm, alpha, beta, do_null))
+#define ABSearch(cb, depth, ply, wtm, alpha, beta) (depth<=0?quiescence(cb, ply, wtm, alpha, beta):search(cb, depth, ply, wtm, alpha, beta))
 
 // Macro qui OR les bitboars.
 #define Cavalier ((cb->cavalierb | cb->cavaliern))

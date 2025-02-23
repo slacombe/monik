@@ -1,6 +1,6 @@
 CC	= clang++
 
-CPPFLAGS = -Wall -D_CRT_SECURE_NO_WARNINGS -DNULL_MOVE -DUSE_SEE -DTRANSPOSITION -DICSTALK
+CPPFLAGS = -Wall -D_CRT_SECURE_NO_WARNINGS -DUSE_SEE -DTRANSPOSITION
 LDFLAGS = -static
 
 objects = obj/monik.obj obj/board.obj obj/init.obj obj/iteration.obj obj/racine.obj obj/make.obj obj/unmake.obj obj/engine.obj\

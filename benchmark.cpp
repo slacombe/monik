@@ -995,10 +995,9 @@ void startBenchmark(TChessBoard* cb) {
         }
 
         benchmark = true;
-        for (uint32 i=0; i<numberOfPositionToTest-1; i++) {
+        for (uint32 i=0; i<numberOfPositionToTest; i++) {
                 string fen = testPositions[i];
                 position++;
-                cout << "Number: " << position << "/" << numberOfPositionToTest << endl;
                 cout << "FEN: "  << fen << endl;
                 parseFen(cb, fen, move, wtm);
                 parse(cb, move.c_str(), 1, wtm, moveToFind);
@@ -1010,6 +1009,7 @@ void startBenchmark(TChessBoard* cb) {
                         break;;
                 }
                 cout << endl;
+                cout << "Number: " << position << "/" << numberOfPositionToTest << endl;
                 if (movesAreEqual(&pv[1][1], &moveToFind)) {
                         cout << "Found: " << ++points << "/" << numberOfPositionToTest << endl;
 

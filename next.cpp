@@ -26,11 +26,11 @@ int nextMove(TChessBoard* cb, int ply, int wtm)
 #ifdef TRANSPOSITION
       Phase[ply] = HASH_MOVE;
 #else
-      Phase[ply] = PV_MOVE;
+      Phase[ply] = GENERATE_CAPTURE_MOVES;
 #endif
       return false;
     case HASH_MOVE:
-      Phase[ply] = PV_MOVE;
+      Phase[ply] = GENERATE_CAPTURE_MOVES;
       if (valideMove(cb, ply, wtm, cb->HashMove[ply])) {
         cb->MoveList[ply].currmove = 0;
         cb->MoveList[ply].moves[0] = cb->HashMove[ply];
@@ -39,17 +39,6 @@ int nextMove(TChessBoard* cb, int ply, int wtm)
       }
       else
         return false;
-    case PV_MOVE:
-      Phase[ply] = GENERATE_CAPTURE_MOVES;
-      if (valideMove(cb, ply, wtm, pv[1][ply])) {
-        cb->MoveList[ply].currmove = 0;
-        cb->MoveList[ply].moves[cb->MoveList[ply].currmove] =
-          pv[1][ply];
-        cb->MoveList[ply].nbmove = 1;
-        return true;
-      }
-      else
-       return false;
     case GENERATE_CAPTURE_MOVES:
       Phase[ply] = CAPTURE_MOVES;
       cb->MoveList[ply].currmove = -1;

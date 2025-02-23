@@ -39,7 +39,7 @@ extern int interrupted;
 extern int g_bCanAbort;
 
 // Algorithme de recherche MinMax avec des coupes Alpha-Beta.
-int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bool do_null) {
+int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
   int Valeur, extension = 0, MoveCherche, danger = 0;
 #ifdef TRANSPOSITION  
   int check_ext = 0;
@@ -105,53 +105,20 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
     return alpha;
   case BORNE_INFERIEUR:
     return beta;
-  case EVITER_NULL:
-    do_null = false;
   }
 
-#endif
-
-#ifdef NULL_MOVE
-
-  // En premier, on essai le NULL MOVE.
-  if (do_null) {
-    int nbPiece = wtm ? cb->TotalMaterielBlanc : cb->TotalMaterielNoir;
-    if (!cb->inCheck[ply] && nbPiece > 5 && depth > 3 && alpha == beta - 1) {
-      int EnPassant = cb->EnPassant[ply + 1];
-      cb->EnPassant[ply + 1] = -1;
-      cb->EnPassant[ply + 1] = -1;
-      Valeur = -search(cb, depth - 3, ply + 1, !wtm, -beta, -beta + 1, false);
-      cb->EnPassant[ply + 1] = EnPassant;
-      if (Valeur >= beta) {
-#ifdef TRANSPOSITION
-        storeRefutation(cb, ply, depth, wtm, Valeur, alpha, beta, danger);
-#endif
-        nullMoveRefutationCount++;
-        alphaBetaCutoffs++;
-        return Valeur;
-      }
-      if (Valeur <= -MATE + 50)
-        danger = 1;
-    }
-  }
 #endif
 
 #ifdef TRANSPOSITION
   Phase[ply] = HASH_MOVE;
 #else
-  //  if ( ((!(ply&1) && alpha==root_alpha && beta==root_beta) ||
-  //     ( (ply&1) && alpha==-root_beta && beta==-root_alpha)) )
   Phase[ply] = PV_MOVE;
-  //  else
-  //    Phase[ply] = GENERATE_CAPTURE_MOVES;
 #endif
 
   // Maintenant, evaluer chaque coup.
   MoveCherche = 0;
   while (Phase[ply] != NO_MORE_MOVES && !interrupted) {
     if (nextMove(cb, ply, wtm)) {
-      // Si
-
       // On execute le coup.
       makeMove(cb, ply, currentMove(&cb->MoveList[ply]), wtm);
       // Mettre le coup dans le chemin actuel.
@@ -235,14 +202,14 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta, bo
         }
         if (inpv) {
           Valeur = -ABSearch(cb, depth - 1 + extension + danger, ply + 1, !wtm,
-                             -beta, -alpha, true);
+                             -beta, -alpha);
         } else {
           Valeur = -ABSearch(cb, depth - 1 + extension + danger, ply + 1, !wtm,
-                             -alpha - 1, -alpha, true);
+                             -alpha - 1, -alpha);
           if (Valeur > alpha && Valeur < beta) {
             pvsresearch++;
             Valeur = -ABSearch(cb, depth - 1 + extension + danger, ply + 1,
-                               !wtm, -beta, -alpha, true);
+                               !wtm, -beta, -alpha);
           }
         }
       } else {

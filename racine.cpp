@@ -96,12 +96,12 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
     // Si c'est la variation principale, Fenetre normale, sinon,
     // fenetre est n et n+1.
     if ( cb->MoveList[1].currmove == 0 ) {
-      Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -beta, -alpha, true);
+      Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -beta, -alpha);
     }
     else {
-      Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -alpha-1, -alpha, true);
+      Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -alpha-1, -alpha);
       if ( Valeur > alpha && Valeur < beta ) {
-        Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -beta, -alpha, true);
+        Valeur = -ABSearch(cb, depth-1+extension, 2, !wtm, -beta, -alpha);
       }
     }
 
