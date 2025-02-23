@@ -1,4 +1,5 @@
 #include <vector>
+#include <fstream>
 #include <string>
 
 #include "chargeur.h"
@@ -994,6 +995,8 @@ void startBenchmark(TChessBoard* cb) {
                 cin >> numberOfPositionToTest;
         }
 
+        std::ofstream not_resolved("notresolved.epd");
+
         benchmark = true;
         for (uint32 i=0; i<numberOfPositionToTest; i++) {
                 string fen = testPositions[i];
@@ -1022,6 +1025,7 @@ void startBenchmark(TChessBoard* cb) {
                         result.pv = continuation;
                 } else {
                         cout << "Not found: " << points << "/" << numberOfPositionToTest << endl;
+                        not_resolved << fen << endl;
                 }
         }
         benchmark = false;

@@ -29,7 +29,7 @@ extern int wtm;
 
 //---------------------------------------------------------------------------
 
-const char *nomProgramme = "Monik v2.2.8";
+const char *nomProgramme = "Monik v2.3";
 
 void Interrupt(int)
 {
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
   initialiseData();
 
-  TChessBoard* cb = (TChessBoard*)malloc(sizeof(TChessBoard));;
+  TChessBoard* cb = new TChessBoard;
   initialiseBoard(cb);
   initialiseBitboard(cb);
 

@@ -52,94 +52,159 @@ int trouverDernierJournal();
 int gagneOpposition(int doit_joue, int roi_blanc, int roi_noir);
 
 // Des macros pour travailler sur les bits.
-#define ClearBit( board, position )       (board &= ~mask[position])
+inline void ClearBit(Bitboard& board, Bitboard position) {
+  board &= ~mask[position];
+}
 
-#define ClearR90R( board, position )   (board &= ~mask[ Rotate90RMap[ position ] ])
+inline void ClearR90R(Bitboard& board, Bitboard position) {
+  board &= ~mask[Rotate90RMap[ position ]];
+}
 
-#define ClearR90L( board, position )   (board &= ~mask[ Rotate90LMap[ position ] ])
+inline void ClearR90L(Bitboard& board, Bitboard position) {
+  board &= ~mask[Rotate90LMap[ position]];
+}
 
-#define ClearR45L( board, position )   (board &= ~mask[ Rotate45LRealMap[ position ] ])
+inline void ClearR45L(Bitboard& board, Bitboard position) {
+  board &= ~mask[Rotate45LRealMap[position]];
+}
 
-#define ClearR45R( board, position )   (board &= ~mask[ Rotate45RRealMap[ position ] ])
+inline void ClearR45R(Bitboard& board, Bitboard position) {
+  board &= ~mask[Rotate45RRealMap[position]];
+}
 
-#define SetBit( board, position )         (board |= mask[position])
+inline void SetBit(Bitboard& board, Bitboard position) {
+  board |= mask[position];
+}
 
-#define SetR90R( board, position )     (board |= mask[ Rotate90RMap[ position ] ])
+inline void SetR90R(Bitboard& board, Bitboard position) {
+  board |= mask[Rotate90RMap[position]];
+}
 
-#define SetR90L( board, position )     (board |= mask[ Rotate90LMap[ position ] ])
+inline void SetR90L(Bitboard& board, Bitboard position) {
+  board |= mask[Rotate90LMap[position]];
+}
 
-#define SetR45L( board, position )     (board |= mask[ Rotate45LRealMap[ position ] ])
+inline void SetR45L(Bitboard& board, Bitboard position) {
+  board |= mask[Rotate45LRealMap[position]];
+}
 
-#define SetR45R( board, position )     (board |= mask[ Rotate45RRealMap[ position ] ])
+inline void SetR45R(Bitboard& board, Bitboard position) {
+  board |= mask[Rotate45RRealMap[position]];
+}
 
-#define MovePiece( board, move )       ClearBit( board, move.From ); SetBit( board, move.To )
+inline void MovePiece(Bitboard& board, const TMove& move) {
+  ClearBit(board, move.From);
+  SetBit(board, move.To);
+}
 
-#define MovePieceR90R( board, move )   ClearR90( board, move.From );   SetR90( board, move.To )
+inline void MovePieceR90R(Bitboard& board, const TMove& move) {
+  ClearR90R(board, move.From);
+  SetR90R(board, move.To);
+}
 
-#define MovePieceR90L( board, move )   ClearR90L( board, move.From ); SetR90L( board, move.To )
+inline void MovePieceR90L(Bitboard& board, const TMove& move) {
+  ClearR90L(board, move.From);
+  SetR90L(board, move.To);
+}
 
-#define MovePieceR45L( board, move )   ClearR45L( board, move.From ); SetR45L( board, move.To )
+inline void MovePieceR45L(Bitboard& board, const TMove& move) {
+  ClearR45L(board, move.From);
+  SetR45L(board, move.To);
+}
 
-#define MovePieceR45R( board, move )   ClearR45R( board, move.From ); SetR45R( board, move.To )
+inline void MovePieceR45R(Bitboard& board, const TMove& move) {
+  ClearR45R(board, move.From);
+  SetR45R(board, move.To);
+}
 
-#define CalculX( pos )   (pos % 8)
-#define CalculY( pos )   (pos / 8)
-#define Carre( valeur )  (Valeur*Valeur)
-#define DistanceX( v1, v2 )   ( abs( CalculX( v2 ) - CalculX( v1 ) ) )
-#define DistanceY( v1, v2 )   ( abs( CalculY( v2 ) - CalculY( v1 ) ) )
+constexpr int CalculX(int pos) {
+  return pos % 8;
+}
 
-#define File( pos )   ((pos)&(0x07))
-#define Rank( pos )   ((pos>>3)&(0x07))
-#define FileDistance(a,b) abs(((a)&7) - ((b)&7))
-#define RankDistance(a,b) abs(((a)>>3) - ((b)>>3))
+constexpr int CalculY(int pos) {
+  return pos / 8;
+}
 
-#define min( x, y )   ((x>y)?y:x)
+constexpr int Carre(int valeur) {
+  return valeur * valeur;
+}
+
+constexpr int DistanceX(int v1, int v2) {
+  return abs(CalculX(v2) - CalculX(v1));
+}
+
+constexpr int DistanceY(int v1, int v2) {
+  return abs(CalculY(v2) - CalculY(v1));
+}
+
+constexpr int File(int pos) {
+  return pos & 0x07;
+}
+
+constexpr int Rank(int pos) {
+  return (pos >> 3) & 0x07;
+}
+
+constexpr int FileDistance(int a, int b) {
+  return abs((a & 7) - (b & 7));
+}
+
+constexpr int RankDistance(int a, int b) {
+  return abs((a >> 3) - (b >> 3));
+}
+
+constexpr int min(int x, int y) {
+  return (x > y) ? y : x;
+}
 
 // En colonne et en rangee.
-#define Distance( pos1, pos2 )   ( DistanceX( pos1, pos2 ) + DistanceY( pos1, pos2 ) )
+constexpr int Distance(int pos1, int pos2) {
+  return DistanceX(pos1, pos2) + DistanceY(pos1, pos2);
+}
 
 // Macro qui determine si c'est le temp d'appeler quiescence ou
 // encore Search.
-#define ABSearch(cb, depth, ply, wtm, alpha, beta) (depth<=0?quiescence(cb, ply, wtm, alpha, beta):search(cb, depth, ply, wtm, alpha, beta))
+constexpr auto ABSearch = [](auto* cb, int depth, int ply, int wtm, int alpha, int beta) {
+  return (depth <= 0 ? quiescence(cb, ply, wtm, alpha, beta) : search(cb, depth, ply, wtm, alpha, beta));
+};
 
 // Macro qui OR les bitboars.
-#define Cavalier ((cb->cavalierb | cb->cavaliern))
-#define Fou      ((cb->foub | cb->foun))
-#define Tour     ((cb->tourb | cb->tourn))
-#define Dame     ((cb->dameb | cb->damen))
-#define DameFou  ((Dame | Fou))
-#define DameTour ((Dame | Tour))
+constexpr Bitboard Cavalier(TChessBoard *cb) { return (cb->cavalierb | cb->cavaliern); }
+constexpr Bitboard Fou(TChessBoard *cb) { return (cb->foub | cb->foun); }
+constexpr Bitboard Tour(TChessBoard *cb) { return (cb->tourb | cb->tourn); }
+constexpr Bitboard Dame(TChessBoard *cb) { return (cb->dameb | cb->damen); }
+constexpr Bitboard DameFou(TChessBoard *cb) { return (Dame(cb) | Fou(cb)); }
+constexpr Bitboard DameTour(TChessBoard *cb) { return (Dame(cb) | Tour(cb)); }
 
-#define And( x, y )  ((x & y))
-#define Or( x, y )   ((x | y))
-#define Xor( x, y )  ((x ^ y))
+constexpr Bitboard And(Bitboard x, Bitboard y) { return (x & y); }
+constexpr Bitboard Or(Bitboard x, Bitboard y) { return (x | y); }
+constexpr Bitboard Xor(Bitboard x, Bitboard y) { return (x ^ y); }
 
+constexpr int FILEA = 0;
+constexpr int FILEB = 1;
+constexpr int FILEC = 2;
+constexpr int FILED = 3;
+constexpr int FILEE = 4;
+constexpr int FILEF = 5;
+constexpr int FILEG = 6;
+constexpr int FILEH = 7;
 
-#define FILEA		0
-#define FILEB		1
-#define FILEC		2
-#define FILED		3
-#define FILEE		4
-#define FILEF		5
-#define FILEG		6
-#define FILEH		7
+constexpr int RANK8 = 0;
+constexpr int RANK7 = 1;
+constexpr int RANK6 = 2;
+constexpr int RANK5 = 3;
+constexpr int RANK4 = 4;
+constexpr int RANK3 = 5;
+constexpr int RANK2 = 6;
+constexpr int RANK1 = 7;
 
-#define RANK8		0
-#define RANK7		1
-#define RANK6		2
-#define RANK5		3
-#define RANK4		4
-#define RANK3		5
-#define RANK2		6
-#define RANK1		7
+constexpr int RoqueBlancDame(TChessBoard *cb, int ply) { return (cb->Roque & ROQUEDAMEBLANC); }
+constexpr int RoqueBlancRoi(TChessBoard *cb, int ply) { return (cb->Roque & ROQUEROIBLANC); }
+constexpr int RoqueNoirDame(TChessBoard *cb, int ply) { return (cb->Roque & ROQUEDAMENOIR); }
+constexpr int RoqueNoirRoi(TChessBoard *cb, int ply) { return (cb->Roque & ROQUEROINOIR); }
 
-#define		RoqueBlancDame(x)		(cb->Roque[ply]&ROQUEDAMEBLANC)
-#define		RoqueBlancRoi(x)		(cb->Roque[ply]&ROQUEROIBLANC)
-#define		RoqueNoirDame(x)		(cb->Roque[ply]&ROQUEDAMENOIR)
-#define		RoqueNoirRoi(x)			(cb->Roque[ply]&ROQUEROINOIR)
-
-#define RoqueBlanc(x) And(RoqueBlancDame(x),RoqueBlancRoi(x))
-#define	RoqueNoir(x)  And(RoqueNoirDame(x),RoqueNoirRoi(x))
+constexpr bool RoqueBlanc(TChessBoard *cb, int ply) { return And(RoqueBlancDame(cb, ply), RoqueBlancRoi(cb, ply)); }
+constexpr bool RoqueNoir(TChessBoard *cb, int ply) { return And(RoqueNoirDame(cb, ply), RoqueNoirRoi(cb, ply)); }
 
 // Verifie si le joueur est en echec.
 inline int check(TChessBoard *cb, int wtm)

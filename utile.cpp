@@ -431,35 +431,35 @@ Bitboard echangeRayonX(TChessBoard *cb, Bitboard attaque, int source, int direct
   switch( direction ) {
     case -1:
       return Or( attaque,
-                 And(And(attaqueTour(cb, source), DameTour ),
+                 And(And(attaqueTour(cb, source), DameTour(cb)),
                       cb->plus1dir[source]));
     case -7:
       return Or( attaque,
-                 And(And(attaqueFou(cb, source), DameFou ),
+                 And(And(attaqueFou(cb, source), DameFou(cb)),
                       cb->plus7dir[source]));
     case -8:
       return Or( attaque,
-                 And(And(attaqueTour(cb, source), DameTour ),
+                 And(And(attaqueTour(cb, source), DameTour(cb)),
                       cb->plus8dir[source]));
     case -9:
       return Or( attaque,
-                 And(And(attaqueFou(cb, source ), DameFou),
+                 And(And(attaqueFou(cb, source ), DameFou(cb)),
                       cb->plus9dir[source]));
     case 1:
       return Or( attaque,
-                 And(And(attaqueTour(cb, source), DameTour ),
+                 And(And(attaqueTour(cb, source), DameTour(cb)),
                       cb->minus1dir[source]));
     case 7:
       return Or( attaque,
-                 And(And(attaqueFou(cb, source), DameFou ),
+                 And(And(attaqueFou(cb, source), DameFou(cb)),
                       cb->minus7dir[source]));
     case 8:
       return Or( attaque,
-                 And(And(attaqueTour(cb, source), DameTour ),
+                 And(And(attaqueTour(cb, source), DameTour(cb)),
                       cb->minus8dir[source]));
     case 9:
       return Or( attaque,
-                 And(And(attaqueFou(cb, source), DameFou ),
+                 And(And(attaqueFou(cb, source), DameFou(cb)),
                       cb->minus9dir[source]));
   }
   return attaque;

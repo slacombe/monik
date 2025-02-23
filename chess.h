@@ -14,19 +14,19 @@
 
 #include "types.h"
 
-#define ROI 6
-#define DAME 5
-#define TOUR 4
-#define FOU 3
-#define CAVALIER 2
-#define PION 1
+constexpr int ROI = 6;
+constexpr int DAME = 5;
+constexpr int TOUR = 4;
+constexpr int FOU = 3;
+constexpr int CAVALIER = 2;
+constexpr int PION = 1;
 
 // Definition de quelque type.
-#define BOARDSIZE 64
-#define MAXMOVE 600
-#define INFINI 32767
-#define MATE 30000
-#define MAXPLY 60
+constexpr int BOARDSIZE = 64;
+constexpr int MAXMOVE = 600;
+constexpr int INFINI = 32767;
+constexpr int MATE = 30000;
+constexpr int MAXPLY = 60;
 
 // Definition pour la librairie d'ouverture.
 
@@ -46,46 +46,47 @@ struct BOOKPOSITION
 	uint32 flag;
 };
 
-#define  POSITION_PER_SLOT     600
+constexpr int POSITION_PER_SLOT = 600;
 
-#define MAXCHECKEXT
+constexpr int MAXCHECKEXT = 0;
 
-typedef char Piece;
-typedef int SCORE;
+using Piece = char;
+using SCORE = int;
 
-#define        VALPION         100
-#define        VALCAVALIER     320
-#define        VALFOU          330
-#define        VALTOUR         500
-#define        VALDAME         900
-#define        VALROI          2000
+constexpr int VALPION = 100;
+constexpr int VALCAVALIER = 320;
+constexpr int VALFOU = 330;
+constexpr int VALTOUR = 500;
+constexpr int VALDAME = 1200;
+constexpr int VALROI = 2000;
 
-#define   BOOKMOVE  100000
+constexpr int BOOKMOVE = 100000;
 
-#define		ROQUEROIBLANC   0x01
-#define		ROQUEDAMEBLANC  0x02
-#define		ROQUEROINOIR    0x04
-#define		ROQUEDAMENOIR   0x08
+constexpr int ROQUEROIBLANC = 0x01;
+constexpr int ROQUEDAMEBLANC = 0x02;
+constexpr int ROQUEROINOIR = 0x04;
+constexpr int ROQUEDAMENOIR = 0x08;
 
-#define		PAS_EXTENSION         0
-#define		EXTENSION_ECHEC       1
-#define		EXTENSION_RECAPTURE   2
-#define		EXTENSION_PIONPASSE   3
-#define		EXTENSION_PROMOTION   4
+constexpr int PAS_EXTENSION = 0;
+constexpr int EXTENSION_ECHEC = 1;
+constexpr int EXTENSION_RECAPTURE = 2;
+constexpr int EXTENSION_PIONPASSE = 3;
+constexpr int EXTENSION_PROMOTION = 4;
 
-#define		NULLE_REPETITION             1
-#define		NULLE_MANQUE_DE_MATERIEL     2
-#define		NULLE_PAT                    3
-#define		NULLE_PAR_ACCORD             4
-#define		NULLE_REGLE_50COUPS          5
-#define		DRAWSCORE     100
+constexpr int NULLE_REPETITION = 1;
+constexpr int NULLE_MANQUE_DE_MATERIEL = 2;
+constexpr int NULLE_PAT = 3;
+constexpr int NULLE_PAR_ACCORD = 4;
+constexpr int NULLE_REGLE_50COUPS = 5;
+constexpr int DRAWSCORE = 100;
 
-#define FORKUNCERTAIN 50
+constexpr int FORKUNCERTAIN = 50;
 
 // Structure pour representer un move.
 
-struct TMove
+class TMove
 {
+public:
 	// Une structure de 64 bit.
 	// Utile pour pouvoir defaire le coup.
 	unsigned From : 6;

@@ -45,7 +45,7 @@ typedef struct {
   // Bit 2 et 5 = tour dame.
   // Bit 1 et 4 = tour roi.
   // bit 3 et 0 = roi.
-  char Roque;
+  int Roque;
 
   // Le materiel.
   int NbWhitePieces;
