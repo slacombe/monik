@@ -128,7 +128,7 @@ int quiescence(TChessBoard *cb, int ply, int wtm, int alpha, int beta )
       alpha = Valeur;
     }
 #ifdef DEBUG
-    consistence(cb, currentMove(&cb->MoveList[ply]));
+    consistence(cb, ply, "caller", currentMove(&cb->MoveList[ply]));
 #endif
   }
 

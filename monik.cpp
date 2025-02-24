@@ -6,6 +6,7 @@
 // Debut: 2 novembre 1998.
 //
 
+#include <iostream>
 #include "chess.h"
 #include "board.h"
 #include "entree.h"

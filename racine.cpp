@@ -116,7 +116,7 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
 		return Valeur;
 
 #ifdef DEBUG
-    consistence(cb, currentMove(&cb->MoveList[1]));
+    consistence(cb, 1, "racine", currentMove(&cb->MoveList[1]));
 #endif
     // Est-elle meilleur que notre valeur actuelle?
     if (!timeabort || g_bModeAnalyse) {

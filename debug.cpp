@@ -7,10 +7,11 @@
 #include "board.h"
 #include "chess.h"
 #include "sortie.h"
+#include "next.h"
 #include "log.h"
 
 // Routine pour l'aide au debogage.
-void consistence(TChessBoard *cb, TMove move)
+void consistence(TChessBoard *cb, int ply, const char* caller, TMove move)
 {
   // Pour chaque case de l'echiquier, verifier si les bitboards sont
   // consistent avec.
@@ -96,14 +97,17 @@ void consistence(TChessBoard *cb, TMove move)
 
       if ( !bConsistent ) {
         char Erreur[255];
+        gameLog << cb;
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
+        gameLog.log("Caller: %s", caller);
+        gameLog.log("Phase[ply] = %d", Phase[ply]);
         gameLog.log( "Erreur: La case du board est vide." );
-        gameLog.log( Erreur );
+        gameLog.log(Erreur);
         sprintf( Erreur, "Case %d contient %d", i, cb->board[i] );
         gameLog.log( Erreur );
-        getCurrent(cb, Erreur, 4 );
+        getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
         exit(1);
       }
@@ -169,14 +173,17 @@ void consistence(TChessBoard *cb, TMove move)
       }
       if ( !bConsistent ) {
         char Erreur[255];
+        gameLog << cb;
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
+        gameLog.log("Caller: %s", caller);
+        gameLog.log("Phase[ply] = %d", Phase[ply]);
         gameLog.log( "Erreur: La case du board contient une piece blanche." );
+        gameLog.log(Erreur);
+        sprintf(Erreur, "Case %d contient %d", i, cb->board[i]);
         gameLog.log( Erreur );
-        sprintf( Erreur, "Case %d contient %d", i, cb->board[i] );
-        gameLog.log( Erreur );
-        getCurrent(cb, Erreur, 4);
+        getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
         exit(1);
       }
@@ -241,14 +248,17 @@ void consistence(TChessBoard *cb, TMove move)
       }
       if ( !bConsistent ) {
         char Erreur[255];
+        gameLog << cb;
         sprintf( Erreur, "From: %d To: %d Piece: %d Capture: %d EnPassant: %d Promotion: %d",
                          move.From, move.To, move.Piece, move.Capture,
                          move.EnPassant, move.Promotion );
+        gameLog.log("Caller: %s", caller);
+        gameLog.log("Phase[ply] = %d", Phase[ply]);
         gameLog.log( "Erreur: La case du board contient une piece noire." );
         gameLog.log( Erreur );
         sprintf(Erreur, "Case %d contient %d", i, cb->board[i]);
         gameLog.log( Erreur );
-        getCurrent(cb, Erreur, 4 );
+        getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
         exit(1);
       }

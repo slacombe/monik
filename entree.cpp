@@ -399,10 +399,12 @@ bool option(TChessBoard *cb, const string command, string& response)
   }
 
   // Test transpoition table
+#ifdef TRANSPOSITION
   if (command == "testhash") {
     testTransposition();
     return true;
   }
+#endif
 
   return false;
 }

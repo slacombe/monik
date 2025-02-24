@@ -15,11 +15,14 @@ int g_transpositionRefutation;
 uint64 nb_entree;
 uint64 mask_cle;
 
-hash_entry *white_hash_table = 0;
-hash_entry *black_hash_table = 0;
+hash_entry *hash_table = 0;
 
 void createTranspositionTable(uint64 size_in_bytes)
 {
+  if (hash_table) {
+    free(hash_table);
+  }
+
   uint64 pos_in_table = size_in_bytes / sizeof(hash_entry);
 
   // Reconvertir en mega-octets.
@@ -29,18 +32,15 @@ void createTranspositionTable(uint64 size_in_bytes)
     pos_in_table >>= 1;
     nb_entree_base2 <<= 1;
   }
-  // Une de trop et diviser en deux, une moitie pour chaque table.
-  nb_entree_base2 >>= 2;
+  nb_entree_base2 >>= 1;
 
   // Alouer la memoire necessaire.
-  white_hash_table = (hash_entry *)calloc(nb_entree_base2, sizeof(hash_entry));
-  black_hash_table = (hash_entry *)calloc(nb_entree_base2, sizeof(hash_entry));
+  hash_table = (hash_entry *)calloc(nb_entree_base2, sizeof(hash_entry));
 
-  nb_entree = nb_entree_base2;
-  mask_cle = nb_entree - 1;
+  mask_cle = nb_entree_base2 - 1;
 
-  cout << "Transposition: " << nb_entree * 2 << " positions" << endl;
-  cout << "Hash table size: " << ((nb_entree * sizeof(Bitboard) * 4) / (1024 * 1024)) << "m" << endl;
+  cout << "Transposition: " << nb_entree_base2 << " positions" << endl;
+  cout << "Hash table size: " << (nb_entree_base2 * sizeof(hash_entry) / (1024 * 1024)) << "m" << endl;
   cout << "Mask: 0x" << hex << mask_cle << dec << endl;
 }
 
@@ -73,18 +73,16 @@ void createTranspositionTable(std::string size) {
 
 void freeTranspositionTable()
 {
-  if (white_hash_table)
+  if (hash_table)
   {
-    free(white_hash_table);
-    free(black_hash_table);
-    white_hash_table = 0;
-    black_hash_table = 0;
+    free(hash_table);
+    hash_table = 0;
   }
 }
 
 bool transpositionTableCreated()
 {
-  return white_hash_table;
+  return hash_table;
 }
 
 void displayTranspositionStats() {
@@ -100,75 +98,72 @@ void clearStats() {
   g_transpositionRefutation = 0;
 }
 
-uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *beta, int *danger)
+inline hash_entry* calculate_position(TChessBoard *cb) {
+  uint32 position = (mask_cle & (int)cb->CleHachage);
+  hash_entry* entry = hash_table +  position;
+  return entry;
+}
+
+uint32 lookup(TChessBoard *cb, int ply, int depth, int *alpha, int *beta, int *danger)
 {
   short valeur;
 
-  // Blanc ou noir?
-  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
-
   // Retrouver la position dans la table.
-  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
+  hash_entry* pPosition = calculate_position(cb);
 
   // Est-ce la bonne position?
   if (pPosition->key ^ cb->CleHachage)
   {
-    return 0;
+    return HASH_MISS;
   }
 
-  if (GetDepth(pPosition->data) < depth)
+  if (pPosition->depth < depth)
   {
-    return 0;
+    return HASH_MISS;
   }
   
-  int type = (int)GetType((pPosition->data));
+  int entry_type = pPosition->entry_type;
 
-  // Effacer le bit de l'age.
-  ClearAge(pPosition->data);
+  *danger = pPosition->danger;
+  valeur = pPosition->score;
 
-  valeur = (short)GetValeur(pPosition->data);
-
-  *danger = (int)GetDanger(pPosition->data);
-
-  struct DeuxMot
-  {
-    int mot1;
-    int mot2;
-  };
-  union Donnee
-  {
-    TMove move;
-    DeuxMot deuxmot;
-  };
-  Donnee coup;
-  coup.deuxmot.mot1 = (int)GetCoup(pPosition->data);
-  cb->HashMove[ply] = coup.move;
+  TMove move;
+  move.From = pPosition->from;
+  move.To = pPosition->to;
+  move.Piece = pPosition->piece;
+  move.Capture = pPosition->capture;
+  move.EnPassant = pPosition->en_passant;
+  move.Promotion = pPosition->promotion;
+  move.Roque = pPosition->roque;
+  move.Score = valeur;
+  cb->HashMove[ply] = move;
   g_transpositionHit++;
-  switch (type)
+  switch (entry_type)
   {
-  case SCORE_EXACTE:
+  case EXACT_SCORE:
     if (abs(valeur) >= MATE - 100)
     {
-      if (valeur > 0)
+      if (pPosition->score > 0)
         valeur -= (ply - 1);
       else
         valeur += (ply - 1);
     }
+    move.Score = valeur;
     *alpha = valeur;
-    return SCORE_EXACTE;
-  case BORNE_SUPERIEUR:
+    return EXACT_SCORE;
+  case UPPER_BOUND:
     if (valeur <= *alpha)
     {
       *alpha = valeur;
-      return BORNE_SUPERIEUR;
+      return UPPER_BOUND;
     }
     return HASH_MISS;
     break;
-  case BORNE_INFERIEUR:
+  case LOWER_BOUND:
     if (valeur >= *beta)
     {
       *beta = valeur;
-      return BORNE_INFERIEUR;
+      return LOWER_BOUND;
     }
     break;
   }
@@ -177,15 +172,12 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int wtm, int *alpha, int *bet
 
 // On utilise cette fonction lorsque un coup refute le coup de la couche
 // precedente.
-uint32 storeRefutation(TChessBoard *cb, int ply, int depth,
-                       int wtm, short valeur, int danger)
+uint32 storeRefutation(TChessBoard *cb, int ply, int depth, short valeur, int danger)
 {
-  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
-
   // Retrouver la position dans la table.
-  hash_entry* pPosition = &pTable[mask_cle & (int)cb->CleHachage];
+  hash_entry* pPosition = calculate_position(cb);
 
-  if (GetCoup((pPosition->data)))
+  if (pPosition->key)
   {
     g_transpositionOverwrite++;
   } else {
@@ -194,38 +186,28 @@ uint32 storeRefutation(TChessBoard *cb, int ply, int depth,
 
   // Mettre les informations dans la table.
   pPosition->key = cb->CleHachage;
-  StoreValeur(pPosition->data, valeur);
-  int type = BORNE_INFERIEUR;
-  StoreType(pPosition->data, type);
-  StoreDanger(pPosition->data, danger);
-  struct DeuxMot
-  {
-    int mot1;
-    int mot2;
-  };
-  union Donnee
-  {
-    TMove move;
-    DeuxMot deuxmot;
-  };
-  Donnee coup;
-  coup.move = pv[ply][ply];
-  StoreCoup(pPosition->data, coup.deuxmot.mot1);
-  StoreDepth(pPosition->data, depth);
+  pPosition->score = valeur;
+  pPosition->entry_type = LOWER_BOUND;
+  pPosition->danger = danger;
+  TMove move = pv[ply][ply];
+  pPosition->from = move.From;
+  pPosition->to = move.To;
+  pPosition->piece = move.Piece;
+  pPosition->capture = move.Capture;
+  pPosition->en_passant = move.EnPassant;
+  pPosition->promotion = move.Promotion;
+  pPosition->depth = depth;
 
   return true;
 }
 
 // StoreBest est appelle quand tout les noeud d'un coup a ete explore
 // et qu'il est temps de renvoyer la valeur du meilleur coup au noeud parent.
-uint32 storeBest(TChessBoard *cb, int ply, int depth, int wtm, int alpha, int initial_alpha, int danger) {
-  // Blanc ou noir?
-  hash_entry* pTable = (wtm) ? white_hash_table : black_hash_table;
-
+uint32 storeBest(TChessBoard *cb, int ply, int depth, int alpha, int initial_alpha, int danger) {
   // Retrouver la position dans la table.
-  hash_entry *pPosition = pTable + (mask_cle & (int)cb->CleHachage);
+  hash_entry* pPosition = calculate_position(cb);
 
-  if (GetCoup(pPosition->data))
+  if (pPosition->key)
   {
     g_transpositionOverwrite++;
   } else {
@@ -234,32 +216,27 @@ uint32 storeBest(TChessBoard *cb, int ply, int depth, int wtm, int alpha, int in
 
   // Mettre les informations dans la table.
   pPosition->key = cb->CleHachage;
-  struct DeuxMot
-  {
-    int mot1;
-    int mot2;
-  };
-  union Donnee
-  {
-    TMove move;
-    DeuxMot deuxmot;
-  };
-  Donnee coup;
-  StoreDepth(pPosition->data, depth);
-  int type;
+  pPosition->depth = depth;
+  int entry_type;
+  TMove move = pv[ply][ply];
   if (alpha > initial_alpha)
   {
-    coup.move = pv[ply][ply];
-    type = SCORE_EXACTE;
+    pPosition->from = move.From;
+    pPosition->to = move.To;
+    pPosition->piece = move.Piece;
+    pPosition->capture = move.Capture;
+    entry_type = EXACT_SCORE;
   }
   else
   {
-    coup.deuxmot.mot1 = 0;
-    type = BORNE_SUPERIEUR;
+    pPosition->from = 0;
+    pPosition->to = 0;
+    pPosition->piece = 0;
+    pPosition->capture = 0;
+    entry_type = UPPER_BOUND;
   }
-  StoreValeur(pPosition->data, alpha);
-  StoreCoup(pPosition->data, coup.deuxmot.mot1);
-  StoreType(pPosition->data, type);
+  pPosition->score = alpha;
+  pPosition->entry_type = entry_type;
 
   return true;
 }

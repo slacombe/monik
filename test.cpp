@@ -13,7 +13,7 @@ using namespace std;
 
 void testTransposition()
 {
-	int ply = 1, depth = 6, wtm = 1, score = 100, alpha = -200, beta = 200, danger = 1;
+	int ply = 1, depth = 6, score = 100, alpha = -200, beta = 200, danger = 1;
 
 	cout << "Creating transposition table" << endl;
 	createTranspositionTable(32*1024*1024);
@@ -29,9 +29,9 @@ void testTransposition()
 	initialiseBitboard(cb);
 
 	cout << "Storing refutation" << endl;
-	storeRefutation(cb, ply, depth, wtm, score, danger);
+	storeRefutation(cb, ply, depth, score, danger);
 	cout << "Calling lookup" << endl;
-	uint32 res = lookup(cb, ply, depth, wtm, &alpha, &beta, &danger);
+	uint32 res = lookup(cb, ply, depth, &alpha, &beta, &danger);
 	cout << "danger = " << danger << endl;
 	cout << "alpha = " << alpha << endl;
 	cout << "beta = " << beta << endl;
@@ -41,12 +41,12 @@ void testTransposition()
 	move.From = 62;
 	move.To = 45;
 	move.Piece = CAVALIER;
-	wtm = 0; alpha = 100; beta = 101; danger = 0;
+	alpha = 100; beta = 101; danger = 0;
 	pv[1][1] = move;
-	storeBest(cb, ply, 2, wtm, alpha, 0, danger);
-	uint32 resbest = lookup(cb, ply, 2, wtm, &alpha, &beta, &danger);
+	storeBest(cb, ply, 2, alpha, 0, danger);
+	uint32 resbest = lookup(cb, ply, 2, &alpha, &beta, &danger);
 	cout << "alpha = " << alpha << endl;
-	cout << "beta = " << beta << beta << endl;
+	cout << "beta = " << beta << endl;
 	cout << "danger = " << danger << endl;
 	cout << cb->HashMove[ply] << endl;
 	cout << "resbest = " << resbest << endl;

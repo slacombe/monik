@@ -96,17 +96,20 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
 
   // Regarder dans la table de transposition pour voir si cette position
   // n'a pas deja ete calculer.
-#ifdef TRANSPOSITION
-  switch (lookup(cb, ply, depth, wtm, &alpha, &beta, &danger)) {
-  case SCORE_EXACTE:
+#ifdef TRANSPOSITION  
+switch (lookup(cb, ply, depth, &alpha, &beta, &danger)) {
+  case EXACT_SCORE:
     alphaBetaCutoffs++;
+    Phase[ply] = HASH_MOVE;
     return alpha;
-  }
-
-#endif
-
-#ifdef TRANSPOSITION
-  Phase[ply] = HASH_MOVE;
+  case LOWER_BOUND:
+    Phase[ply] = HASH_MOVE;
+  case HASH_MISS:
+    Phase[ply] = GENERATE_CAPTURE_MOVES;
+    break;
+  default:
+    Phase[ply] = GENERATE_CAPTURE_MOVES;
+}
 #else
   Phase[ply] = GENERATE_CAPTURE_MOVES;
 #endif
@@ -221,13 +224,13 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
         return Valeur;
 
 #ifdef DEBUG
-      consistence(cb, currentMove(&cb->MoveList[ply]));
+      consistence(cb, ply, "search", currentMove(&cb->MoveList[ply]));
 #endif
       // Est-il meilleur que notre valeur actuelle?
       if (Valeur > alpha) {
         if (Valeur >= beta) {
 #ifdef TRANSPOSITION
-          storeRefutation(cb, ply, depth, wtm, Valeur, check_ext);
+          storeRefutation(cb, ply, depth, Valeur, check_ext);
           g_transpositionRefutation++;
 #endif
           // Verifier si on peu l'utiliser comme killer move.
@@ -273,7 +276,7 @@ int search(TChessBoard *cb, int depth, int ply, int wtm, int alpha, int beta) {
   }
 
 #ifdef TRANSPOSITION
-  storeBest(cb, ply, depth, wtm, alpha, old_alpha, danger);
+  storeBest(cb, ply, depth, alpha, old_alpha, danger);
 #endif
 
   return alpha;

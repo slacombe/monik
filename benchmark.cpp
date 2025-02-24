@@ -12,6 +12,7 @@
 #include "chess.h"
 #include "sortie.h"
 #include "system.h"
+#include "log.h"
 
 using namespace std;
 
@@ -996,6 +997,7 @@ void startBenchmark(TChessBoard* cb) {
                 cin >> numberOfPositionToTest;
         }
 
+        gameLog.startNew();
         std::ofstream not_resolved("notresolved.epd");
 
         benchmark = true;
