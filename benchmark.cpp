@@ -1015,6 +1015,7 @@ void startBenchmark(TChessBoard* cb) {
                         break;;
                 }
                 cout << endl;
+                cout << "move: " << pv[1][1] << ", " << "exppected: " << moveToFind << endl;
                 cout << "Number: " << position << "/" << numberOfPositionToTest << endl;
                 if (movesAreEqual(&pv[1][1], &moveToFind)) {
                         cout << "Found: " << ++points << "/" << numberOfPositionToTest << endl;

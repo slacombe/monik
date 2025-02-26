@@ -1,3 +1,5 @@
+#include <iostream>
+#include <iomanip>
 #include <stdio.h>
 #include <time.h>
 
@@ -69,8 +71,8 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
               cb->MoveList[1].nbmove );
     }
     else if ( !xboard ) {
-      printf( "\r [%d] (%2d/%d)", iProfondeurIteration, cb->MoveList[1].currmove+1,
-               cb->MoveList[1].nbmove);
+      cout << "\r" << " [" << iProfondeurIteration << "] (" << cb->MoveList[1].currmove+1 << "/"
+        << cb->MoveList[1].nbmove << ")" << pv[1][1];
     }
 
     // On execute le coup.
@@ -156,6 +158,8 @@ void affichePV(TChessBoard *cb, int i_iProfondeur)
               pv[1][1].Score,
               (TempsCenti()-timestamp),
               iNodes, szContinuation );
+      cout << iProfondeurIteration << pv[1][1].Score << (TempsCenti()-timestamp) 
+        << iNodes << szContinuation << endl;
     }
     gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f   % 7.2f %s", i_iProfondeur,
                  cb->MoveList[1].currmove+1,
@@ -168,13 +172,10 @@ void affichePV(TChessBoard *cb, int i_iProfondeur)
     else if ( !xboard ) {
       char szContinuation[255];
       getPV( szContinuation, &pv[1][1], i_iProfondeur );
-      printf( "\r [%d] (%2d/%d)  n: %8d %5.2f   % 7.2f %s\n", i_iProfondeur,
-              cb->MoveList[1].currmove+1,
-               cb->MoveList[1].nbmove,
-				iNodes,	
-               (TempsCenti()-timestamp)/100.0,
-               fScore,
-               szContinuation );
+      cout << "\r [" << i_iProfondeur << "] (" << setw(2) << cb->MoveList[1].currmove+1
+        << "/" << setw(2) << cb->MoveList[1].nbmove << ") n:" << setw(9) 
+        << iNodes << "   " << (TempsCenti()-timestamp)/100.0
+        << fScore << szContinuation << endl;
     }
 }
 

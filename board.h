@@ -194,6 +194,7 @@ void addKiller(TChessBoard *cb, TMove move, int ply);
 void ajouteMove(TMoveList *cb, TMove move);
 
 ostream& operator<<(ostream& os, const TChessBoard* cb);
+ostream& operator<<(ostream& os, const TMove& move);
 
 //---------------------------------------------------------------------------
 #endif

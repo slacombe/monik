@@ -60,6 +60,8 @@ uint32 storeRefutation(TChessBoard *cb, int ply, int depth, short valeur, int da
 
 uint32 storeBest(TChessBoard *cb, int ply, int depth, int alpha, int initial_alpha, int danger);
 
+void savePV(TChessBoard *cb, int wtm, int ply, int depth);
+
 #endif
 
 #endif

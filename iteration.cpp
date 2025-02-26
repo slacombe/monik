@@ -132,8 +132,8 @@ int iteration(TChessBoard *cb, int wtm) {
     // Si ce n'est pas le premier coup de la liste alors la fenetre
     // est retrecie a n et n+1.
     if (iProfondeurIteration > 1) {
-      root_alpha = prev_root_score - 40;
-      root_beta = prev_root_score + 40;
+      root_alpha = prev_root_score - 100;
+      root_beta = prev_root_score + 100;
       gameLog.log("root_alpha = %d, root_beta = %d", root_alpha, root_beta);
     } else {
       root_alpha = -INFINI;
@@ -237,10 +237,6 @@ int iteration(TChessBoard *cb, int wtm) {
       break;
     }
 
-    if (benchmark && movesAreEqual(&pv[1][1], &moveToFind)) {
-	    break;
-    }
-
     tri(&cb->MoveList[1]);
 
     iProfondeurIteration++;
@@ -248,6 +244,10 @@ int iteration(TChessBoard *cb, int wtm) {
   } // while
 
   iProfondeurIteration--;
+#ifdef TRANSPOSITION
+  savePV(cb, wtm, 1, iProfondeurIteration);
+#endif        
+
 
   return pv[1][1].Score;
 }

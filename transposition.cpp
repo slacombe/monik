@@ -4,6 +4,8 @@
 
 #include "board.h"
 #include "transposition.h"
+#include "make.h"
+#include "unmake.h"
 
 using namespace std;
 
@@ -239,6 +241,16 @@ uint32 storeBest(TChessBoard *cb, int ply, int depth, int alpha, int initial_alp
   pPosition->entry_type = entry_type;
 
   return true;
+}
+
+void savePV(TChessBoard *cb, int side, int ply, int depth) {
+  int wtm = side;
+  for(int i=1; i<pv_length[ply]; i++) {
+    makeMove(cb, ply, pv[ply][i], wtm);
+    storeBest(cb, 1, depth, pv[ply][i].Score, pv[1][i].Score-1, 0);
+    unmakeMove(cb, ply, pv[ply][i], wtm);
+    wtm = -wtm;
+  }  
 }
 
 #endif

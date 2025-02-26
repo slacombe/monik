@@ -21,6 +21,7 @@
 #include "unmake.h"
 #include "utile.h"
 #include "log.h"
+#include "sortie.h"
 
 using namespace std;
 
@@ -567,6 +568,13 @@ ostream& operator<<(ostream& os, const TChessBoard* cb) {
     if (i % 8 == 7) 
       cout << endl;
   }
+  return os;
+}
+
+ostream& operator<<(ostream& os, const TMove& move) {
+  char text[10];
+  sortieMove(move, text);
+  cout << text;
   return os;
 }
 
