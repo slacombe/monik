@@ -243,14 +243,17 @@ uint32 storeBest(TChessBoard *cb, int ply, int depth, int alpha, int initial_alp
   return true;
 }
 
-void savePV(TChessBoard *cb, int side, int ply, int depth) {
+void savePV(TChessBoard *cb, int side, int depth) {
   int wtm = side;
-  for(int i=1; i<pv_length[ply]; i++) {
-    makeMove(cb, ply, pv[ply][i], wtm);
-    storeBest(cb, 1, depth, pv[ply][i].Score, pv[1][i].Score-1, 0);
-    unmakeMove(cb, ply, pv[ply][i], wtm);
+  for(int i=1; i<pv_length[1]; i++) {
+    makeMove(cb, i, pv[1][i], wtm);
+    storeBest(cb, i, depth, pv[1][i].Score, pv[1][i].Score-1, 0);
     wtm = -wtm;
   }  
+  for(int i=pv_length[1]-1; i>=1; i--) {
+    wtm = -wtm;
+    unmakeMove(cb, i, pv[1][i], wtm);
+  }
 }
 
 #endif

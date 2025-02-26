@@ -71,8 +71,8 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
               cb->MoveList[1].nbmove );
     }
     else if ( !xboard ) {
-      cout << "\r" << " [" << iProfondeurIteration << "] (" << cb->MoveList[1].currmove+1 << "/"
-        << cb->MoveList[1].nbmove << ")" << pv[1][1];
+      cout << "\r" << " [" << iProfondeurIteration << "] (" << setw(2) << cb->MoveList[1].currmove+1 << "/"
+        << setw(2) << cb->MoveList[1].nbmove << ") ";
     }
 
     // On execute le coup.
@@ -154,12 +154,8 @@ void affichePV(TChessBoard *cb, int i_iProfondeur)
               iNodes, szContinuation );
     }
     else {
-      printf( "%d %d %d %d %s\n", i_iProfondeur,
-              pv[1][1].Score,
-              (TempsCenti()-timestamp),
-              iNodes, szContinuation );
-      cout << iProfondeurIteration << pv[1][1].Score << (TempsCenti()-timestamp) 
-        << iNodes << szContinuation << endl;
+      cout << iProfondeurIteration << " " << pv[1][1].Score << " " << (TempsCenti()-timestamp) 
+        << " " << iNodes << " " << szContinuation << endl;
     }
     gameLog.log( "[%2d] (%2d/%d) n: %8d  %5.2f   % 7.2f %s", i_iProfondeur,
                  cb->MoveList[1].currmove+1,

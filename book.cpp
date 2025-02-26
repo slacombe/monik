@@ -490,8 +490,8 @@ int createStartBook(const char *i_szFilename)
 		}
 
 		uint32 pos = ftell(fp);
-		if (pos % 10 == 0 || pos == fileSize) {
-			printf("Progress: %3lu%%\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", (pos * 100) / fileSize);
+		if (pos % 50 == 0 || pos == fileSize) {
+			printf("Progress: %3lu%%\r", (pos * 100) / fileSize);
 		}
 	}
 

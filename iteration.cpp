@@ -239,14 +239,16 @@ int iteration(TChessBoard *cb, int wtm) {
 
     tri(&cb->MoveList[1]);
 
-    iProfondeurIteration++;
+#ifdef TRANSPOSITION
+    savePV(cb, wtm, iProfondeurIteration);
+#endif        
+
+iProfondeurIteration++;
     prev_root_score = root_score;
-  } // while
+
+} // while
 
   iProfondeurIteration--;
-#ifdef TRANSPOSITION
-  savePV(cb, wtm, 1, iProfondeurIteration);
-#endif        
 
 
   return pv[1][1].Score;
