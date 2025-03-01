@@ -14,20 +14,20 @@
 
 using namespace std;
 
-extern TMove pv[MAXPLY][MAXPLY];
+extern MOVE pv[MAXPLY][MAXPLY];
 extern int pv_length[MAXPLY];
 
 typedef struct MoveList {
 public:
 	int nbmove;
 	int currmove;
-	TMove moves[MAXMOVE];
-} TMoveList;
+	MOVE moves[MAXMOVE];
+} LINE;
 
 // Les positions.
 typedef struct {
   int NoCoups;
-  TMove ListeMove[MAXMOVE];
+  MOVE ListeMove[MAXMOVE];
   int ListeRoque[MAXMOVE];
 
   // Regle du 50 coup sans changement.
@@ -164,11 +164,11 @@ typedef struct {
   int Deploiement[BOARDSIZE];
 
   // La liste des coups.
-  TMoveList MoveList[MAXPLY];
+  LINE MoveList[MAXPLY];
 
-  TMoveList CurrentPath;
+  LINE CurrentPath;
 
-  TMove HashMove[MAXPLY];
+  MOVE HashMove[MAXPLY];
 
   int RaisonExtension[MAXPLY];
 
@@ -176,25 +176,25 @@ typedef struct {
   int m_iNbExtEchec;
 
   // 2 Killer move.
-  TMove Killers[MAXPLY][2];
+  MOVE Killers[MAXPLY][2];
 } TChessBoard;
 
-void copie(TMoveList *dest, TMoveList *src);
-void tri(TMoveList *ml);
-void vide(TMoveList *ml);
-int movesAreEqual(TMove *dest, TMove *src);
+void copie(LINE *dest, LINE *src);
+void tri(LINE *ml);
+void vide(LINE *ml);
+int movesAreEqual(MOVE *dest, MOVE *src);
 
-TMove currentMove(TMoveList* ml); 
-void choisiMove(TChessBoard *cb, TMoveList *ml, int ply, int wtm);
-void choisiNonQuiet(TChessBoard *cb, TMoveList& ml, int ply, int wtm);  
-void setCurrentMoveScore(TMoveList *ml, int score);
+MOVE currentMove(LINE* ml); 
+void choisiMove(TChessBoard *cb, LINE *ml, int ply, int wtm);
+void choisiNonQuiet(TChessBoard *cb, LINE& ml, int ply, int wtm);  
+void setCurrentMoveScore(LINE *ml, int score);
 void initialiseBoard(TChessBoard *cb);
 void initialiseBitboard(TChessBoard *cb);
-void addKiller(TChessBoard *cb, TMove move, int ply);
-void ajouteMove(TMoveList *cb, TMove move);
+void addKiller(TChessBoard *cb, MOVE move, int ply);
+void ajouteMove(LINE *cb, MOVE move);
 
 ostream& operator<<(ostream& os, const TChessBoard* cb);
-ostream& operator<<(ostream& os, const TMove& move);
+ostream& operator<<(ostream& os, const MOVE& move);
 
 //---------------------------------------------------------------------------
 #endif

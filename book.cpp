@@ -256,7 +256,7 @@ int BookLookup(Bitboard key, int wtm)
 	return 0;
 }
 
-int book(TChessBoard *cb, int wtm, TMoveList &ml)
+int book(TChessBoard *cb, int wtm, LINE &ml)
 {
 	if (!bookLoaded || cb->OutOfBook >= 3)
 	{
@@ -311,7 +311,7 @@ int book(TChessBoard *cb, int wtm, TMoveList &ml)
 		for (j = i + 1; j < pv_length[0]; j++)
 			if (pv[0][i].Score < pv[0][j].Score)
 			{
-				TMove temp = pv[0][i];
+				MOVE temp = pv[0][i];
 				pv[0][i] = pv[0][j];
 				pv[0][j] = temp;
 			}
@@ -449,7 +449,7 @@ int createStartBook(const char *i_szFilename)
 			// Convertir le coup dans un format
 			// que Monik comprendra.
 			//
-			TMove move;
+			MOVE move;
 			if (!inputMove(cb, szText, ply, wtm, move))
 			{
 				fprintf(stderr, "Line: %d, Illegal move: %s\n", line, szText);

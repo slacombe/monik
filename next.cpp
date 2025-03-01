@@ -19,7 +19,7 @@ int Phase[MAXPLY];
 int nextMove(TChessBoard* cb, int ply, int wtm)
 {
   int i, max, maxpos;
-  TMove temp;
+  MOVE temp;
 
   switch( Phase[ply] ) {
     case FIRST_PHASE:

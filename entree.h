@@ -11,10 +11,10 @@ extern bool exiting;
 
 void entree(TChessBoard *cb, char* o_szCommande);
 
-bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_Move);
+bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, MOVE& o_Move);
 
 bool option(TChessBoard *cb, const string command, string& response);
 
-int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move);
+int inputMove(TChessBoard *cb, char* text, int ply, int wtm, MOVE& move);
 //---------------------------------------------------------------------------
 #endif

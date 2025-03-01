@@ -21,10 +21,10 @@
 void genMoveAttaque(TChessBoard *cb,
                     int ply,                  // Profondeur.
                     int wtm,                 // Joueur
-                    TMoveList& movelist)     // Liste des coups.
+                    LINE& movelist)     // Liste des coups.
 {
   Bitboard piecebd, temp;
-  TMove move;
+  MOVE move;
   move.Score = 0;
   move.Roque = 0;
 
@@ -403,11 +403,11 @@ void genMoveAttaque(TChessBoard *cb,
 void genMovePasAttaque(TChessBoard *cb,
 			int ply,                  // Profondeur.
                 	int wtm,                 // Joueur
-                	TMoveList& movelist)     // Liste des coups.
+                	LINE& movelist)     // Liste des coups.
 {
   Bitboard piecebd, temp;
-  TMove move;
-  memset(&move, 0, sizeof( TMove ));
+  MOVE move;
+  memset(&move, 0, sizeof( MOVE ));
 
   // Les blancs.
   if ( wtm ) {

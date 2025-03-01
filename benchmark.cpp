@@ -970,7 +970,7 @@ const vector<string> testPositions = {
 };
 
 bool benchmark;
-TMove moveToFind;
+MOVE moveToFind;
 
 typedef struct {
         string fen;

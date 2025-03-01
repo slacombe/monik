@@ -43,7 +43,7 @@ Bitboard Random64();
 // Verifier si le joueur est en echec.
 int check(TChessBoard *cb, int wtm);
 
-void swap(TMove& m1, TMove& m2);
+void swap(MOVE& m1, MOVE& m2);
 int echange(TChessBoard *cb, int source, int dest, int wtm);
 Bitboard echangeRayonX(TChessBoard *cb, Bitboard attaque, int source, int direction);
 
@@ -92,27 +92,27 @@ inline void SetR45R(Bitboard& board, Bitboard position) {
   board |= mask[Rotate45RRealMap[position]];
 }
 
-inline void MovePiece(Bitboard& board, const TMove& move) {
+inline void MovePiece(Bitboard& board, const MOVE& move) {
   ClearBit(board, move.From);
   SetBit(board, move.To);
 }
 
-inline void MovePieceR90R(Bitboard& board, const TMove& move) {
+inline void MovePieceR90R(Bitboard& board, const MOVE& move) {
   ClearR90R(board, move.From);
   SetR90R(board, move.To);
 }
 
-inline void MovePieceR90L(Bitboard& board, const TMove& move) {
+inline void MovePieceR90L(Bitboard& board, const MOVE& move) {
   ClearR90L(board, move.From);
   SetR90L(board, move.To);
 }
 
-inline void MovePieceR45L(Bitboard& board, const TMove& move) {
+inline void MovePieceR45L(Bitboard& board, const MOVE& move) {
   ClearR45L(board, move.From);
   SetR45L(board, move.To);
 }
 
-inline void MovePieceR45R(Bitboard& board, const TMove& move) {
+inline void MovePieceR45R(Bitboard& board, const MOVE& move) {
   ClearR45R(board, move.From);
   SetR45R(board, move.To);
 }

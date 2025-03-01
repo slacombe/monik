@@ -20,7 +20,7 @@ struct BookPosition_t
 int chargerCles( void );
 int sauvegarderCles( void );
 int loadBook( void );
-int book(TChessBoard* cb, int wtm, TMoveList& ml);
+int book(TChessBoard* cb, int wtm, LINE& ml);
 int createStartBook(const char* i_szFilename);
 
 #endif

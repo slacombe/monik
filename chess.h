@@ -86,7 +86,7 @@ constexpr int FORKUNCERTAIN = 50;
 
 // Structure pour representer un move.
 
-struct TMove
+struct MOVE
 {
 public:
 	// Une structure de 64 bit.
@@ -148,9 +148,9 @@ extern char MonikHome[255];
 
 // benchmark
 extern bool benchmark;
-extern TMove moveToFind;
+extern MOVE moveToFind;
 
-std::ostream& operator<<(std::ostream& os, const TMove& move);
+std::ostream& operator<<(std::ostream& os, const MOVE& move);
 
 //---------------------------------------------------------------------------
 #endif

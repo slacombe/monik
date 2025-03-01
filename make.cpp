@@ -17,7 +17,7 @@
 
 // On effectue un coup dans l'echiquier. On mettera a jour tout
 // les structures necessaire.
-void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
+void makeMove(TChessBoard *cb, int ply, MOVE move, int wtm)
 {
   // Pour le defaire.
   cb->Regle50CoupStore[cb->NoCoups] = cb->Regle50Coup;
@@ -233,7 +233,7 @@ void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
         cb->CleHachage ^= CleRoiB[move.To];
         // Verifier pour le roque.
         if ( move.From == E1 && (move.To == G1 || move.To == C1 )) {
-           TMove movetour;
+           MOVE movetour;
             // Deplacer la tour.
             // Cote roi.
             if ( move.To == G1 ) {
@@ -264,7 +264,7 @@ void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
         cb->CleHachage ^= CleRoiN[move.From];
         cb->CleHachage ^= CleRoiN[move.To];
         if ( move.From == E8 && (move.To == G8 || move.To == C8 )) {
-            TMove movetour;
+            MOVE movetour;
             // Deplacer la tour.
             // Cote roi.
             if ( move.To == G8 ) {
@@ -455,7 +455,7 @@ void makeMove(TChessBoard *cb, int ply, TMove move, int wtm)
   cb->NoCoups++;
 }
 
-void makeMoveRoot(TChessBoard *cb, TMove move, int wtm)
+void makeMoveRoot(TChessBoard *cb, MOVE move, int wtm)
 {
 	makeMove(cb, 1, move, wtm);
 

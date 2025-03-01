@@ -37,7 +37,7 @@ void testTransposition()
 	cout << "beta = " << beta << endl;
 	cout << "res = " << res << endl;
 
-	TMove move;
+	MOVE move;
 	move.From = 62;
 	move.To = 45;
 	move.Piece = CAVALIER;

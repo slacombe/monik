@@ -248,11 +248,11 @@ switch (lookup(cb, ply, depth, &alpha, &beta, &danger)) {
 
           return Valeur;
         }
+
+        alpha = Valeur;
         pv[ply][ply] = cb->CurrentPath.moves[ply];
         pv_length[ply] = pv_length[ply + 1];
-        memcpy(&pv[ply][ply + 1], &pv[ply + 1][ply + 1],
-               sizeof(TMove) * (pv_length[ply] - ply));
-        alpha = Valeur;
+        memcpy(&pv[ply][ply + 1], &pv[ply + 1][ply + 1], sizeof(MOVE) * (pv_length[ply] - ply));
       }
     } // if
   }

@@ -11,7 +11,7 @@
 #include "log.h"
 
 // Routine pour l'aide au debogage.
-void consistence(TChessBoard *cb, int ply, const char* caller, TMove move)
+void consistence(TChessBoard *cb, int ply, const char* caller, MOVE move)
 {
   // Pour chaque case de l'echiquier, verifier si les bitboards sont
   // consistent avec.
@@ -109,7 +109,7 @@ void consistence(TChessBoard *cb, int ply, const char* caller, TMove move)
         gameLog.log( Erreur );
         getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
-        exit(1);
+        assert(bConsistent);
       }
     }
     // Avec une piece blanche.
@@ -185,7 +185,7 @@ void consistence(TChessBoard *cb, int ply, const char* caller, TMove move)
         gameLog.log( Erreur );
         getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
-        exit(1);
+        assert(bConsistent);
       }
     }
     // Avec une piece noire.
@@ -260,7 +260,7 @@ void consistence(TChessBoard *cb, int ply, const char* caller, TMove move)
         gameLog.log( Erreur );
         getCurrent(cb, Erreur, ply);
         gameLog.log( Erreur );
-        exit(1);
+        assert(bConsistent);
       }
     }
   }

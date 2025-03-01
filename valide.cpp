@@ -6,7 +6,7 @@
 #include "utile.h"
 
 // Pour voir si le killer move est toujours valide avant de le jouer.
-bool valideMove(TChessBoard *cb, int ply, int wtm, TMove& move)
+bool valideMove(TChessBoard *cb, int ply, int wtm, MOVE& move)
 {
   // Verifier si la case de depart contient la bonne piece.
   if ( move.Piece < 1 || move.Piece > 6 )

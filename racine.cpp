@@ -125,7 +125,7 @@ int searchRacine(TChessBoard *cb, int depth, int wtm, int alpha, int beta)
       if (Valeur > alpha) {
         pv[1][1] = cb->CurrentPath.moves[1];
         pv_length[1] = pv_length[2];
-        memcpy(&pv[1][2], &pv[2][2], sizeof(TMove) * (pv_length[1] - 1));
+        memcpy(&pv[1][2], &pv[2][2], sizeof(MOVE) * (pv_length[1] - 1));
         affichePV(cb, iProfondeurIteration);
         if (Valeur >= beta) {
           return Valeur;
@@ -168,10 +168,13 @@ void affichePV(TChessBoard *cb, int i_iProfondeur)
     else if ( !xboard ) {
       char szContinuation[255];
       getPV( szContinuation, &pv[1][1], i_iProfondeur );
-      cout << "\r [" << i_iProfondeur << "] (" << setw(2) << cb->MoveList[1].currmove+1
-        << "/" << setw(2) << cb->MoveList[1].nbmove << ") n:" << setw(9) 
-        << iNodes << "   " << (TempsCenti()-timestamp)/100.0
-        << fScore << szContinuation << endl;
+      cout.precision(2);
+      cout << "\r [" 
+        << i_iProfondeur << "] (" << setw(2) << cb->MoveList[1].currmove+1 << "/" << setw(2) << cb->MoveList[1].nbmove 
+        << ") n:" << setw(12) << iNodes << " " 
+        << fixed << setw(7) << setprecision(2) << (TempsCenti()-timestamp)/100.0 << " " 
+        << fixed << setw(5) << setprecision(2) << fScore << " " 
+        << szContinuation << endl;
     }
 }
 

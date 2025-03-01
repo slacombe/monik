@@ -21,7 +21,7 @@ extern int wtm;
 
 //-----------------------------------------------------------------------------
 // Routine pour defaire un coup.
-void unmakeMove(TChessBoard *cb, int ply, TMove move, int wtm )
+void unmakeMove(TChessBoard *cb, int ply, MOVE move, int wtm )
 {
   cb->NoCoups--;
   cb->Regle50Coup = cb->Regle50CoupStore[cb->NoCoups];
@@ -175,7 +175,7 @@ void unmakeMove(TChessBoard *cb, int ply, TMove move, int wtm )
         // Le roque.
         if ( move.Roque ) {
           if ( move.From == E1 && ( move.To == G1 || move.To == C1 )) {
-            TMove movetour;
+            MOVE movetour;
             // Cote roi.
             if ( move.To == G1 ) {
               movetour.From = F1;
@@ -205,7 +205,7 @@ void unmakeMove(TChessBoard *cb, int ply, TMove move, int wtm )
         // Le roque.
         if ( move.Roque ) {
           if ( move.From == E8 && ( move.To == G8 || move.To == C8 )) {
-            TMove movetour;
+            MOVE movetour;
             // Cote roi.
             if ( move.To == G8 ) {
               movetour.From = F8;

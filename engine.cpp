@@ -68,8 +68,8 @@ bool engine(TChessBoard *cb, const char *i_szCommande, char* o_szReponse) {
 			return false;
 	}
 
-	TMove move;
-	TMoveList movelist;
+	MOVE move;
+	LINE movelist;
 	vide(&movelist);
 	if (strcmp(i_szCommande, "undo") == 0) {
 		undoMove(cb); // Un coup de reculons.

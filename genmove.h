@@ -14,12 +14,12 @@
 void genMoveAttaque(TChessBoard *cb, 
                         int ply,                  // Profondeur.
                         int wtm,                 // Joueur
-                        TMoveList& movelist);    // Liste des coups.
+                        LINE& movelist);    // Liste des coups.
 
 void genMovePasAttaque(TChessBoard *cb,
                         int ply,                  // Profondeur.
                         int wtm,                 // Joueur
-                        TMoveList& movelist);    // Liste des coups.
+                        LINE& movelist);    // Liste des coups.
 
 //---------------------------------------------------------------------------
 #endif

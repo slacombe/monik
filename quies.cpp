@@ -97,7 +97,7 @@ int quiescence(TChessBoard *cb, int ply, int wtm, int alpha, int beta )
     if ( bGarde ) {
       keep++;
       cb->MoveList[ply].moves[i].Score = iScoreGain;
-      memcpy(&cb->MoveList[ply].moves[keep], &cb->MoveList[ply].moves[i], sizeof(TMove));
+      memcpy(&cb->MoveList[ply].moves[keep], &cb->MoveList[ply].moves[i], sizeof(MOVE));
     }
   }
   cb->MoveList[ply].nbmove = keep+1;
@@ -122,9 +122,9 @@ int quiescence(TChessBoard *cb, int ply, int wtm, int alpha, int beta )
     // Est-il meileur que notre valeur actuelle?
     if ( Valeur > alpha ) {
       if ( Valeur >= beta ) return Valeur;
-	  pv_length[ply] = pv_length[ply+1];
-	  pv[ply][ply] = cb->CurrentPath.moves[ply];
-	  memcpy(&pv[ply][ply+1], &pv[ply+1][ply], sizeof(TMove)*(pv_length[ply]-ply));
+      pv[ply][ply] = cb->CurrentPath.moves[ply];
+      memcpy(&pv[ply][ply+1], &pv[ply+1][ply+1], sizeof(MOVE)*(pv_length[ply]-ply));
+      pv_length[ply] = pv_length[ply+1];
       alpha = Valeur;
     }
 #ifdef DEBUG

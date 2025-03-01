@@ -15,7 +15,7 @@ extern int iMateInPly;
 const char* promotion = "nbrq";
 
 // Prend un move et genere une chaine lisible.
-int sortieMove(TMove move, char* i_szString) {
+int sortieMove(MOVE move, char* i_szString) {
 	int p = 0;
 	
 	// La case source.
@@ -45,7 +45,7 @@ void sortie(const char* i_szReponse) {
 
 // Obtient la continuation.
 
-void getPV(char* o_szContinuation, TMove* ml, int ply) {
+void getPV(char* o_szContinuation, MOVE* ml, int ply) {
 	char szMove[6];
 	strcpy(o_szContinuation, "");
 	int iNbMove = pv_length[ply];

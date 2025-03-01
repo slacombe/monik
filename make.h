@@ -9,8 +9,8 @@
 #ifndef MakeH
 #define MakeH
 
-void makeMove(TChessBoard *cb, int ply, TMove move, int wtm);
+void makeMove(TChessBoard *cb, int ply, MOVE move, int wtm);
 
-void makeMoveRoot(TChessBoard *cb, TMove move, int wtm);
+void makeMoveRoot(TChessBoard *cb, MOVE move, int wtm);
 //---------------------------------------------------------------------------
 #endif

@@ -25,7 +25,7 @@
 
 using namespace std;
 
-TMove pv[MAXPLY][MAXPLY];
+MOVE pv[MAXPLY][MAXPLY];
 int pv_length[MAXPLY];
 
 TChessBoard *createPosition() { return new TChessBoard; }
@@ -477,7 +477,7 @@ void initialiseBitboard(TChessBoard *cb) {
   cb->CaseNoire = 0x55AA55AA55AA55AALL;
 }
 
-void addKiller(TChessBoard *cb, TMove move, int ply) {
+void addKiller(TChessBoard *cb, MOVE move, int ply) {
   // Score est utilise ici comme un compteur de nombre de fois qu'il
   // a ete utilise.
   if (cb->Killers[ply][0].Score <= cb->Killers[ply][1].Score) {
@@ -490,7 +490,7 @@ void addKiller(TChessBoard *cb, TMove move, int ply) {
 }
 
 // Enleve tout ce qui est en echec.
-void choisiMove(TChessBoard *cb, TMoveList *ml, int ply, int wtm) {
+void choisiMove(TChessBoard *cb, LINE *ml, int ply, int wtm) {
 #ifdef JOURNAL
   log.log("ChoisiMove: NbMove: %d\n", nbmove);
 #endif
@@ -521,7 +521,7 @@ void choisiMove(TChessBoard *cb, TMoveList *ml, int ply, int wtm) {
 }
 
 // Enleve tout ce qui est en echec.
-void choisiNonQuiet(TChessBoard *cb, TMoveList *ml, int ply, int wtm) {
+void choisiNonQuiet(TChessBoard *cb, LINE *ml, int ply, int wtm) {
   // Verifier chaque coup.
   for (int i = 0; i < ml->nbmove; i++) {
     ml->moves[i].Score =
@@ -529,36 +529,36 @@ void choisiNonQuiet(TChessBoard *cb, TMoveList *ml, int ply, int wtm) {
   }
 }
 
-void copie(TMoveList *dest, TMoveList *src) {
-  memcpy(dest->moves, src->moves, src->nbmove * sizeof(TMove));
+void copie(LINE *dest, LINE *src) {
+  memcpy(dest->moves, src->moves, src->nbmove * sizeof(MOVE));
 }
 
-void tri(TMoveList *ml) {
+void tri(LINE *ml) {
   if (ml->nbmove <= 0)
     return;
   for (int i = 0; i < ml->nbmove - 1; i++)
     for (int j = i + 1; j < ml->nbmove; j++)
       if (ml->moves[i].Score < ml->moves[j].Score) {
-        TMove move = ml->moves[i];
+        MOVE move = ml->moves[i];
         ml->moves[i] = ml->moves[j];
         ml->moves[j] = move;
       }
 }
 
-void ajouteMove(TMoveList *ml, TMove move) { ml->moves[ml->nbmove++] = move; }
+void ajouteMove(LINE *ml, MOVE move) { ml->moves[ml->nbmove++] = move; }
 
-void vide(TMoveList *ml) {
+void vide(LINE *ml) {
   ml->nbmove = 0;
   ml->currmove = 0;
 }
 
-TMove currentMove(TMoveList *ml) { return ml->moves[ml->currmove]; }
+MOVE currentMove(LINE *ml) { return ml->moves[ml->currmove]; }
 
-void setCurrentMoveScore(TMoveList *ml, int score) {
+void setCurrentMoveScore(LINE *ml, int score) {
   ml->moves[ml->currmove].Score = score;
 }
 
-int movesAreEqual(TMove *dest, TMove *src) {
+int movesAreEqual(MOVE *dest, MOVE *src) {
   return dest->From == src->From && dest->To == src->To;
 }
 
@@ -571,7 +571,7 @@ ostream& operator<<(ostream& os, const TChessBoard* cb) {
   return os;
 }
 
-ostream& operator<<(ostream& os, const TMove& move) {
+ostream& operator<<(ostream& os, const MOVE& move) {
   char text[10];
   sortieMove(move, text);
   cout << text;

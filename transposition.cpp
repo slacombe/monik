@@ -119,7 +119,7 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int *alpha, int *beta, int *d
     return HASH_MISS;
   }
 
-  if (pPosition->depth < depth)
+  if (pPosition->depth <= depth)
   {
     return HASH_MISS;
   }
@@ -129,7 +129,7 @@ uint32 lookup(TChessBoard *cb, int ply, int depth, int *alpha, int *beta, int *d
   *danger = pPosition->danger;
   valeur = pPosition->score;
 
-  TMove move;
+  MOVE move;
   move.From = pPosition->from;
   move.To = pPosition->to;
   move.Piece = pPosition->piece;
@@ -191,7 +191,7 @@ uint32 storeRefutation(TChessBoard *cb, int ply, int depth, short valeur, int da
   pPosition->score = valeur;
   pPosition->entry_type = LOWER_BOUND;
   pPosition->danger = danger;
-  TMove move = pv[ply][ply];
+  MOVE move = pv[ply][ply];
   pPosition->from = move.From;
   pPosition->to = move.To;
   pPosition->piece = move.Piece;
@@ -220,14 +220,16 @@ uint32 storeBest(TChessBoard *cb, int ply, int depth, int alpha, int initial_alp
   pPosition->key = cb->CleHachage;
   pPosition->depth = depth;
   int entry_type;
-  TMove move = pv[ply][ply];
+  MOVE move = pv[ply][ply];
   if (alpha > initial_alpha)
   {
     pPosition->from = move.From;
     pPosition->to = move.To;
     pPosition->piece = move.Piece;
     pPosition->capture = move.Capture;
-    entry_type = EXACT_SCORE;
+    pPosition->en_passant = move.EnPassant;
+    pPosition->promotion = move.Promotion;
+      entry_type = EXACT_SCORE;
   }
   else
   {
@@ -248,10 +250,10 @@ void savePV(TChessBoard *cb, int side, int depth) {
   for(int i=1; i<pv_length[1]; i++) {
     makeMove(cb, i, pv[1][i], wtm);
     storeBest(cb, i, depth, pv[1][i].Score, pv[1][i].Score-1, 0);
-    wtm = -wtm;
+    wtm = !wtm;
   }  
   for(int i=pv_length[1]-1; i>=1; i--) {
-    wtm = -wtm;
+    wtm = !wtm;
     unmakeMove(cb, i, pv[1][i], wtm);
   }
 }

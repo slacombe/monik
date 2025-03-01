@@ -77,7 +77,7 @@ void entree(TChessBoard *cb, char* o_szCommande)
 // sous forme interne.
 // Valeur retourne:
 //    true si le coup est valide, false sinon.
-bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_Move)
+bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, MOVE& o_Move)
 {
   // Prend l'entree de l'utilisateur et
   // le converti en un format interne.
@@ -85,7 +85,7 @@ bool parse(TChessBoard *cb, const char* i_szEntree, int ply, int wtm, TMove& o_M
   // La case source.
   int iRangee = int( i_szEntree[1] )-'0';
   int iColonne = int( i_szEntree[0] )-'a';
-  TMove move;
+  MOVE move;
   move.From = (8-iRangee)*8+iColonne;
   if ( move.From > 63 )
     return false;
@@ -415,9 +415,9 @@ bool option(TChessBoard *cb, const string command, string& response)
 // 
 // Code modifie de Crafty.
 //
-int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move) 
+int inputMove(TChessBoard *cb, char* text, int ply, int wtm, MOVE& move) 
 {
-	TMove goodmove;
+	MOVE goodmove;
 	int piece=-1, capture, promote, give_check;
 	int ffile, frank, tfile, trank;
 	int current, i, nleft;
@@ -585,7 +585,7 @@ int inputMove(TChessBoard *cb, char* text, int ply, int wtm, TMove& move)
 		}
 	}*/
 
-	TMoveList movelist;
+	LINE movelist;
   vide(&movelist);
 	genMoveAttaque(cb, ply, wtm, movelist);
 	genMovePasAttaque(cb, ply, wtm, movelist);

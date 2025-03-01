@@ -12,7 +12,7 @@
 #include "chess.h"
 #include "board.h"
 
-void unmakeMove(TChessBoard *cb, int ply, TMove i_Move, int wtm);
+void unmakeMove(TChessBoard *cb, int ply, MOVE i_Move, int wtm);
 void undoMove(TChessBoard *cb);
 
 //---------------------------------------------------------------------------

@@ -334,9 +334,9 @@ Bitboard attaqueFou(TChessBoard *cb, int i_iPosition)
   return att;
 }
 
-void swap(TMove& m1, TMove& m2 )
+void swap(MOVE& m1, MOVE& m2 )
 {
-  TMove T = m1;
+  MOVE T = m1;
   m1 = m2;
   m2 = T;
 }
